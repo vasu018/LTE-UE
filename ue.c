@@ -105,7 +105,8 @@ service_req(void *arg)
     /*
      * Send service requests
      */
-    put_enb_ue_s1ap_id((uint8_t*)buf+11, thread_state->udp_port);
+//    put_enb_ue_s1ap_id((uint8_t*)buf+11, thread_state->udp_port);
+    put_enb_ue_s1ap_id((uint8_t*)buf+11, thread_state->thread_num + thread_state->seed);
 
     printf("Sending Service request : %d\n",thread_state->thread_num);
     if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
@@ -129,7 +130,8 @@ service_req(void *arg)
                 printf("received service NAS request : %d\n",thread_state->thread_num);
 		char payload[] = "000d40340000050000000200010008000480646dbe001a00090847f3914a9d00075e006440080002f83900e00000004340060002f8390001\0";
                 hex_to_num(payload,(int8_t *) buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
                 thread_state->nas_sec_recvd = 1;
                 
                 if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *)thread_state->si_other, slen)==-1)
@@ -140,7 +142,8 @@ service_req(void *arg)
                 
                 char payload[] = "000d40370000050000000200010008000480646dbe001a000c0b075308deaaa8d6434c1b27006440080002f83900e00000004340060002f8390001\0";
                 hex_to_num(payload,(int8_t *) buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
                 thread_state->auth_recvd = 1;
 
                 if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *)thread_state->si_other, slen)==-1)
@@ -150,7 +153,8 @@ service_req(void *arg)
                 printf("\nSending setup response!!!! %d\n",thread_state->thread_num);
                 char payload[] = "200900240000030000400200010008400480646dbe0033400f000032400a0a1f64640a5b47b28a9a\0";
                 hex_to_num(payload,(int8_t *)buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
                 thread_state->initial_context_setup = 1;
 
                 if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
@@ -215,7 +219,8 @@ attach(void *arg)
     printf("Received fd : %d in %s\n",s , __func__);
     printf("Assigned port: %d\n",si_us.sin_port);
 
-    put_enb_ue_s1ap_id((uint8_t*)buf+11, si_us.sin_port);
+//    put_enb_ue_s1ap_id((uint8_t*)buf+11, si_us.sin_port);
+    put_enb_ue_s1ap_id((uint8_t*)buf+11, thread_state->thread_num + thread_state->seed);
     thread_state->udp_port = si_us.sin_port;
 
     if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
@@ -240,8 +245,8 @@ attach(void *arg)
                 printf("received NAS request : %d\n",thread_state->thread_num);
 		char payload[] = "000d40340000050000000200010008000480646dbe001a00090847f3914a9d00075e006440080002f83900e00000004340060002f8390001\0";
                 hex_to_num(payload,(int8_t *) buf);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
+//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
                 thread_state->nas_sec_recvd = 1;
                 
                 if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
@@ -252,8 +257,8 @@ attach(void *arg)
                 
                 char payload[] = "000d40370000050000000200010008000480646dbe001a000c0b075308deaaa8d6434c1b27006440080002f83900e00000004340060002f8390001\0";
                 hex_to_num(payload,(int8_t *) buf);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
+//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
                 thread_state->auth_recvd = 1;
 
                 if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
@@ -263,8 +268,8 @@ attach(void *arg)
                 printf("\nSending ATTACH complete!!!! %d\n",thread_state->thread_num);
                 char payload[] = "000d40390000050000000200010008000480646dbe001a000e0d27e29c599901074300035200c2006440080002f83900e00000004340060002f8390001\0";
                 hex_to_num(payload,(int8_t *)buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+18, thread_state->udp_port);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+18, thread_state->thread_num + thread_state->seed);
+//                put_enb_ue_s1ap_id((uint8_t*)buf+18, thread_state->udp_port);
+                put_enb_ue_s1ap_id((uint8_t*)buf+18, thread_state->thread_num + thread_state->seed);
                 thread_state->attach_complete_recvd = 1;
 
                 if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
@@ -272,7 +277,7 @@ attach(void *arg)
 
                 printf("Lets sleep and then send service request: %d\n",thread_state->thread_num);
 
-//                sleep(5);
+                sleep(10);
                 service_req(thread_state);
             }
 
