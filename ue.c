@@ -8,8 +8,20 @@
 #include <unistd.h>
 #include <pthread.h>
 #include "ue.h"
+#include <time.h>
+#include <errno.h>
+#include <sys/time.h>
+
 
 int rrval = 1;
+uint8_t ind = 0;
+unsigned long int no_attach_req = 0;
+unsigned long int no_attach_succ = 0;
+unsigned long int no_serv_req = 0;
+unsigned long int no_serv_succ = 0;
+double total_time = 0;
+double serv_time = 0;
+
 
 void diep(char *s)
 {
@@ -77,7 +89,8 @@ increase_imsi(uint8_t* imsi_p, int increment_val)
         *start = *start | ((digit & 0x0f) << 4);
         start -= 1;
     }
-
+    start++;
+    *start = ind;
     return 0;
 }
 
@@ -89,6 +102,8 @@ service_req(void *arg)
     thread_state_t      *thread_state = (thread_state_t*)arg;
     int                 s = thread_state->socket;
     uint8_t             attach_code = 0x4d;
+    clock_t start, end;
+    double cpu_time_used=0;
     
     char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
 
@@ -114,6 +129,8 @@ service_req(void *arg)
     /*
      * Start listening for auth/NAS requests
      */
+	no_serv_req++;
+    start = clock();
     while (1) {
         if (recvfrom(s, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
             printf("Thread %d died with thread state(nas_sec_req, auth_req, initial context) : (%d, %d, %d)\n",
@@ -156,7 +173,11 @@ service_req(void *arg)
 //                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
                 put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
                 thread_state->initial_context_setup = 1;
-
+		
+		no_serv_succ ++;
+    		end = clock();
+		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+		serv_time += cpu_time_used;
                 if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
                     diep("sendto()");
                 close(s);
@@ -179,8 +200,11 @@ attach(void *arg)
     int                 s;
     thread_state_t      *thread_state = (thread_state_t*)arg;
     struct timeval tv;
-    tv.tv_sec = 1;
+    tv.tv_sec = 2;
     tv.tv_usec = 0;
+    clock_t start, end;
+    double cpu_time_used=0;
+
     char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
@@ -222,10 +246,13 @@ attach(void *arg)
 //    put_enb_ue_s1ap_id((uint8_t*)buf+11, si_us.sin_port);
     put_enb_ue_s1ap_id((uint8_t*)buf+11, thread_state->thread_num + thread_state->seed);
     thread_state->udp_port = si_us.sin_port;
-
+    
     if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
         diep("sendto()");
     
+	no_attach_req++;
+    start = clock();
+
     /*
      * Start listening for auth/NAS requests
      */
@@ -234,7 +261,8 @@ attach(void *arg)
             printf("Thread %d died with thread state(nas_sec_req, auth_req, attach_accept) : (%d, %d, %d)\n",
                    thread_state->thread_num, thread_state->nas_sec_recvd,
                    thread_state->auth_recvd, thread_state->attach_complete_recvd);
-            pthread_exit(0);
+            	printf("error number is %d %s\n",errno,strerror(errno));
+		pthread_exit(0);
         } else {
             /*
              * Process packet header
@@ -265,6 +293,10 @@ attach(void *arg)
                     diep("sendto()");
             } else if (buf[0] == PACKET_ID_ATTACH_ACCEPT && (thread_state->attach_complete_recvd == 0)) {
                 printf("received ATTACH accept :%d\n",thread_state->thread_num);
+		no_attach_succ++;
+		end = clock();
+		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+		total_time += cpu_time_used;
                 printf("\nSending ATTACH complete!!!! %d\n",thread_state->thread_num);
                 char payload[] = "000d40390000050000000200010008000480646dbe001a000e0d27e29c599901074300035200c2006440080002f83900e00000004340060002f8390001\0";
                 hex_to_num(payload,(int8_t *)buf);
@@ -347,5 +379,13 @@ int main(int argc, char *argv[])
 	for (i=0; i<num_ue; i++) {
 		pthread_join(attach_thread[i], NULL);
 	}
-	return 0;
+    if(no_attach_succ)
+	total_time = total_time/no_attach_succ;
+    if(no_serv_succ)
+	serv_time = serv_time/no_serv_succ;
+
+    printf("Number of attach req:%lu succ:%lu time:%f\n",no_attach_req,no_attach_succ,total_time);
+    printf("Number of serv req:%lu succ:%lu time:%f\n",no_serv_req,no_serv_succ,serv_time);
+    return 0;
+
 }
