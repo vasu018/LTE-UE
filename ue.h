@@ -15,11 +15,44 @@
 #define PACKET_ID_ATTACH_ACCEPT 0x04
 #define PACKET_ID_SERVICE_REQ_INITIAL_CONTEXT 0x04
 
+const char * const iplist[] = {"10.10.10.185"};
+
 typedef struct udp_conn_context_s {
     int fd;
     struct sockaddr_in *si_other;
     struct sockaddr_in *si_us;
 }udp_conn_context_t;
+
+typedef enum {
+    PKT_TYPE_ATTACH=0,
+    PKT_TYPE_SERVICE,
+    PKT_TYPE_DETACH
+}pkt_type;
+
+typedef struct pkt_identifier_s {
+    uint32_t slice_id;
+    uint32_t msg_type;
+}pkt_identifier_t;
+
+typedef enum {
+    STAT_ATTACH_ATTEMPT = 0,
+    STAT_ATTACH_SUCCESSFUL,
+    STAT_ATTACH_FAIL,
+    STAT_SERVICE_ATTEMPT,
+    STAT_SERVICE_SUCCESSFUL,
+    STAT_SERVICE_FAIL
+}stat_type;
+
+typedef struct system_stats_s {
+    unsigned long int     attach_attempt;
+    unsigned long int     attach_successful;
+    unsigned long int     attach_fail;
+
+    unsigned long int     service_attempt;
+    unsigned long int     service_successful;
+    unsigned long int     service_fail;
+    pthread_spinlock_t stat_lock;
+}system_stats_t;
 
 typedef struct thread_state_s {
     uint32_t     thread_num;

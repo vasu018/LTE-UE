@@ -15,13 +15,46 @@
 
 int rrval = 1;
 uint8_t ind = 0;
-unsigned long int no_attach_req = 0;
-unsigned long int no_attach_succ = 0;
-unsigned long int no_serv_req = 0;
-unsigned long int no_serv_succ = 0;
 double total_time = 0;
 double serv_time = 0;
 
+system_stats_t global_stats;
+
+int
+increment_system_stat(thread_state_t *thread_state, int stat)
+{
+    switch (stat) {
+    case STAT_ATTACH_ATTEMPT:
+        pthread_spin_lock(&global_stats.stat_lock);
+        global_stats.attach_attempt++;
+        pthread_spin_unlock(&global_stats.stat_lock);
+        break;
+    case STAT_ATTACH_SUCCESSFUL:
+        pthread_spin_lock(&global_stats.stat_lock);
+        global_stats.attach_successful++;
+        pthread_spin_unlock(&global_stats.stat_lock);
+        break;
+    case STAT_SERVICE_ATTEMPT:
+        pthread_spin_lock(&global_stats.stat_lock);
+        global_stats.service_attempt++;
+        pthread_spin_unlock(&global_stats.stat_lock);
+        break;
+    case STAT_SERVICE_SUCCESSFUL:
+        pthread_spin_lock(&global_stats.stat_lock);
+        global_stats.service_successful++;
+        pthread_spin_unlock(&global_stats.stat_lock);
+        break;
+    default:
+        break;
+    }
+    return 1;
+}
+
+int
+show_stats(void *arg)
+{
+    return 1;
+}
 
 void diep(char *s)
 {
@@ -93,20 +126,29 @@ increase_imsi(uint8_t* imsi_p, int increment_val)
     *start = ind;
     return 0;
 }
+    
 
-void *
+static int
 service_req(void *arg)
 {
     uint32_t            slen=sizeof(struct sockaddr_in);
-    char                buf[BUFLEN];
+    char                buf_array[BUFLEN], *buf_start, *buf;
     thread_state_t      *thread_state = (thread_state_t*)arg;
     int                 s = thread_state->socket;
     uint8_t             attach_code = 0x4d;
-    clock_t start, end;
-    double cpu_time_used=0;
+    clock_t             start, end;
+    double              cpu_time_used=0;
+    pkt_identifier_t    pkt_identifier;
+    int                 err=0;
     
     char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
 
+    /* Keep the start pointer to use for sending
+     */
+    buf = buf_array;
+    buf_start = buf;
+    memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+    buf = buf_start + sizeof(pkt_identifier_t);
 
     hex_to_num(payload, (int8_t *)buf);
     /*
@@ -124,19 +166,20 @@ service_req(void *arg)
     put_enb_ue_s1ap_id((uint8_t*)buf+11, thread_state->thread_num + thread_state->seed);
 
     printf("Sending Service request : %d\n",thread_state->thread_num);
-    if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
+    if (sendto(s, buf_start, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
         diep("sendto()");
     /*
      * Start listening for auth/NAS requests
      */
-	no_serv_req++;
+    increment_system_stat(thread_state, STAT_SERVICE_ATTEMPT);
     start = clock();
     while (1) {
         if (recvfrom(s, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
             printf("Thread %d died with thread state(nas_sec_req, auth_req, initial context) : (%d, %d, %d)\n",
                    thread_state->thread_num, thread_state->nas_sec_recvd,
                    thread_state->auth_recvd, thread_state->initial_context_setup);
-            pthread_exit(0);
+            err = ETIME;
+            break;
         } else {
             /*
              * Process packet header
@@ -146,66 +189,193 @@ service_req(void *arg)
             if (buf[0] == PACKET_ID_NAS_SEC_REQ && (thread_state->nas_sec_recvd == 0)) {
                 printf("received service NAS request : %d\n",thread_state->thread_num);
 		char payload[] = "000d40340000050000000200010008000480646dbe001a00090847f3914a9d00075e006440080002f83900e00000004340060002f8390001\0";
+
+                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+                buf = buf_start + sizeof(pkt_identifier_t);
+                
                 hex_to_num(payload,(int8_t *) buf);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
                 put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
                 thread_state->nas_sec_recvd = 1;
                 
-                if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *)thread_state->si_other, slen)==-1)
+                if (sendto(s, buf_start, BUFLEN, 0, (struct sockaddr *)thread_state->si_other, slen)==-1)
                     diep("sendto()");
 		
             } else if (buf[0] == PACKET_ID_AUTH_REQ && (thread_state->auth_recvd == 0)) {
                 printf("received service AUTH request : %d\n",thread_state->thread_num);
                 
                 char payload[] = "000d40370000050000000200010008000480646dbe001a000c0b075308deaaa8d6434c1b27006440080002f83900e00000004340060002f8390001\0";
+
+                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+                buf = buf_start + sizeof(pkt_identifier_t);
+                
                 hex_to_num(payload,(int8_t *) buf);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
                 put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
                 thread_state->auth_recvd = 1;
 
-                if (sendto(s, buf, BUFLEN, 0, (struct sockaddr *)thread_state->si_other, slen)==-1)
+                if (sendto(s, buf_start, BUFLEN, 0, (struct sockaddr *)thread_state->si_other, slen)==-1)
                     diep("sendto()");
             } else if (buf[0] == PACKET_ID_SERVICE_REQ_INITIAL_CONTEXT && (thread_state->initial_context_setup == 0)) {
                 printf("received Initial context setup :%d\n",thread_state->thread_num);
                 printf("\nSending setup response!!!! %d\n",thread_state->thread_num);
                 char payload[] = "200900240000030000400200010008400480646dbe0033400f000032400a0a1f64640a5b47b28a9a\0";
+
+                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+                buf = buf_start + sizeof(pkt_identifier_t);
+                
                 hex_to_num(payload,(int8_t *)buf);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
                 put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
                 thread_state->initial_context_setup = 1;
 		
-		no_serv_succ ++;
+                increment_system_stat(thread_state, STAT_SERVICE_SUCCESSFUL);
     		end = clock();
 		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
 		serv_time += cpu_time_used;
-                if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
+                if (sendto(s, buf_start, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
                     diep("sendto()");
                 close(s);
-
+                return 0;
             }
 
         }
 
     }
     close(s);
-    pthread_exit(0);
+    pthread_exit(NULL);
+    return err;
 }
 
-void *
+static int
 attach(void *arg)
 {
     uint32_t            slen=sizeof(struct sockaddr_in);
-    char                buf[BUFLEN];
-    struct sockaddr_in  si_other, si_us;
-    int                 s;
+    char                buf_array[BUFLEN], *buf_start, *buf;
+    int                 err;
     thread_state_t      *thread_state = (thread_state_t*)arg;
+    clock_t             start, end;
+    double              cpu_time_used=0;
+    pkt_identifier_t    pkt_identifier;
+
+    char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
+
+    /*
+     * Lets put the pkt id in the very beginning
+     */
+    pkt_identifier.slice_id = 1;
+    pkt_identifier.msg_type = PKT_TYPE_ATTACH;
+
+    /* Keep the start pointer to use for sending
+     */
+    buf = buf_array;
+    buf_start = buf;
+    memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+    buf = buf_start + sizeof(pkt_identifier_t);
+
+    hex_to_num(payload, (int8_t *)buf);
+    increase_imsi((uint8_t*)buf+24,thread_state->thread_num + thread_state->seed);
+    /*
+     * Send attach requests
+     */
+    getsockname(thread_state->socket, (struct sockaddr*)thread_state->si_us, &slen);
+    printf("Received fd : %d in %s\n",thread_state->socket , __func__);
+    printf("Assigned port: %d\n",thread_state->si_us->sin_port);
+
+//    put_enb_ue_s1ap_id((uint8_t*)buf+11, si_us.sin_port);
+    put_enb_ue_s1ap_id((uint8_t*)buf+11, thread_state->thread_num + thread_state->seed);
+    
+    if (sendto(thread_state->socket, buf_start, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
+        diep("sendto()");
+    increment_system_stat(thread_state, STAT_ATTACH_ATTEMPT);
+    start = clock();
+
+    /*
+     * Start listening for auth/NAS requests
+     */
+    while (1) {
+        if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
+            printf("Thread %d died with thread state(nas_sec_req, auth_req, attach_accept) : (%d, %d, %d)\n",
+                   thread_state->thread_num, thread_state->nas_sec_recvd,
+                   thread_state->auth_recvd, thread_state->attach_complete_recvd);
+            err = ETIME;
+            break;
+        } else {
+            /*
+             * Process packet header
+             * Check the type of the packet
+             * After receiving packet, construct a packet and send it back
+             */
+            if (buf[0] == PACKET_ID_NAS_SEC_REQ && (thread_state->nas_sec_recvd == 0)) {
+                printf("received NAS request : %d\n",thread_state->thread_num);
+		char payload[] = "000d40340000050000000200010008000480646dbe001a00090847f3914a9d00075e006440080002f83900e00000004340060002f8390001\0";
+
+                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+                buf = buf_start + sizeof(pkt_identifier_t);
+
+                hex_to_num(payload,(int8_t *) buf);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
+//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
+                thread_state->nas_sec_recvd = 1;
+                
+                if (sendto(thread_state->socket, buf_start, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
+                    diep("sendto()");
+		
+            } else if (buf[0] == PACKET_ID_AUTH_REQ && (thread_state->auth_recvd == 0)) {
+                printf("received AUTH request : %d\n",thread_state->thread_num);
+                
+                char payload[] = "000d40370000050000000200010008000480646dbe001a000c0b075308deaaa8d6434c1b27006440080002f83900e00000004340060002f8390001\0";
+                
+                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+                buf = buf_start + sizeof(pkt_identifier_t);
+                
+                hex_to_num(payload,(int8_t *) buf);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
+                thread_state->auth_recvd = 1;
+
+                if (sendto(thread_state->socket, buf_start, BUFLEN, 0,(struct sockaddr *)thread_state->si_other, slen)==-1)
+                    diep("sendto()");
+            } else if (buf[0] == PACKET_ID_ATTACH_ACCEPT && (thread_state->attach_complete_recvd == 0)) {
+                printf("received ATTACH accept :%d\n",thread_state->thread_num);
+                increment_system_stat(thread_state, STAT_ATTACH_SUCCESSFUL);
+		end = clock();
+		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
+		total_time += cpu_time_used;
+                printf("\nSending ATTACH complete!!!! %d\n",thread_state->thread_num);
+                char payload[] = "000d40390000050000000200010008000480646dbe001a000e0d27e29c599901074300035200c2006440080002f83900e00000004340060002f8390001\0";
+
+                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+                buf = buf_start + sizeof(pkt_identifier_t);
+
+                hex_to_num(payload,(int8_t *)buf);
+                put_enb_ue_s1ap_id((uint8_t*)buf+18, thread_state->thread_num + thread_state->seed);
+                thread_state->attach_complete_recvd = 1;
+
+                if (sendto(thread_state->socket, buf_start, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
+                    diep("sendto()");
+
+                return 0;
+
+            } else {
+                printf("\%d received garbage \n",thread_state->thread_num);
+
+            }
+
+        }
+
+    }
+    close(thread_state->socket);
+    pthread_exit(NULL);
+    return err;
+}
+
+void *
+execute_thread(void *arg)
+{
+    int retval;
+    thread_state_t *thread_state = (thread_state_t*)arg;
+    int                 s, ip_index;
+    struct sockaddr_in  si_other, si_us;
     struct timeval tv;
     tv.tv_sec = 2;
     tv.tv_usec = 0;
-    clock_t start, end;
-    double cpu_time_used=0;
-
-    char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
         diep("socket");
@@ -221,103 +391,32 @@ attach(void *arg)
     si_us.sin_family = AF_INET;
     si_us.sin_port = htons(0);
     //si_us.sin_addr.s_addr = inet_addr("5.5.5.5");
-    si_us.sin_addr.s_addr = inet_addr(US_IP);
+    ip_index = thread_state->thread_num % (sizeof(iplist)/sizeof(iplist[0]));
+    printf("Sending from: %s in %s\n",iplist[ip_index], __func__);
+    si_us.sin_addr.s_addr = inet_addr(iplist[ip_index]);
 
     bind(s ,(struct sockaddr *)&si_us,sizeof(si_us));
 
     thread_state->socket = s;
     thread_state->si_other = &si_other;
     thread_state->si_us = &si_us;
-
+    thread_state->udp_port = thread_state->si_us->sin_port;
+    
     if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
             perror("Error");
-            pthread_exit(0);
+            pthread_exit(NULL);
     }
-
-    hex_to_num(payload, (int8_t *)buf);
-    increase_imsi((uint8_t*)buf+24,thread_state->thread_num + thread_state->seed);
-    /*
-     * Send attach requests
-     */
-    getsockname(s,(struct sockaddr*)&si_us,&slen);
-    printf("Received fd : %d in %s\n",s , __func__);
-    printf("Assigned port: %d\n",si_us.sin_port);
-
-//    put_enb_ue_s1ap_id((uint8_t*)buf+11, si_us.sin_port);
-    put_enb_ue_s1ap_id((uint8_t*)buf+11, thread_state->thread_num + thread_state->seed);
-    thread_state->udp_port = si_us.sin_port;
     
-    if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
-        diep("sendto()");
+    retval = attach(arg);
     
-	no_attach_req++;
-    start = clock();
+    printf("Lets sleep and then send service request: %d\n",thread_state->thread_num);
+    sleep(10);
 
-    /*
-     * Start listening for auth/NAS requests
-     */
-    while (1) {
-        if (recvfrom(s, buf, BUFLEN, 0,(struct sockaddr *) &si_us, &slen)==-1) {
-            printf("Thread %d died with thread state(nas_sec_req, auth_req, attach_accept) : (%d, %d, %d)\n",
-                   thread_state->thread_num, thread_state->nas_sec_recvd,
-                   thread_state->auth_recvd, thread_state->attach_complete_recvd);
-            	printf("error number is %d %s\n",errno,strerror(errno));
-		pthread_exit(0);
-        } else {
-            /*
-             * Process packet header
-             * Check the type of the packet
-             * After receiving packet, construct a packet and send it back
-             */
-            if (buf[0] == PACKET_ID_NAS_SEC_REQ && (thread_state->nas_sec_recvd == 0)) {
-                printf("received NAS request : %d\n",thread_state->thread_num);
-		char payload[] = "000d40340000050000000200010008000480646dbe001a00090847f3914a9d00075e006440080002f83900e00000004340060002f8390001\0";
-                hex_to_num(payload,(int8_t *) buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
-                thread_state->nas_sec_recvd = 1;
-                
-                if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
-                    diep("sendto()");
-		
-            } else if (buf[0] == PACKET_ID_AUTH_REQ && (thread_state->auth_recvd == 0)) {
-                printf("received AUTH request : %d\n",thread_state->thread_num);
-                
-                char payload[] = "000d40370000050000000200010008000480646dbe001a000c0b075308deaaa8d6434c1b27006440080002f83900e00000004340060002f8390001\0";
-                hex_to_num(payload,(int8_t *) buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->thread_num + thread_state->seed);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+17, thread_state->udp_port);
-                thread_state->auth_recvd = 1;
-
-                if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
-                    diep("sendto()");
-            } else if (buf[0] == PACKET_ID_ATTACH_ACCEPT && (thread_state->attach_complete_recvd == 0)) {
-                printf("received ATTACH accept :%d\n",thread_state->thread_num);
-		no_attach_succ++;
-		end = clock();
-		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-		total_time += cpu_time_used;
-                printf("\nSending ATTACH complete!!!! %d\n",thread_state->thread_num);
-                char payload[] = "000d40390000050000000200010008000480646dbe001a000e0d27e29c599901074300035200c2006440080002f83900e00000004340060002f8390001\0";
-                hex_to_num(payload,(int8_t *)buf);
-//                put_enb_ue_s1ap_id((uint8_t*)buf+18, thread_state->udp_port);
-                put_enb_ue_s1ap_id((uint8_t*)buf+18, thread_state->thread_num + thread_state->seed);
-                thread_state->attach_complete_recvd = 1;
-
-                if (sendto(s, buf, BUFLEN, 0,(struct sockaddr *) &si_other, slen)==-1)
-                    diep("sendto()");
-
-                printf("Lets sleep and then send service request: %d\n",thread_state->thread_num);
-
-                sleep(10);
-                service_req(thread_state);
-            }
-
-        }
-
+    if (retval == 0) {
+        retval = service_req(arg);
     }
-    close(s);
-    pthread_exit(0);
+    show_stats(arg);
+    pthread_exit(NULL);
 }
 
 int main(int argc, char *argv[])
@@ -368,24 +467,30 @@ int main(int argc, char *argv[])
 	attach_thread = (pthread_t*)malloc(num_ue * sizeof(pthread_t));
 	thread_state  = (thread_state_t*)malloc(num_ue * sizeof(thread_state_t));
 
+        pthread_spin_init(&global_stats.stat_lock, PTHREAD_PROCESS_SHARED);
 	for (i=0; i<num_ue; i++) {
 		thread_state[i].thread_num = i;
 		thread_state[i].seed = seed;
 		thread_state[i].nas_sec_recvd = 0;
 		thread_state[i].auth_recvd = 0;
 		thread_state[i].attach_complete_recvd = 0;
-		pthread_create(&attach_thread[i], NULL, attach, &thread_state[i]);
+		pthread_create(&attach_thread[i], NULL, execute_thread, &thread_state[i]);
 	}
 	for (i=0; i<num_ue; i++) {
 		pthread_join(attach_thread[i], NULL);
 	}
-    if(no_attach_succ)
-	total_time = total_time/no_attach_succ;
-    if(no_serv_succ)
-	serv_time = serv_time/no_serv_succ;
-
-    printf("Number of attach req:%lu succ:%lu time:%f\n",no_attach_req,no_attach_succ,total_time);
-    printf("Number of serv req:%lu succ:%lu time:%f\n",no_serv_req,no_serv_succ,serv_time);
+	total_time = total_time/global_stats.attach_successful;
+	serv_time = serv_time/global_stats.service_successful;
+    
+    printf("\n\n\t\tRequest\t\tSuccessful\t\tTime\n");
+    printf("Attach\t\t%lu\t\t%lu\t\t%f\n",
+           global_stats.attach_attempt,
+           global_stats.attach_successful,
+           total_time);
+    printf("Service\t\t%lu\t\t%lu\t\t%f\n",
+           global_stats.service_attempt,
+           global_stats.service_successful,
+           total_time);
     return 0;
 
 }
