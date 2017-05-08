@@ -30,8 +30,8 @@ typedef enum {
 }pkt_type;
 
 typedef struct pkt_identifier_s {
-    uint32_t slice_id;
-    uint32_t msg_type;
+    uint8_t slice_id;
+    uint8_t msg_type;
 }pkt_identifier_t;
 
 typedef enum {
