@@ -143,6 +143,8 @@ service_req(void *arg)
     
     char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
 
+    pkt_identifier.slice_id = 1;
+    pkt_identifier.msg_type = PKT_TYPE_SERVICE;
     /* Keep the start pointer to use for sending
      */
     buf = buf_array;
