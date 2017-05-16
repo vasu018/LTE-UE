@@ -36,8 +36,14 @@ typedef struct pkt_identifier_s {
 
 typedef enum {
     STAT_ATTACH_ATTEMPT = 0,
-    STAT_ATTACH_SUCCESSFUL,
+    STAT_ATTACH_NAS_REQ_RECV,
+    STAT_ATTACH_NAS_RESP_SENT,
+    STAT_ATTACH_AUTH_REQ_RECV,
+    STAT_ATTACH_AUTH_RESP_SENT,
+    STAT_ATTACH_ACCEPT_RECV,
+    STAT_ATTACH_ACCEPT_COMPLETE_SENT,
     STAT_ATTACH_FAIL,
+
     STAT_SERVICE_ATTEMPT,
     STAT_SERVICE_SUCCESSFUL,
     STAT_SERVICE_FAIL
@@ -45,24 +51,39 @@ typedef enum {
 
 typedef struct system_stats_s {
     unsigned long int     attach_attempt;
-    unsigned long int     attach_successful;
+    unsigned long int     attach_auth_req_recv;
+    unsigned long int     attach_auth_resp_sent;
+    unsigned long int     attach_nas_req_recv;
+    unsigned long int     attach_nas_resp_sent;
+    unsigned long int     attach_accept_recv;
+    unsigned long int     attach_accept_complete_sent;
     unsigned long int     attach_fail;
 
     unsigned long int     service_attempt;
     unsigned long int     service_successful;
     unsigned long int     service_fail;
-    pthread_spinlock_t stat_lock;
 }system_stats_t;
 
+typedef struct time_stats_s {
+    double     attach_total;
+    double     attach_initiate_to_auth_recv;
+    double     attach_auth_send_to_nas_recv;
+    double     attach_nas_recv_to_accept;
+
+    double     service_attempt;
+    double     service_successful;
+    double     service_fail;
+}time_stats_t;
+
 typedef struct thread_state_s {
-    uint32_t     thread_num;
-    uint32_t     udp_port;
-    uint32_t     seed;
-    int     nas_sec_recvd;
-    int     auth_recvd;
-    int     attach_complete_recvd;
-    int     initial_context_setup;
-    int     socket;
+    uint32_t    thread_num;
+    uint32_t    udp_port;
+    uint32_t    thread_seed;
+    uint32_t    serial_seed;
+    int         socket;
+    int         state;
+    system_stats_t  thread_stats;
+    time_stats_t    thread_time_stats;
     struct sockaddr_in  *si_other;
     struct sockaddr_in  *si_us;
 } thread_state_t;
