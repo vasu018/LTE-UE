@@ -245,7 +245,7 @@ increase_imsi_serial(uint8_t* imsi_p, int increment_val)
     uint8_t *start = imsi_p+6;
     uint32_t digit;
 
-    for (i=0; i<4; i++) {
+    for (i=0; i<2; i++) {
         ans = ans * 10;
         ans += (*start & 0xf0) >> 4;
         ans = ans * 10;
@@ -263,7 +263,7 @@ increase_imsi_serial(uint8_t* imsi_p, int increment_val)
     printf("Serial imsi ans= %lu\n",ans);
 #endif
     start = imsi_p+7;
-    for (i=4; i>0; i--) {
+    for (i=2; i>0; i--) {
         digit = ans % 10;
         ans = ans/10;
         *start = digit & 0x0f;
@@ -335,6 +335,7 @@ service_req(void *arg)
     
     char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
 
+    pkt_identifier.cluster_id = 1;
     pkt_identifier.hostid = thread_state->hostid;
     pkt_identifier.sliceid = 1;
     /* Keep the start pointer to use for sending
@@ -456,6 +457,7 @@ attach(void *arg)
     /*
      * Lets put the pkt id in the very beginning
      */
+    pkt_identifier.cluster_id = 0;
     pkt_identifier.hostid = 0;
     pkt_identifier.sliceid = 1;
 
@@ -641,7 +643,7 @@ execute_thread(void *arg)
     int     one_sec_flag = 1;
 #endif
 #endif
-    tv.tv_sec = 20;
+    tv.tv_sec = 60;
     tv.tv_usec = 0;
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
