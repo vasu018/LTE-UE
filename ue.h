@@ -3,8 +3,9 @@
 
 #define BUFLEN 1024
 #define NUM_UE 1
-#define ATTACH_PORT 2343
-#define SERVICE_PORT 2343
+#define S1AP_PORT 2343
+#define EXP_START_PORT 2355
+#define EXP_STOP_PORT 2356
 #define US_PORT 23432
 #define RECPACK 10
 #define OTHER_IP "10.10.10.30"
@@ -15,6 +16,7 @@
 #define PACKET_ID_ATTACH_ACCEPT 0x04
 #define PACKET_ID_SERVICE_REQ_INITIAL_CONTEXT 0x04
 
+//const char * const iplist[] = {"10.10.10.185", "10.10.10.186", "10.10.10.187"};
 const char * const iplist[] = {"10.10.10.185"};
 
 typedef struct udp_conn_context_s {
@@ -26,7 +28,8 @@ typedef struct udp_conn_context_s {
 typedef enum {
     PKT_TYPE_ATTACH=0,
     PKT_TYPE_SERVICE,
-    PKT_TYPE_DETACH
+    PKT_TYPE_DETACH,
+    PKT_TYPE_TEST_MME
 }pkt_type;
 
 typedef struct pkt_identifier_s {
@@ -45,7 +48,12 @@ typedef enum {
     STAT_ATTACH_FAIL,
 
     STAT_SERVICE_ATTEMPT,
-    STAT_SERVICE_SUCCESSFUL,
+    STAT_SERVICE_NAS_REQ_RECV,
+    STAT_SERVICE_NAS_RESP_SENT,
+    STAT_SERVICE_AUTH_REQ_RECV,
+    STAT_SERVICE_AUTH_RESP_SENT,
+    STAT_SERVICE_ACCEPT_RECV,
+    STAT_SERVICE_ACCEPT_COMPLETE_SENT,
     STAT_SERVICE_FAIL
 }stat_type;
 
@@ -60,7 +68,12 @@ typedef struct system_stats_s {
     unsigned long int     attach_fail;
 
     unsigned long int     service_attempt;
-    unsigned long int     service_successful;
+    unsigned long int     service_auth_req_recv;
+    unsigned long int     service_auth_resp_sent;
+    unsigned long int     service_nas_req_recv;
+    unsigned long int     service_nas_resp_sent;
+    unsigned long int     service_accept_recv;
+    unsigned long int     service_accept_complete_sent;
     unsigned long int     service_fail;
 }system_stats_t;
 
@@ -70,9 +83,10 @@ typedef struct time_stats_s {
     double     attach_auth_send_to_nas_recv;
     double     attach_nas_recv_to_accept;
 
-    double     service_attempt;
-    double     service_successful;
-    double     service_fail;
+    double     service_total;
+    double     service_initiate_to_auth_recv;
+    double     service_auth_send_to_nas_recv;
+    double     service_nas_recv_to_accept;
 }time_stats_t;
 
 typedef struct thread_state_s {
