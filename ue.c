@@ -13,13 +13,11 @@
 #include <sys/time.h>
 #include <signal.h>
 
-#define DEF_CLOCK 0
-#define DEF_GETTIMEOFDAY 1
 #define DEF_GET_ONE_SEC_CONN
-//#define DEBUG
+
+//#define SLICE_TO_OTHER_MME
 
 int rrval = 1;
-double total_time = 0;
 double serv_time = 0;
 int serial_num=1;
 system_stats_t global_system_stats;
@@ -32,7 +30,50 @@ uint32_t            rand_thread, rand_serial;
 struct timeval all_start, all_end;
 thread_state_t  *min_attach_thread=NULL, *max_attach_thread=NULL;
 thread_state_t  *min_service_thread=NULL, *max_service_thread=NULL;
+thread_state_t  *min_detach_thread=NULL, *max_detach_thread=NULL;
 uint8_t msg_type_global;
+
+int compare (const void* p1, const void* p2)
+{
+	thread_state_t *t1 = (thread_state_t*)p1;
+	thread_state_t *t2 = (thread_state_t*)p2;
+
+	if (msg_type_global == PKT_TYPE_ATTACH) {
+		if (t1->thread_time_stats.attach_total < t2->thread_time_stats.attach_total) return -1;
+		if (t1->thread_time_stats.attach_total == t2->thread_time_stats.attach_total) return 0;
+		if (t1->thread_time_stats.attach_total > t2->thread_time_stats.attach_total) return 1;
+	} else if (msg_type_global == PKT_TYPE_SERVICE) {
+		if (t1->thread_time_stats.service_total <  t2->thread_time_stats.service_total) return -1;
+		if (t1->thread_time_stats.service_total == t2->thread_time_stats.service_total) return 0;
+		if (t1->thread_time_stats.service_total >  t2->thread_time_stats.service_total) return 1;
+	} else if (msg_type_global == PKT_TYPE_DETACH) {
+		if (t1->thread_time_stats.detach_total <  t2->thread_time_stats.detach_total) return -1;
+		if (t1->thread_time_stats.detach_total == t2->thread_time_stats.detach_total) return 0;
+		if (t1->thread_time_stats.detach_total >  t2->thread_time_stats.detach_total) return 1;
+	}
+	return 0;
+}
+
+void
+show_time_median(thread_state_t *thread_state, int num_par, int num_ser)
+{
+
+	// sort the values
+	qsort (&thread_state[0], num_par*num_ser, sizeof(thread_state_t), compare);
+
+	// print the sucess/2 + failures index
+	printf("Median:\n");
+	if (msg_type_global == PKT_TYPE_ATTACH) {
+		printf("Time: %lf\n", thread_state[global_system_stats.attach_accept_complete_sent/2 + global_system_stats.attach_fail].
+			   thread_time_stats.attach_total);
+	} else if (msg_type_global == PKT_TYPE_SERVICE) {
+		printf("Time: %lf\n", thread_state[global_system_stats.attach_accept_complete_sent/2 + global_system_stats.attach_fail].
+			   thread_time_stats.attach_total);
+	} else if (msg_type_global == PKT_TYPE_DETACH) {
+		printf("Time: %lf\n", thread_state[global_system_stats.attach_accept_complete_sent/2 + global_system_stats.attach_fail].
+			   thread_time_stats.attach_total);
+	}
+}
 
 void
 write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
@@ -41,19 +82,149 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
     char filename[40];
     int i,j;
 
-    sprintf(filename,"logs/mat_%d_%d.txt",num_par,num_ser);
-    if((fp=fopen(filename, "wb"))==NULL) {
-            printf("Cannot open file.\n");
-    }
+#ifdef SLICE_TO_OTHER_MME
+	FILE *fp2 = NULL;
+#endif
+	if (msg_type_global == PKT_TYPE_ATTACH) {
+		sprintf(filename,"logs/attach_%d_%d.txt",num_par,num_ser);
+		if((fp=fopen(filename, "wb+"))==NULL) {
+			printf("Cannot open file.\n");
+		}
 
-    for (j=0; j<num_ser; j++) {
-        for (i=0; i<num_par; i++) {
-            fprintf(fp,"%lf,",thread_state[i + num_par*j].
-                    thread_time_stats.attach_total);
+		for (j=0; j<num_ser; j++) {
+			for (i=0; i<num_par; i++) {
+				fprintf(fp,"%lf,",thread_state[i + num_par*j].
+						thread_time_stats.attach_total);
+			}
+			fprintf(fp,"\n");
+		}
+	} else if(msg_type_global == PKT_TYPE_SERVICE) {
+		sprintf(filename,"logs/service_%d_%d.txt",num_par,num_ser);
+		if((fp=fopen(filename, "wb+"))==NULL) {
+			printf("Cannot open file.\n");
+		}
+
+		for (j=0; j<num_ser; j++) {
+			for (i=0; i<num_par; i++) {
+#ifdef SLICE_TO_OTHER_MME
+				printf("LINE:%d thnum %d  serseed %d\n",__LINE__, thread_state[i + num_par*j].thread_num, thread_state[i + num_par*j].serial_seed);
+				if( (1 + ((thread_state[i + num_par*j].thread_num + thread_state[i + num_par*j].serial_seed) % 2)) == 2 ) {
+					fprintf(fp2,"%lf,",thread_state[i + num_par*j].
+						thread_time_stats.service_total);
+					fprintf(fp2,"\n");
+				} else {
+					fprintf(fp,"%lf,",thread_state[i + num_par*j].
+						thread_time_stats.service_total);
+					fprintf(fp,"\n");
+				}
+#else
+				fprintf(fp,"%lf,",thread_state[i + num_par*j].
+						thread_time_stats.service_total);
+#endif
+			}
+			fprintf(fp,"\n");
+		}
+	} else if(msg_type_global == PKT_TYPE_DETACH) {
+		sprintf(filename,"logs/detach_%d_%d.txt",num_par,num_ser);
+		if((fp=fopen(filename, "wb+"))==NULL) {
+			printf("Cannot open file.\n");
+		}
+
+		for (j=0; j<num_ser; j++) {
+			for (i=0; i<num_par; i++) {
+				fprintf(fp,"%lf,",thread_state[i + num_par*j].
+						thread_time_stats.detach_total);
+			}
+			fprintf(fp,"\n");
+		}
+	}
+}
+
+static void
+write_value_file()
+{
+	FILE *fp;
+
+
+	double all_time = 0;
+    all_time = (all_end.tv_sec  - all_start.tv_sec) * 1000.0 ;
+    all_time += (all_end.tv_usec - all_start.tv_usec) / 1000.0 ;
+
+    if (msg_type_global == PKT_TYPE_ATTACH) {
+		if((fp=fopen("attach_test_values.csv", "a"))==NULL) {
+			printf("Cannot open output file.\n");
+			return;
+		}
+		fprintf(fp,"%lf,%lf,%lf,%lu,%lu,%lu,%lf,%lf,%lf,%lf,%lf\n",
+			all_time,
+			rand_total_time,
+			global_time_stats.attach_total / global_system_stats.attach_accept_complete_sent,
+			global_system_stats.attach_attempt,
+			global_system_stats.attach_accept_complete_sent,
+			global_system_stats.attach_fail,
+			global_time_stats.attach_initiate_to_auth_recv / global_system_stats.attach_accept_complete_sent,
+			global_time_stats.attach_auth_send_to_nas_recv / global_system_stats.attach_accept_complete_sent,
+			global_time_stats.attach_nas_recv_to_accept / global_system_stats.attach_accept_complete_sent,
+			max_attach_thread->thread_time_stats.attach_total,
+			min_attach_thread->thread_time_stats.attach_total);
+    } else if (msg_type_global == PKT_TYPE_SERVICE) {
+		if((fp=fopen("service_test_values.csv", "a"))==NULL) {
+			printf("Cannot open output file. error:%d\n",errno);
+			return;
+		}
+		fprintf(fp,"%lf,%lf,%lf,%lu,%lu,%lu,%lf,%lf,%lf,%lf,%lf\n",
+			all_time,
+			rand_total_time,
+			global_time_stats.service_total / global_system_stats.service_accept_complete_sent,
+			global_system_stats.service_attempt,
+			global_system_stats.service_accept_complete_sent,
+			global_system_stats.service_fail,
+			global_time_stats.service_initiate_to_auth_recv / global_system_stats.service_accept_complete_sent,
+			global_time_stats.service_auth_send_to_nas_recv / global_system_stats.service_accept_complete_sent,
+			global_time_stats.service_nas_recv_to_accept /	  global_system_stats.service_accept_complete_sent,
+			max_service_thread->thread_time_stats.service_total,
+			min_service_thread->thread_time_stats.service_total);
+    } else if (msg_type_global == PKT_TYPE_DETACH) {
+		if((fp=fopen("detach_test_values.csv", "a"))==NULL) {
+			printf("Cannot open output file. error:%d\n",errno);
+			return;
+		}
+		fprintf(fp,"%lf,%lf,%lf,%lu,%lu,%lu,%lf,%lf,%lf,%lf\n",
+			all_time,
+			rand_total_time,
+			global_time_stats.detach_total /
+			global_system_stats.detach_context_release,
+			global_system_stats.detach_attempt,
+			global_system_stats.detach_accept,
+			global_system_stats.detach_context_release,
+			global_time_stats.detach_send_to_accept_recv /
+			global_system_stats.detach_context_release,
+			global_time_stats.detach_accept_to_context_release_recv /
+			global_system_stats.detach_context_release,
+			max_detach_thread->thread_time_stats.detach_total,
+			min_detach_thread->thread_time_stats.detach_total);
+	}
+}
+
+static inline void
+set_min_max_detach_threads(thread_state_t *thread_state)
+{
+    if (!min_detach_thread) {
+        min_detach_thread = thread_state;
+    } else {
+        if(min_detach_thread->thread_time_stats.detach_total > 
+           thread_state->thread_time_stats.detach_total) {
+            min_detach_thread = thread_state;
         }
-        fprintf(fp,"\n");
     }
-
+    if (!max_detach_thread) {
+        max_detach_thread = thread_state;
+    } else {
+        if(max_detach_thread->thread_time_stats.detach_total < 
+           thread_state->thread_time_stats.detach_total) {
+            max_detach_thread = thread_state;
+        }
+    }
 }
 
 static inline void
@@ -67,7 +238,6 @@ set_min_max_service_threads(thread_state_t *thread_state)
             min_service_thread = thread_state;
         }
     }
-    
     if (!max_service_thread) {
         max_service_thread = thread_state;
     } else {
@@ -89,7 +259,6 @@ set_min_max_attach_threads(thread_state_t *thread_state)
             min_attach_thread = thread_state;
         }
     }
-    
     if (!max_attach_thread) {
         max_attach_thread = thread_state;
     } else {
@@ -116,15 +285,13 @@ aggregate_time_stat(time_stats_t *dest_stats, time_stats_t *src_stats, uint8_t m
             src_stats->service_auth_send_to_nas_recv;
         dest_stats->service_nas_recv_to_accept   += 
             src_stats->service_nas_recv_to_accept;
+    } else if (msg_type == PKT_TYPE_DETACH) {
+        dest_stats->detach_total    +=  src_stats->detach_total;
+        dest_stats->detach_send_to_accept_recv   +=
+            src_stats->detach_send_to_accept_recv;
+        dest_stats->detach_accept_to_context_release_recv   += 
+            src_stats->detach_accept_to_context_release_recv;
     }
-    
-#if 0
-    /*
-     * We want to flush src stats since they have been accounted for
-     */
-    memset(src_stats, 0, sizeof(time_stats_t));
-#endif
-
     return;
 }
 
@@ -148,17 +315,14 @@ aggregate_system_stat(system_stats_t *dest_stats, system_stats_t *src_stats)
         dest_stats->service_auth_resp_sent  += src_stats->service_auth_resp_sent;
         dest_stats->service_accept_recv     += src_stats->service_accept_recv;
         dest_stats->service_accept_complete_sent    += src_stats->service_accept_complete_sent;
-        dest_stats->service_fail            += src_stats->attach_fail;
+        dest_stats->service_fail            += src_stats->service_fail;
 
+    } else if (msg_type_global == PKT_TYPE_DETACH) {
+        dest_stats->detach_attempt		+= src_stats->detach_attempt;
+        dest_stats->detach_accept		+= src_stats->detach_accept;
+        dest_stats->detach_context_release	+= src_stats->detach_context_release;
+        dest_stats->detach_fail			+= src_stats->detach_fail;
     }
-    
-#if 0
-    /*
-     * We want to flush src stats since they have been accounted for
-     */
-    memset(src_stats, 0, sizeof(system_stats_t));
-#endif
-
     return;
 }
 
@@ -214,6 +378,18 @@ increment_system_stat(system_stats_t *stats, int stat)
     case STAT_SERVICE_FAIL:
         stats->service_fail++;
         break;
+    case STAT_DETACH_FAIL:
+        stats->detach_fail++;
+        break;
+    case STAT_DETACH_ATTEMPT:
+        stats->detach_attempt++;
+        break;
+    case STAT_DETACH_ACCEPT:
+        stats->detach_accept++;
+        break;
+    case STAT_DETACH_CONTEXT_RELEASE:
+        stats->detach_context_release++;
+        break;
     default:
         break;
     }
@@ -231,7 +407,6 @@ show_system_thread_stats(thread_state_t *thread_state, int num_par, int num_ser)
     printf("Burst_num\t#SuccessConn\tAtch_fail\tAtch_attempt\tauth_recv\tnas_recv\n\n");
 
     for (j=0; j<num_ser; j++) {
-        
         attach_accept_complete_sent = 0;
         attach_fail = 0;
         attach_attempt = 0;
@@ -318,6 +493,10 @@ show_exit_counter_stats(system_stats_t *stats)
            stats->service_attempt,
            stats->service_accept_complete_sent,
            stats->service_fail);
+    printf("Detach\t\t%lu\t\t%lu\t\t\t%lu\n",
+           stats->detach_attempt,
+           stats->detach_context_release,
+           stats->detach_fail);
 }
 
 void
@@ -342,13 +521,10 @@ show_time_global_stats()
         "Nas_recv->accept \t\t= %lf\n",
         global_time_stats.attach_total /
         global_system_stats.attach_accept_complete_sent,
-        
         global_time_stats.attach_initiate_to_auth_recv /
         global_system_stats.attach_accept_complete_sent,
-        
         global_time_stats.attach_auth_send_to_nas_recv /
         global_system_stats.attach_accept_complete_sent,
-        
         global_time_stats.attach_nas_recv_to_accept /
         global_system_stats.attach_accept_complete_sent);
         //Vasu Commented
@@ -364,19 +540,33 @@ show_time_global_stats()
         "Nas_recv->accept \t\t= %lf\n",
         global_time_stats.service_total /
         global_system_stats.service_accept_complete_sent,
-        
         global_time_stats.service_initiate_to_auth_recv /
         global_system_stats.service_accept_complete_sent,
-        
         global_time_stats.service_auth_send_to_nas_recv /
         global_system_stats.service_accept_complete_sent,
-        
         global_time_stats.service_nas_recv_to_accept /
         global_system_stats.service_accept_complete_sent);
-        printf("\nMin service time = %lf\n",
-               min_service_thread->thread_time_stats.service_total);
-        printf("Max service time = %lf\n",
-               max_service_thread->thread_time_stats.service_total);
+		if (min_service_thread && max_service_thread) {
+			printf("\nMin service time = %lf\n",
+				   min_service_thread->thread_time_stats.service_total);
+			printf("Max service time = %lf\n",
+				   max_service_thread->thread_time_stats.service_total);
+		}
+    } else if (msg_type_global == PKT_TYPE_DETACH) {
+        printf("\nMean Stats");
+        printf("\nDetach Total \t\t\t= %lf\n"
+        "detach_send->detach_accept_recv \t= %lf\n"
+        "detach_accept_recv->detach_context_release_recv \t= %lf\n",
+        global_time_stats.detach_total /
+        global_system_stats.detach_context_release,
+        global_time_stats.detach_send_to_accept_recv /
+        global_system_stats.detach_context_release,
+        global_time_stats.detach_accept_to_context_release_recv /
+        global_system_stats.detach_context_release);
+        printf("\nMin detach time = %lf\n",
+               min_detach_thread->thread_time_stats.detach_total);
+        printf("Max detach time = %lf\n",
+               max_detach_thread->thread_time_stats.detach_total);
     }
 }
 
@@ -414,6 +604,13 @@ show_system_global_stats()
         global_system_stats.service_nas_resp_sent,
         global_system_stats.service_accept_recv,
         global_system_stats.service_accept_complete_sent);
+    } else if (msg_type_global == PKT_TYPE_DETACH) {
+        printf("DETACH_ATTEMPT \t\t\t= %lu\n"
+        "DETACH_ACCEPT \t\t= %lu\n"
+        "DETACH_CONTEXT_RELEASE \t= %lu\n",
+        global_system_stats.detach_attempt,
+        global_system_stats.detach_accept,
+        global_system_stats.detach_context_release);
     }
 }
 
@@ -429,11 +626,6 @@ void sig_handler(int signo)
         show_system_global_stats();
         show_exit_counter_stats(&global_system_stats);
         break_flag = 1;
-        //exit(0);
-#if 0
-        show_time_thread_stats(thread_state, num_threads);
-        show_system_thread_stats(thread_state, num_threads);
-#endif
     }
 }
 
@@ -459,7 +651,7 @@ int
 put_enb_ue_s1ap_id(uint8_t* pkt_enb_id_ptr, uint32_t enb_id)
 {
     uint8_t *start = pkt_enb_id_ptr; 
-    
+
     memcpy(start, &enb_id, sizeof(uint32_t));
     return 0;
 }
@@ -479,9 +671,6 @@ print_imsi(uint8_t* imsi_p)
         start += 1;
     }
 
-#if 0
-    printf("Imsi value = %lu\n",ans);
-#endif
 }
 
 int
@@ -500,15 +689,8 @@ increase_imsi_serial(uint8_t* imsi_p, int increment_val)
         start += 1;
     }
 
-#if 0
-    printf("increment serial imsi by = %d\n",increment_val);
-#endif
-
     ans += increment_val;
 
-#if 0
-    printf("Serial imsi ans= %lu\n",ans);
-#endif
     start = imsi_p+7;
     for (i=4; i>0; i--) {
         digit = ans % 10;
@@ -539,15 +721,8 @@ increase_imsi_thread(uint8_t* imsi_p, int increment_val)
         start += 1;
     }
 
-#if 0
-    printf("increment thread imsi by = %d\n",increment_val);
-#endif
-
     ans += increment_val;
 
-#if 0
-    printf("Thread imsi ans= %lu\n",ans);
-#endif
     start = imsi_p+3;
     for (i=4; i>0; i--) {
         digit = ans % 10;
@@ -571,7 +746,6 @@ send_signal(int msg_type, int port)
     char                buf_array[BUFLEN], *buf_start, *buf;
     pkt_identifier_t    pkt_identifier;
     char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
-    
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
         diep("socket");
@@ -587,7 +761,6 @@ send_signal(int msg_type, int port)
 
     bind(s ,(struct sockaddr *)&si_us,sizeof(si_us));
 
-    
     pkt_identifier.slice_id = 1;
     pkt_identifier.msg_type = PKT_TYPE_ATTACH;
     /* Keep the start pointer to use for sending
@@ -599,13 +772,9 @@ send_signal(int msg_type, int port)
 
     hex_to_num(payload, (int8_t *)buf);
 
-#if 0
-    printf("Sending %d experiment signal for %d\n",port, msg_type);
-#endif
     if (sendto(s, buf_start, BUFLEN, 0,(struct sockaddr *)&si_other, slen)==-1)
         diep("sendto()");
     close(s);
-
 }
 
 static int
@@ -615,15 +784,10 @@ service(void *arg)
     char                buf_array[BUFLEN], *buf_start, *buf;
     int                 err;
     thread_state_t      *thread_state = (thread_state_t*)arg;
-#if DEF_CLOCK
-    clock_t             start, end;
-    double              cpu_time_used=0;
-#elif DEF_GETTIMEOFDAY
     struct timeval t1, t2;
     struct timeval auth_recv, nas_recv;
     double              cpu_time_used=0;
     uint8_t             attach_code = 0x4d;
-#endif
     pkt_identifier_t    pkt_identifier;
     uint32_t            enb_ue_s1ap_id = 0;
     enb_ue_s1ap_id = (thread_state->thread_num + thread_state->thread_seed)* 10000 +
@@ -634,7 +798,11 @@ service(void *arg)
     /*
      * Lets put the pkt id in the very beginning
      */
+#ifdef SLICE_TO_OTHER_MME
+    pkt_identifier.slice_id = 1 + ((thread_state->thread_num + thread_state->serial_seed) % 2);
+#else
     pkt_identifier.slice_id = 1;
+#endif
     pkt_identifier.msg_type = PKT_TYPE_SERVICE;
 
     /* Keep the start pointer to use for sending
@@ -662,15 +830,11 @@ service(void *arg)
         gettimeofday(&all_start, NULL);
         all_start_flag = 0;
     }
-    
+
     if (sendto(thread_state->socket, buf_start, BUFLEN, 0,
                (struct sockaddr *) thread_state->si_other, slen)==-1)
         diep("sendto()");
-#if DEF_CLOCK
-    start = clock();
-#elif DEF_GETTIMEOFDAY
     gettimeofday(&t1, NULL);
-#endif
     increment_system_stat(&thread_state->thread_stats, 
                           STAT_SERVICE_ATTEMPT);
 
@@ -679,10 +843,6 @@ service(void *arg)
      */
     while (1) {
         if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
-#if 0
-            printf("Thread %d died with thread state: (%d)\n",
-                   thread_state->thread_num, thread_state->state);
-#endif
             err = ETIME;
             increment_system_stat(&thread_state->thread_stats, 
                                   STAT_SERVICE_FAIL);
@@ -708,13 +868,11 @@ service(void *arg)
                 increment_system_stat(&thread_state->thread_stats, 
                                       STAT_SERVICE_NAS_REQ_RECV);
 
-#if DEF_GETTIMEOFDAY
                 gettimeofday(&nas_recv, NULL);
                 thread_state->thread_time_stats.service_auth_send_to_nas_recv +=
                     (nas_recv.tv_sec - auth_recv.tv_sec) * 1000.0;
                 thread_state->thread_time_stats.service_auth_send_to_nas_recv +=
                     (nas_recv.tv_usec - auth_recv.tv_usec) / 1000.0;
-#endif
                 if (sendto(thread_state->socket, buf_start, 
                            BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
                            slen)==-1) {
@@ -728,24 +886,22 @@ service(void *arg)
 #ifdef DEBUG
                 printf("received AUTH request : %d\n",thread_state->thread_num);
 #endif
-                
+
                 char payload[] = "000d40370000050000000200010008000480646dbe001a000c0b075308deaaa8d6434c1b27006440080002f83900e00000004340060002f8390001\0";
-                
+
                 memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
                 buf = buf_start + sizeof(pkt_identifier_t);
-                
+
                 hex_to_num(payload,(int8_t *) buf);
                 put_enb_ue_s1ap_id((uint8_t*)buf+17, enb_ue_s1ap_id);
                 thread_state->state = STAT_SERVICE_AUTH_REQ_RECV;
                 increment_system_stat(&thread_state->thread_stats, 
                                       STAT_SERVICE_AUTH_REQ_RECV);
-#if DEF_GETTIMEOFDAY
                 gettimeofday(&auth_recv, NULL);
                 thread_state->thread_time_stats.service_initiate_to_auth_recv += 
                     (auth_recv.tv_sec - t1.tv_sec) * 1000.0;
                 thread_state->thread_time_stats.service_initiate_to_auth_recv += 
                     (auth_recv.tv_usec - t1.tv_usec) / 1000.0;
-#endif
 
                 if (sendto(thread_state->socket, buf_start, BUFLEN, 
                            0,(struct sockaddr *)thread_state->si_other, 
@@ -761,15 +917,9 @@ service(void *arg)
                 printf("received service initial_context :%d\n",
                        thread_state->thread_num);
 #endif
-#if DEF_CLOCK
-		end = clock();
-		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-		total_time += cpu_time_used;
-#elif DEF_GETTIMEOFDAY
                 gettimeofday(&t2, NULL);
                 cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0; 
                 cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
-                total_time    +=cpu_time_used;
 
                 /*
                  * Copy t2 in all_end as well for total time calculation
@@ -790,7 +940,6 @@ service(void *arg)
                     (t2.tv_sec - nas_recv.tv_sec) * 1000.0;
                 thread_state->thread_time_stats.service_nas_recv_to_accept += 
                     (t2.tv_usec - nas_recv.tv_usec) / 1000.0;
-#endif
 
 #ifdef DEBUG
                 printf("\nSending ATTACH complete!!!! %d\n",thread_state->thread_num);
@@ -827,121 +976,6 @@ service(void *arg)
     return err;
 }
 
-#if 0
-int
-service_req(void *arg)
-{
-    uint32_t            slen=sizeof(struct sockaddr_in);
-    char                buf_array[BUFLEN], *buf_start, *buf;
-    thread_state_t      *thread_state = (thread_state_t*)arg;
-    int                 s = thread_state->socket;
-    uint8_t             attach_code = 0x4d;
-    clock_t             start, end;
-    double              cpu_time_used=0;
-    pkt_identifier_t    pkt_identifier;
-    int                 err=0;
-    uint32_t            enb_ue_s1ap_id = 0;
-
-    enb_ue_s1ap_id = (thread_state->thread_num + thread_state->thread_seed)* 10000 +
-                    thread_state->serial_seed;
-    
-    char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
-
-    pkt_identifier.slice_id = 1;
-    pkt_identifier.msg_type = PKT_TYPE_SERVICE;
-    /* Keep the start pointer to use for sending
-     */
-    buf = buf_array;
-    buf_start = buf;
-    memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
-    buf = buf_start + sizeof(pkt_identifier_t);
-
-    hex_to_num(payload, (int8_t *)buf);
-    /*
-     * Change message type to service ID
-     */
-    memcpy((uint8_t*)buf+21, &attach_code, sizeof(uint8_t));
-
-    thread_state->si_other->sin_port = S1AP_PORT;
-    /*
-     * Send service requests
-     */
-    put_enb_ue_s1ap_id((uint8_t*)buf+11, enb_ue_s1ap_id);
-
-    printf("Sending Service request : %d\n",thread_state->thread_num);
-    if (sendto(s, buf_start, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
-        diep("sendto()");
-    /*
-     * Start listening for auth/NAS requests
-     */
-    start = clock();
-    while (1) {
-        if (recvfrom(s, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
-            printf("Thread %d died with thread state(%d)\n",
-                   thread_state->thread_num, thread_state->state);
-            err = ETIME;
-            break;
-        } else {
-            /*
-             * Process packet header
-             * Check the type of the packet
-             * After receiving packet, construct a packet and send it back
-             */
-            if (buf[0] == PACKET_ID_NAS_SEC_REQ) {
-                printf("received service NAS request : %d\n",thread_state->thread_num);
-		char payload[] = "000d40340000050000000200010008000480646dbe001a00090847f3914a9d00075e006440080002f83900e00000004340060002f8390001\0";
-
-                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
-                buf = buf_start + sizeof(pkt_identifier_t);
-                
-                hex_to_num(payload,(int8_t *) buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, enb_ue_s1ap_id);
-                
-                if (sendto(s, buf_start, BUFLEN, 0, (struct sockaddr *)thread_state->si_other, slen)==-1)
-                    diep("sendto()");
-		
-            } else if (buf[0] == PACKET_ID_AUTH_REQ) {
-                printf("received service AUTH request : %d\n",thread_state->thread_num);
-                
-                char payload[] = "000d40370000050000000200010008000480646dbe001a000c0b075308deaaa8d6434c1b27006440080002f83900e00000004340060002f8390001\0";
-
-                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
-                buf = buf_start + sizeof(pkt_identifier_t);
-                
-                hex_to_num(payload,(int8_t *) buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, enb_ue_s1ap_id);
-
-                if (sendto(s, buf_start, BUFLEN, 0, (struct sockaddr *)thread_state->si_other, slen)==-1)
-                    diep("sendto()");
-            } else if (buf[0] == PACKET_ID_SERVICE_REQ_INITIAL_CONTEXT) {
-                printf("received Initial context setup :%d\n",thread_state->thread_num);
-                printf("\nSending setup response!!!! %d\n",thread_state->thread_num);
-                char payload[] = "200900240000030000400200010008400480646dbe0033400f000032400a0a1f64640a5b47b28a9a\0";
-
-                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
-                buf = buf_start + sizeof(pkt_identifier_t);
-                
-                hex_to_num(payload,(int8_t *)buf);
-                put_enb_ue_s1ap_id((uint8_t*)buf+17, enb_ue_s1ap_id);
-		
-    		end = clock();
-		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-		serv_time += cpu_time_used;
-                if (sendto(s, buf_start, BUFLEN, 0,(struct sockaddr *) thread_state->si_other, slen)==-1)
-                    diep("sendto()");
-                close(s);
-                return 0;
-            }
-
-        }
-
-    }
-    close(s);
-    pthread_exit(&thread_state);
-    return err;
-}
-#endif
-
 static int
 attach(void *arg)
 {
@@ -949,14 +983,9 @@ attach(void *arg)
     char                buf_array[BUFLEN], *buf_start, *buf;
     int                 err;
     thread_state_t      *thread_state = (thread_state_t*)arg;
-#if DEF_CLOCK
-    clock_t             start, end;
-    double              cpu_time_used=0;
-#elif DEF_GETTIMEOFDAY
     struct timeval t1, t2;
     struct timeval auth_recv, nas_recv;
     double              cpu_time_used=0;
-#endif
     pkt_identifier_t    pkt_identifier;
     uint32_t            enb_ue_s1ap_id = 0;
     enb_ue_s1ap_id = (thread_state->thread_num + thread_state->thread_seed)* 10000 +
@@ -967,7 +996,11 @@ attach(void *arg)
     /*
      * Lets put the pkt id in the very beginning
      */
+#ifdef SLICE_TO_OTHER_MME
+    pkt_identifier.slice_id = 1 + ((thread_state->thread_num + thread_state->serial_seed) % 2);
+#else
     pkt_identifier.slice_id = 1;
+#endif
     pkt_identifier.msg_type = PKT_TYPE_ATTACH;
 
     /* Keep the start pointer to use for sending
@@ -995,11 +1028,7 @@ attach(void *arg)
     if (sendto(thread_state->socket, buf_start, BUFLEN, 0,
                (struct sockaddr *) thread_state->si_other, slen)==-1)
         diep("sendto()");
-#if DEF_CLOCK
-    start = clock();
-#elif DEF_GETTIMEOFDAY
     gettimeofday(&t1, NULL);
-#endif
     increment_system_stat(&thread_state->thread_stats, 
                           STAT_ATTACH_ATTEMPT);
 
@@ -1008,10 +1037,6 @@ attach(void *arg)
      */
     while (1) {
         if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
-#if 0
-            printf("Thread %d died with thread state: (%d)\n",
-                   thread_state->thread_num, thread_state->state);
-#endif
             err = ETIME;
             increment_system_stat(&thread_state->thread_stats, 
                                   STAT_ATTACH_FAIL);
@@ -1037,13 +1062,11 @@ attach(void *arg)
                 increment_system_stat(&thread_state->thread_stats, 
                                       STAT_ATTACH_NAS_REQ_RECV);
 
-#if DEF_GETTIMEOFDAY
                 gettimeofday(&nas_recv, NULL);
                 thread_state->thread_time_stats.attach_auth_send_to_nas_recv +=
                     (nas_recv.tv_sec - auth_recv.tv_sec) * 1000.0;
                 thread_state->thread_time_stats.attach_auth_send_to_nas_recv +=
                     (nas_recv.tv_usec - auth_recv.tv_usec) / 1000.0;
-#endif
                 if (sendto(thread_state->socket, buf_start, 
                            BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
                            slen)==-1) {
@@ -1057,24 +1080,22 @@ attach(void *arg)
 #ifdef DEBUG
                 printf("received AUTH request : %d\n",thread_state->thread_num);
 #endif
-                
+
                 char payload[] = "000d40370000050000000200010008000480646dbe001a000c0b075308deaaa8d6434c1b27006440080002f83900e00000004340060002f8390001\0";
-                
+
                 memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
                 buf = buf_start + sizeof(pkt_identifier_t);
-                
+
                 hex_to_num(payload,(int8_t *) buf);
                 put_enb_ue_s1ap_id((uint8_t*)buf+17, enb_ue_s1ap_id);
                 thread_state->state = STAT_ATTACH_AUTH_REQ_RECV;
                 increment_system_stat(&thread_state->thread_stats, 
                                       STAT_ATTACH_AUTH_REQ_RECV);
-#if DEF_GETTIMEOFDAY
                 gettimeofday(&auth_recv, NULL);
                 thread_state->thread_time_stats.attach_initiate_to_auth_recv += 
                     (auth_recv.tv_sec - t1.tv_sec) * 1000.0;
                 thread_state->thread_time_stats.attach_initiate_to_auth_recv += 
                     (auth_recv.tv_usec - t1.tv_usec) / 1000.0;
-#endif
 
                 if (sendto(thread_state->socket, buf_start, BUFLEN, 
                            0,(struct sockaddr *)thread_state->si_other, 
@@ -1089,15 +1110,9 @@ attach(void *arg)
 #ifdef DEBUG
                 printf("received ATTACH accept :%d\n",thread_state->thread_num);
 #endif
-#if DEF_CLOCK
-		end = clock();
-		cpu_time_used = ((double) (end - start)) / CLOCKS_PER_SEC;
-		total_time += cpu_time_used;
-#elif DEF_GETTIMEOFDAY
                 gettimeofday(&t2, NULL);
                 cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0; 
                 cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
-                total_time    +=cpu_time_used;
 
                 /*
                  * Copy t2 in all_end as well for total time calculation
@@ -1118,7 +1133,6 @@ attach(void *arg)
                     (t2.tv_sec - nas_recv.tv_sec) * 1000.0;
                 thread_state->thread_time_stats.attach_nas_recv_to_accept += 
                     (t2.tv_usec - nas_recv.tv_usec) / 1000.0;
-#endif
 
 #ifdef DEBUG
                 printf("\nSending ATTACH complete!!!! %d\n",thread_state->thread_num);
@@ -1155,6 +1169,156 @@ attach(void *arg)
     return err;
 }
 
+static int
+detach(void *arg)
+{
+    uint32_t            slen=sizeof(struct sockaddr_in);
+    char                buf_array[BUFLEN], *buf_start, *buf;
+    int                 err;
+    thread_state_t      *thread_state = (thread_state_t*)arg;
+    struct timeval t1, t2;
+    struct timeval		detach_accept_recv;
+    uint8_t             attach_code = 0x45;
+    pkt_identifier_t    pkt_identifier;
+    uint32_t            enb_ue_s1ap_id = 0;
+    double				cpu_time_used;
+    enb_ue_s1ap_id = (thread_state->thread_num + thread_state->thread_seed)* 10000 +
+                    thread_state->serial_seed;
+
+    char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
+
+    /*
+     * Lets put the pkt id in the very beginning
+     */
+    pkt_identifier.slice_id = 1;
+    pkt_identifier.msg_type = PKT_TYPE_DETACH;
+
+    /* Keep the start pointer to use for sending
+     */
+    buf = buf_array;
+    buf_start = buf;
+    memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+    buf = buf_start + sizeof(pkt_identifier_t);
+
+    hex_to_num(payload, (int8_t *)buf);
+    /*
+     * Change message type to service ID
+     */
+    memcpy((uint8_t*)buf+21, &attach_code, sizeof(uint8_t));
+    increase_imsi_serial((uint8_t*)buf+24,thread_state->serial_seed);
+    increase_imsi_thread((uint8_t*)buf+24,thread_state->thread_num + thread_state->thread_seed);
+//    print_imsi((uint8_t*)buf+24);
+    put_enb_ue_s1ap_id((uint8_t*)buf+11, enb_ue_s1ap_id);
+    /*
+     * Send attach requests
+     */
+    getsockname(thread_state->socket, (struct sockaddr*)thread_state->si_us, &slen);
+
+    if (all_start_flag) {
+        gettimeofday(&all_start, NULL);
+        all_start_flag = 0;
+    }
+
+    if (sendto(thread_state->socket, buf_start, BUFLEN, 0,
+               (struct sockaddr *) thread_state->si_other, slen)==-1)
+        diep("sendto()");
+    gettimeofday(&t1, NULL);
+    increment_system_stat(&thread_state->thread_stats, 
+                          STAT_DETACH_ATTEMPT);
+
+    /*
+     * Start listening for auth/NAS requests
+     */
+    while (1) {
+        if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)<0) {
+            err = ETIME;
+            increment_system_stat(&thread_state->thread_stats, 
+                                  STAT_DETACH_FAIL);
+            break;
+        } else {
+            /*
+             * Process packet header
+             * Check the type of the packet
+             * After receiving packet, construct a packet and send it back
+             */
+            if (buf[0] == PACKET_ID_DETACH_ACCEPT) {
+#if DEBUG
+                printf("received detach accept : %d\n",thread_state->thread_num);
+#endif
+				char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
+
+                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+                buf = buf_start + sizeof(pkt_identifier_t);
+
+                hex_to_num(payload,(int8_t *) buf);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, enb_ue_s1ap_id);
+                thread_state->state = STAT_DETACH_ACCEPT;
+                increment_system_stat(&thread_state->thread_stats,
+                                      STAT_DETACH_ACCEPT);
+
+                gettimeofday(&detach_accept_recv, NULL);
+                thread_state->thread_time_stats.detach_send_to_accept_recv +=
+                    (detach_accept_recv.tv_sec - t1.tv_sec) * 1000.0;
+                thread_state->thread_time_stats.detach_send_to_accept_recv +=
+				(detach_accept_recv.tv_usec - t1.tv_usec) / 1000.0;
+				thread_state->state = STAT_DETACH_ACCEPT;
+			} else if (buf[0] == PACKET_ID_DETACH_CONTEXT_RELEASE) {
+#if DEBUG
+                printf("received detach context release : %d\n",thread_state->thread_num);
+#endif
+				char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
+                gettimeofday(&t2, NULL);
+                cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0; 
+                cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
+
+                /*
+                 * Copy t2 in all_end as well for total time calculation
+                 */
+                all_end.tv_sec  = t2.tv_sec;
+                all_end.tv_usec = t2.tv_usec;
+
+                if (first_time_flag) {
+                    rand_total_time = cpu_time_used;
+                    rand_thread = thread_state->thread_num;
+                    rand_serial = thread_state->serial_seed;
+                    first_time_flag = 0;
+                }
+                thread_state->thread_time_stats.detach_total += 
+                    cpu_time_used;
+
+                memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
+                buf = buf_start + sizeof(pkt_identifier_t);
+
+                hex_to_num(payload,(int8_t *) buf);
+                put_enb_ue_s1ap_id((uint8_t*)buf+17, enb_ue_s1ap_id);
+                increment_system_stat(&thread_state->thread_stats,
+                                      STAT_DETACH_CONTEXT_RELEASE);
+
+                thread_state->thread_time_stats.detach_accept_to_context_release_recv +=
+                    (t2.tv_sec -
+					detach_accept_recv.tv_sec) * 1000.0;
+
+                thread_state->thread_time_stats.detach_accept_to_context_release_recv +=
+                    (t2.tv_usec -
+					detach_accept_recv.tv_usec) / 1000.0;
+				thread_state->state = STAT_DETACH_CONTEXT_RELEASE;
+                if (sendto(thread_state->socket, buf_start,
+                           BUFLEN, 0,(struct sockaddr *) thread_state->si_other,
+                           slen)==-1) {
+                    diep("sendto()");
+				}
+				return 0;
+            } else {
+                printf("\%d received garbage \n",thread_state->thread_num);
+
+            }
+
+        }
+
+    }
+    return err;
+}
+
 void *
 execute_thread(void *arg)
 {
@@ -1162,7 +1326,7 @@ execute_thread(void *arg)
     int                 s, ip_index;
     struct sockaddr_in  si_other, si_us;
     struct timeval tv;
-    
+
     tv.tv_sec = 2;
     tv.tv_usec = 0;
 
@@ -1176,9 +1340,6 @@ execute_thread(void *arg)
     si_us.sin_family = AF_INET;
     si_us.sin_port = htons(0);
     ip_index = thread_state->thread_num % (sizeof(iplist)/sizeof(iplist[0]));
-#if 0
-    printf("Sending from: %s in %s\n",iplist[ip_index], __func__);
-#endif
     si_us.sin_addr.s_addr = inet_addr(iplist[ip_index]);
 
     bind(s ,(struct sockaddr *)&si_us,sizeof(si_us));
@@ -1187,27 +1348,20 @@ execute_thread(void *arg)
     thread_state->si_other = &si_other;
     thread_state->si_us = &si_us;
     thread_state->udp_port = thread_state->si_us->sin_port;
-    
+
     if (setsockopt(s, SOL_SOCKET, SO_RCVTIMEO,&tv,sizeof(tv)) < 0) {
             perror("Error");
             pthread_exit(&thread_state->state);
     }
-    
+
     if (msg_type_global == PKT_TYPE_ATTACH) {
         attach(arg);
     } else if (msg_type_global == PKT_TYPE_SERVICE) {
         service(arg);
+    } else if (msg_type_global == PKT_TYPE_DETACH) {
+        detach(arg);
     }
 
-#if 0
-    printf("Attach retval:%d\n",retval);
-    printf("Lets sleep and then send service request: %d\n",thread_state->thread_num);
-    sleep(10);
-
-    if (retval == 0) {
-        retval = service_req(arg);
-    }
-#endif
     close(thread_state->socket);
     pthread_exit(&thread_state->state);
 }
@@ -1219,11 +1373,6 @@ int main(int argc, char *argv[])
     int         seed = 0, burst_interval=1;
     thread_state_t       *thread_state;
     int ret = 0;
-#if 0
-    struct timeval t1, t2;
-    int one_sec_flag = 1;
-    double elapsed_time = 0;
-#endif
 
     if (argc < 5) {
         printf("Usage: ./ue <pkt_type> <num_par> <num_ser> <Thread IMSI seed>\n");
@@ -1255,9 +1404,6 @@ int main(int argc, char *argv[])
         printf("\ncan't catch SIGINT\n");
         return -1;
     }
-#if 0
-    gettimeofday(&t1, NULL);
-#endif
 
     send_signal(PKT_TYPE_TEST_MME, EXP_START_PORT);
 
@@ -1300,8 +1446,15 @@ int main(int argc, char *argv[])
                                     &thread_state[i + num_threads*j].thread_time_stats,
                                     PKT_TYPE_SERVICE);
                 }
+            } else if (msg_type_global == PKT_TYPE_DETACH) {
+                if (thread_state[i + num_threads*j].
+                    thread_stats.detach_context_release > 0) {
+                    set_min_max_detach_threads(&thread_state[i + num_threads*j]);
+                    aggregate_time_stat(&global_time_stats, 
+                                    &thread_state[i + num_threads*j].thread_time_stats,
+                                    PKT_TYPE_DETACH);
+                }
             }
-            
 #if 0
             if (one_sec_flag) {
                 gettimeofday(&t2, NULL);
@@ -1329,5 +1482,7 @@ int main(int argc, char *argv[])
     show_exit_counter_stats(&global_system_stats);
     show_time_global_stats();
     write_array_file(thread_state, num_threads, serial_num);
+    show_time_median(thread_state, num_threads, serial_num);
+	write_value_file();
     return 0;
 }

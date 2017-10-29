@@ -15,6 +15,8 @@
 #define PACKET_ID_AUTH_REQ      0x03
 #define PACKET_ID_ATTACH_ACCEPT 0x04
 #define PACKET_ID_SERVICE_REQ_INITIAL_CONTEXT 0x04
+#define PACKET_ID_DETACH_ACCEPT 0x05
+#define PACKET_ID_DETACH_CONTEXT_RELEASE 0x06
 
 //const char * const iplist[] = {"10.10.10.185", "10.10.10.186", "10.10.10.187"};
 const char * const iplist[] = {"10.10.10.185"};
@@ -54,7 +56,12 @@ typedef enum {
     STAT_SERVICE_AUTH_RESP_SENT,
     STAT_SERVICE_ACCEPT_RECV,
     STAT_SERVICE_ACCEPT_COMPLETE_SENT,
-    STAT_SERVICE_FAIL
+    STAT_SERVICE_FAIL,
+
+	STAT_DETACH_ATTEMPT,
+	STAT_DETACH_FAIL,
+	STAT_DETACH_ACCEPT,
+	STAT_DETACH_CONTEXT_RELEASE
 }stat_type;
 
 typedef struct system_stats_s {
@@ -75,6 +82,11 @@ typedef struct system_stats_s {
     unsigned long int     service_accept_recv;
     unsigned long int     service_accept_complete_sent;
     unsigned long int     service_fail;
+    
+	unsigned long int     detach_attempt;
+	unsigned long int     detach_accept;
+	unsigned long int     detach_context_release;
+	unsigned long int     detach_fail;
 }system_stats_t;
 
 typedef struct time_stats_s {
@@ -87,6 +99,10 @@ typedef struct time_stats_s {
     double     service_initiate_to_auth_recv;
     double     service_auth_send_to_nas_recv;
     double     service_nas_recv_to_accept;
+    
+	double     detach_total;
+	double     detach_send_to_accept_recv;
+	double     detach_accept_to_context_release_recv;
 }time_stats_t;
 
 typedef struct thread_state_s {
