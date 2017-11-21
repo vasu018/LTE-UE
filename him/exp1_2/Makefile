@@ -4,16 +4,13 @@ CFLAGS=-Wall -Werror -g
 
 #obj-m += ue.o
 
-all: ue ue_no_write
+all: ue
 
 ue: ue.c 
 	$(CC) ue.c -o ue $(CFLAGS) $(LDFLAGS)
 
-ue_no_write: ue.c
-	$(CC) ue.c -o ue_no_write $(CFLAGS) -DNOWRITE $(LDFLAGS)
-
 clean:
-	rm -f ue ue_no_write
+	rm -f ue ue_nonblock_serial
 
 
 

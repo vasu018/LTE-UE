@@ -2,3 +2,6 @@ logs
 cscope*
 *.out
 ue
+ue_no_write
+*.swp
+*.csv

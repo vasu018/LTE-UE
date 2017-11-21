@@ -21,8 +21,6 @@
 int rrval = 1;
 double serv_time = 0;
 int serial_num=1;
-int max_retry_count = 10;
-int timeout_between_retry = 100;
 system_stats_t global_system_stats;
 time_stats_t global_time_stats;
 int first_time_flag = 1;
@@ -82,7 +80,7 @@ void
 write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 {
     FILE *fp;
-    char filename[100];
+    char filename[40];
     int i,j;
 
 #ifdef SLICE_TO_OTHER_MME
@@ -90,7 +88,7 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 #endif
 	if (msg_type_global == PKT_TYPE_ATTACH) {
 		sprintf(filename,"logs/attach_%d_%d.txt",num_par,num_ser);
-		if((fp=fopen(filename, "ab+"))==NULL) {
+		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
 
@@ -103,8 +101,8 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 		}
 	} else if(msg_type_global == PKT_TYPE_SERVICE) {
 		sprintf(filename,"logs/service_%d_%d.txt",num_par,num_ser);
-		if((fp=fopen(filename, "ab+"))==NULL) {
-			printf("Cannot open file %s.\n", filename);
+		if((fp=fopen(filename, "wb+"))==NULL) {
+			printf("Cannot open file.\n");
 		}
 
 		for (j=0; j<num_ser; j++) {
@@ -129,7 +127,7 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 		}
 	} else if(msg_type_global == PKT_TYPE_DETACH) {
 		sprintf(filename,"logs/detach_%d_%d.txt",num_par,num_ser);
-		if((fp=fopen(filename, "ab+"))==NULL) {
+		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
 
@@ -142,7 +140,7 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 		}
 	} else if(msg_type_global == PKT_TYPE_TAU_TEST) {
 		sprintf(filename,"logs/tau_%d_%d.txt",num_par,num_ser);
-		if((fp=fopen(filename, "ab+"))==NULL) {
+		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
 
@@ -325,9 +323,6 @@ aggregate_system_stat(system_stats_t *dest_stats, system_stats_t *src_stats, uin
         dest_stats->attach_accept_recv     += src_stats->attach_accept_recv;
         dest_stats->attach_accept_complete_sent    += src_stats->attach_accept_complete_sent;
         dest_stats->attach_fail            += src_stats->attach_fail;
-		if (src_stats->attach_attempt == 0) {
-			printf("attach attempt = %ld\n",src_stats->attach_attempt);
-		}
     } else if (msg_type == PKT_TYPE_SERVICE) {
         dest_stats->service_attempt         += src_stats->service_attempt;
         dest_stats->service_nas_req_recv    += src_stats->service_nas_req_recv;
@@ -344,8 +339,6 @@ aggregate_system_stat(system_stats_t *dest_stats, system_stats_t *src_stats, uin
         dest_stats->detach_context_release	+= src_stats->detach_context_release;
         dest_stats->detach_fail			+= src_stats->detach_fail;
     }
-
-	dest_stats->retry			+= src_stats->retry;
     return;
 }
 
@@ -412,9 +405,6 @@ increment_system_stat(system_stats_t *stats, int stat)
         break;
     case STAT_DETACH_CONTEXT_RELEASE:
         stats->detach_context_release++;
-        break;
-    case STAT_RETRY:
-        stats->retry = 1;
         break;
     default:
         break;
@@ -523,7 +513,6 @@ show_exit_counter_stats(system_stats_t *stats)
            stats->detach_attempt,
            stats->detach_context_release,
            stats->detach_fail);
-	printf("\nRetries:\t%lu\n",stats->retry);
 }
 
 void
@@ -555,12 +544,10 @@ show_time_global_stats()
         global_time_stats.attach_nas_recv_to_accept /
         global_system_stats.attach_accept_complete_sent);
         //Vasu Commented
-		if (min_attach_thread && max_attach_thread) {
-			printf("\nMin attach time = %lf\n",
-				   min_attach_thread->thread_time_stats.attach_total);
-			printf("Max attach time = %lf\n",
-				   max_attach_thread->thread_time_stats.attach_total);
-		}
+        printf("\nMin attach time = %lf\n",
+               min_attach_thread->thread_time_stats.attach_total);
+        printf("Max attach time = %lf\n",
+               max_attach_thread->thread_time_stats.attach_total);
     } else if (msg_type_global == PKT_TYPE_SERVICE) {
         printf("\nMean Stats");
         printf("\nAttach Total \t\t\t= %lf\n"
@@ -592,12 +579,10 @@ show_time_global_stats()
         global_system_stats.detach_context_release,
         global_time_stats.detach_accept_to_context_release_recv /
         global_system_stats.detach_context_release);
-		if (min_attach_thread && max_attach_thread) {
-			printf("\nMin detach time = %lf\n",
-				   min_detach_thread->thread_time_stats.detach_total);
-			printf("Max detach time = %lf\n",
-				   max_detach_thread->thread_time_stats.detach_total);
-		}
+        printf("\nMin detach time = %lf\n",
+               min_detach_thread->thread_time_stats.detach_total);
+        printf("Max detach time = %lf\n",
+               max_detach_thread->thread_time_stats.detach_total);
     }
 }
 
@@ -874,18 +859,6 @@ service(void *arg)
      */
     while (1) {
         if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
-			thread_state->retry_count++;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_RETRY);
-			if (thread_state->retry_count < max_retry_count) {
-                if (sendto(thread_state->socket, buf_start,
-                           BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
-                           slen)==-1) {
-                    diep("sendto()");
-				}
-				printf("Retrying for %d,%d!\n",thread_state->thread_num, thread_state->serial_seed);
-				continue;
-			}
             err = ETIME;
             increment_system_stat(&thread_state->thread_stats, 
                                   STAT_SERVICE_FAIL);
@@ -960,7 +933,8 @@ service(void *arg)
                 printf("received service initial_context :%d\n",
                        thread_state->thread_num);
 #endif
-                gettimeofday(&t2, NULL);
+#if 0
+				gettimeofday(&t2, NULL);
                 cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0; 
                 cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
 
@@ -983,7 +957,7 @@ service(void *arg)
                     (t2.tv_sec - nas_recv.tv_sec) * 1000.0;
                 thread_state->thread_time_stats.service_nas_recv_to_accept += 
                     (t2.tv_usec - nas_recv.tv_usec) / 1000.0;
-
+#endif
 #ifdef DEBUG
                 printf("\nSending ATTACH complete!!!! %d\n",thread_state->thread_num);
 #endif
@@ -1008,7 +982,35 @@ service(void *arg)
                                           STAT_SERVICE_ACCEPT_COMPLETE_SENT);
                 }
                 return 0;
-            } else {
+            } else if (buf[0] == PACKET_ID_ATTACH_ACCEPT) {
+#ifdef DEBUG
+                printf("received ATTACH accept :%d\n",thread_state->thread_num);
+#endif
+                gettimeofday(&t2, NULL);
+                cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0; 
+                cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
+
+                /*
+                 * Copy t2 in all_end as well for total time calculation
+                 * Yes race condition!! Don't care right now. Fix later
+                 */
+                all_end.tv_sec  = t2.tv_sec;
+                all_end.tv_usec = t2.tv_usec;
+
+                if (first_time_flag) {
+                    rand_total_time = cpu_time_used;
+                    rand_thread = thread_state->thread_num;
+                    rand_serial = thread_state->serial_seed;
+                    first_time_flag = 0;
+                }
+                thread_state->thread_time_stats.service_total += 
+                    cpu_time_used;
+                thread_state->thread_time_stats.service_nas_recv_to_accept += 
+                    (t2.tv_sec - nas_recv.tv_sec) * 1000.0;
+                thread_state->thread_time_stats.sevice_nas_recv_to_accept += 
+                    (t2.tv_usec - nas_recv.tv_usec) / 1000.0;
+
+			} else {
                 printf("\%d received garbage \n",thread_state->thread_num);
 
             }
@@ -1079,21 +1081,7 @@ attach(void *arg)
      * Start listening for auth/NAS requests
      */
     while (1) {
-        if (recvfrom(thread_state->socket,
-			buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
-			thread_state->retry_count++;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_RETRY);
-			if (thread_state->retry_count < max_retry_count) {
-                if (sendto(thread_state->socket, buf_start,
-                           BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
-                           slen)==-1) {
-                    diep("sendto()");
-				}
-				//printf("Retrying %d for %d,%d : %d!\n",thread_state->retry_count, thread_state->thread_num,
-				//	   thread_state->serial_seed, thread_state->state);
-				continue;
-			}
+        if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
             err = ETIME;
             increment_system_stat(&thread_state->thread_stats, 
                                   STAT_ATTACH_FAIL);
@@ -1288,18 +1276,6 @@ detach(void *arg)
      */
     while (1) {
         if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)<0) {
-			thread_state->retry_count++;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_RETRY);
-			if (thread_state->retry_count < max_retry_count) {
-                if (sendto(thread_state->socket, buf_start,
-                           BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
-                           slen)==-1) {
-                    diep("sendto()");
-				}
-				//printf("Retrying for %d,%d!\n",thread_state->thread_num, thread_state->serial_seed);
-				continue;
-			}
             err = ETIME;
             increment_system_stat(&thread_state->thread_stats, 
                                   STAT_DETACH_FAIL);
@@ -1396,8 +1372,8 @@ execute_thread(void *arg)
     struct sockaddr_in  si_other, si_us;
     struct timeval tv;
 
-    tv.tv_sec = timeout_between_retry / 1000;
-    tv.tv_usec = (timeout_between_retry % 1000)*1000; // 100 ms
+    tv.tv_sec = 2;
+    tv.tv_usec = 0;
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
         diep("socket");
@@ -1449,7 +1425,6 @@ int main(int argc, char *argv[])
     if (argc < 5) {
         printf("Usage: ./ue <pkt_type> <num_par> <num_ser> <Thread IMSI seed>\n");
         printf("Usage: ./ue_nonblock_serial <pkt_type> <num_par> <num_ser> <Thread IMSI seed> <burst interval>\n");
-        printf("Usage: ./ue_nonblock_serial <pkt_type> <num_par> <num_ser> <Thread IMSI seed> <burst interval> <max_retry_count> <timeout_between_retries>\n");
         printf("pkt_type:\n0\tATTACH\n1\tSERVICE\n2\tDETACH\nATTACH+DETACH\n");
         exit(0);
     }
@@ -1462,12 +1437,6 @@ int main(int argc, char *argv[])
         serial_num = atoi(argv[3]);
         seed = atoi(argv[4]);
         burst_interval = atoi(argv[5]);
-    } else if (argc == 8) {
-        serial_num = atoi(argv[3]);
-        seed = atoi(argv[4]);
-        burst_interval = atoi(argv[5]);
-		max_retry_count = atoi(argv[6]);
-		timeout_between_retry = atoi(argv[7]);
     }
 
     /*
@@ -1510,54 +1479,54 @@ int main(int argc, char *argv[])
             if (msg_type_global == PKT_TYPE_ATTACH) {
                 if (thread_state[i + num_threads*j].
                     thread_stats.attach_accept_complete_sent > 0) {
+                    aggregate_time_stat(&global_time_stats, 
+                                    &thread_state[i + num_threads*j].thread_time_stats,
+                                    PKT_TYPE_ATTACH);
+					aggregate_system_stat(&global_system_stats, 
+										&thread_state[i + num_threads*j].thread_stats,
+										PKT_TYPE_ATTACH);
                     set_min_max_attach_threads(&thread_state[i + num_threads*j]);
                 }
-				aggregate_time_stat(&global_time_stats, 
-								&thread_state[i + num_threads*j].thread_time_stats,
-								PKT_TYPE_ATTACH);
-				aggregate_system_stat(&global_system_stats, 
-									&thread_state[i + num_threads*j].thread_stats,
-									PKT_TYPE_ATTACH);
             } else if (msg_type_global == PKT_TYPE_SERVICE) {
                 if (thread_state[i + num_threads*j].
                     thread_stats.service_accept_complete_sent > 0) {
+                    aggregate_time_stat(&global_time_stats, 
+                                    &thread_state[i + num_threads*j].thread_time_stats,
+                                    PKT_TYPE_SERVICE);
+					aggregate_system_stat(&global_system_stats, 
+										&thread_state[i + num_threads*j].thread_stats,
+										PKT_TYPE_SERVICE);
                     set_min_max_service_threads(&thread_state[i + num_threads*j]);
                 }
-				aggregate_time_stat(&global_time_stats, 
-								&thread_state[i + num_threads*j].thread_time_stats,
-								PKT_TYPE_SERVICE);
-				aggregate_system_stat(&global_system_stats, 
-									&thread_state[i + num_threads*j].thread_stats,
-									PKT_TYPE_SERVICE);
             } else if (msg_type_global == PKT_TYPE_DETACH) {
                 if (thread_state[i + num_threads*j].
                     thread_stats.detach_context_release > 0) {
+                    aggregate_time_stat(&global_time_stats, 
+                                    &thread_state[i + num_threads*j].thread_time_stats,
+                                    PKT_TYPE_DETACH);
+					aggregate_system_stat(&global_system_stats, 
+										&thread_state[i + num_threads*j].thread_stats,
+										PKT_TYPE_DETACH);
                     set_min_max_detach_threads(&thread_state[i + num_threads*j]);
 				}
-				aggregate_time_stat(&global_time_stats, 
-								&thread_state[i + num_threads*j].thread_time_stats,
-								PKT_TYPE_DETACH);
-				aggregate_system_stat(&global_system_stats, 
-									&thread_state[i + num_threads*j].thread_stats,
-									PKT_TYPE_DETACH);
             } else if (msg_type_global == PKT_TYPE_TAU_TEST) {
                 if (thread_state[i + num_threads*j].
                     thread_stats.detach_context_release > 0) {
+                    aggregate_time_stat(&global_time_stats, 
+                                    &thread_state[i + num_threads*j].thread_time_stats,
+                                    PKT_TYPE_ATTACH);
+					aggregate_system_stat(&global_system_stats, 
+										&thread_state[i + num_threads*j].thread_stats,
+										PKT_TYPE_ATTACH);
+                    aggregate_time_stat(&global_time_stats, 
+                                    &thread_state[i + num_threads*j].thread_time_stats,
+                                    PKT_TYPE_DETACH);
+					aggregate_system_stat(&global_system_stats, 
+										&thread_state[i + num_threads*j].thread_stats,
+										PKT_TYPE_DETACH);
                     set_min_max_attach_threads(&thread_state[i + num_threads*j]);
                     set_min_max_detach_threads(&thread_state[i + num_threads*j]);
                 }
-				aggregate_time_stat(&global_time_stats, 
-								&thread_state[i + num_threads*j].thread_time_stats,
-								PKT_TYPE_ATTACH);
-				aggregate_system_stat(&global_system_stats, 
-									&thread_state[i + num_threads*j].thread_stats,
-									PKT_TYPE_ATTACH);
-				aggregate_time_stat(&global_time_stats, 
-								&thread_state[i + num_threads*j].thread_time_stats,
-								PKT_TYPE_DETACH);
-				aggregate_system_stat(&global_system_stats, 
-									&thread_state[i + num_threads*j].thread_stats,
-									PKT_TYPE_DETACH);
             }
 #if 0
             if (one_sec_flag) {

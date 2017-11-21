@@ -66,8 +66,7 @@ typedef enum {
 	STAT_DETACH_ATTEMPT,
 	STAT_DETACH_FAIL,
 	STAT_DETACH_ACCEPT,
-	STAT_DETACH_CONTEXT_RELEASE,
-	STAT_RETRY
+	STAT_DETACH_CONTEXT_RELEASE
 }stat_type;
 
 typedef struct system_stats_s {
@@ -93,8 +92,6 @@ typedef struct system_stats_s {
 	unsigned long int     detach_accept;
 	unsigned long int     detach_context_release;
 	unsigned long int     detach_fail;
-
-	unsigned long int	  retry;
 }system_stats_t;
 
 typedef struct time_stats_s {
@@ -114,17 +111,16 @@ typedef struct time_stats_s {
 }time_stats_t;
 
 typedef struct thread_state_s {
-	uint32_t    thread_num;
-	uint32_t    udp_port;
-	uint32_t    thread_seed;
-	uint32_t    serial_seed;
-	int         socket;
-	int         state;
-	int			retry_count;
-	system_stats_t  thread_stats;
-	time_stats_t    thread_time_stats;
-	struct sockaddr_in  *si_other;
-	struct sockaddr_in  *si_us;
+    uint32_t    thread_num;
+    uint32_t    udp_port;
+    uint32_t    thread_seed;
+    uint32_t    serial_seed;
+    int         socket;
+    int         state;
+    system_stats_t  thread_stats;
+    time_stats_t    thread_time_stats;
+    struct sockaddr_in  *si_other;
+    struct sockaddr_in  *si_us;
 } thread_state_t;
 
 #endif

@@ -66,8 +66,7 @@ typedef enum {
 	STAT_DETACH_ATTEMPT,
 	STAT_DETACH_FAIL,
 	STAT_DETACH_ACCEPT,
-	STAT_DETACH_CONTEXT_RELEASE,
-	STAT_RETRY
+	STAT_DETACH_CONTEXT_RELEASE
 }stat_type;
 
 typedef struct system_stats_s {
@@ -93,8 +92,6 @@ typedef struct system_stats_s {
 	unsigned long int     detach_accept;
 	unsigned long int     detach_context_release;
 	unsigned long int     detach_fail;
-
-	unsigned long int	  retry;
 }system_stats_t;
 
 typedef struct time_stats_s {
