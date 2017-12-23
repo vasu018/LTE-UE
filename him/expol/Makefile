@@ -7,7 +7,7 @@ CFLAGS=-Wall -Werror -g
 all: ue ue_no_write
 
 ue: ue.c 
-	$(CC) ue.c -o ue2 $(CFLAGS) $(LDFLAGS)
+	$(CC) ue.c -o ue $(CFLAGS) $(LDFLAGS)
 
 ue_no_write: ue.c
 	$(CC) ue.c -o ue_no_write $(CFLAGS) -DNOWRITE $(LDFLAGS)

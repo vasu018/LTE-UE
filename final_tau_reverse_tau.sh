@@ -1,8 +1,9 @@
 #!/bin/bash
 
 
-parallel=(1000 10000 50000)
+parallel=(100 1000 10000 25000 50000 75000)
 printf -- "sequence array = %s\n" "${parallel[@]}"
+tau_size=20000
 
 tot=0
 for i in ${parallel[@]}; do
@@ -10,6 +11,8 @@ for i in ${parallel[@]}; do
 done
 
 #TAU
+
+mkdir "logs/tau_reverse_logs/migration_""$tau_size""_$1"
 
 sleep 4
 seed=1
@@ -19,13 +22,13 @@ for element in ${parallel[@]}
 do
 	echo " running TAU attach for  "$element
 	echo "seeding by "$seed
+	./ue_no_write 3 $tau_size 1 $tau_seed &
 	./ue 0 "$element" 1 "$seed" &
-	./ue_no_write 3 5000 1 $tau_seed
-	sleep 4
+	sleep 7
 	seed=$((seed+element))
-	tau_seed=$(($tau_seed + 5000))
+	tau_seed=$(($tau_seed + $tau_size))
 	mmelogfile="logs/attach_""$element""_1.txt"
-	cp $mmelogfile "logs/tau_reverse_logs/attach_""$element""_1_tau.txt"
+	cp $mmelogfile "logs/tau_reverse_logs/migration_""$tau_size""_$1""/attach_""$element""_1_tau.txt"
 done
 
 sleep 4
@@ -34,13 +37,13 @@ for element in ${parallel[@]}
 do
 	echo " running TAU service for  "$element
 	echo "seeding by "$seed
-	./ue 1 "$element" 1 "$seed"
-	./ue_no_write 3 5000 1 $tau_seed
-	sleep 4
+	./ue_no_write 3 $tau_size 1 $tau_seed &
+	./ue 1 "$element" 1 "$seed" &
+	sleep 7
 	seed=$((seed+element))
-	tau_seed=$(($tau_seed + 5000))
+	tau_seed=$(($tau_seed + $tau_size))
 	mmelogfile="logs/service_""$element""_1.txt"
-	cp $mmelogfile "logs/tau_reverse_logs/service_""$element""_1_tau.txt"
+	cp $mmelogfile "logs/tau_reverse_logs/migration_""$tau_size""_$1""/service_""$element""_1_tau.txt"
 done
 
 

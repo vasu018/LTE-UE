@@ -1,6 +1,6 @@
-if [ "$#" -ne 3 ]; then
+if [ "$#" -ne 4 ]; then
 	echo "Illegal number of parameters"
-	echo "usage: ./final_tau.sh <ser_load> <tau_load> <tau_batches>"
+	echo "usage: ./final_tau.sh <ser_load> <tau_load> <tau_batches> <retry_timeout>"
 	exit
 fi
 
@@ -20,10 +20,12 @@ fi
 # $1 is service request load
 # $2 is TAU request single batch strength
 # $3 is number of batches
+# $4 is delay for retry
 
 let "sload = $1"
 let "rload = $2"
 let "batches = $3"
+let "timeout = $4"
 
 logfile="logs/amos/tau_agg_""$rload""_""$batches""_""$load_desc"".txt"
 finalMmelogfile="logs/amos/tau_agg_""$rload""_""$batches""_""$load_desc""_mme.txt"
@@ -35,15 +37,20 @@ cat /dev/null > $mmelogfile
 
 
 let "svar = 1 + ($rload * $batches)"
-./ue_no_write 0 $sload 1 $svar
+
+bash ./service_bg.sh $sload $svar > /dev/null &
+child_pid=$!
+sleep 4
 
 for number in $(eval echo "{1..$batches}")
 do
 	let "var = 1 + ($rload) * ($number -1)"
 	echo $var
-	./ue_no_write 1 $sload 1 $svar &
-	./ue 3 $rload 1 $var | tee -a $logfile
+	./ue 3 $rload 1 $var 1 5 $timeout | tee -a $logfile
 done
+
+kill -9 $child_pid
+
 cp  $mmelogfile $finalMmelogfile
 
 

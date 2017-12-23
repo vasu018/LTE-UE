@@ -16,13 +16,15 @@
 //#define DEBUG 1
 #define DEF_GET_ONE_SEC_CONN
 
-//#define SLICE_TO_OTHER_MME
+#define SLICE_TO_OTHER_MME
 
 int rrval = 1;
 double serv_time = 0;
 int serial_num=1;
-int max_retry_count = 5;
-int timeout_between_retry = 999;
+
+int max_retry_count = 10;
+int timeout_between_retry = 100;
+
 system_stats_t global_system_stats;
 time_stats_t global_time_stats;
 int first_time_flag = 1;
@@ -85,7 +87,7 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
     char filename[100];
     int i,j;
 
-#ifdef SLICE_TO_OTHER_MME
+#if 0
 	FILE *fp2 = NULL;
 #endif
 	if (msg_type_global == PKT_TYPE_ATTACH) {
@@ -109,7 +111,7 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 
 		for (j=0; j<num_ser; j++) {
 			for (i=0; i<num_par; i++) {
-#ifdef SLICE_TO_OTHER_MME
+#if 0
 				printf("LINE:%d thnum %d  serseed %d\n",__LINE__, thread_state[i + num_par*j].thread_num, thread_state[i + num_par*j].serial_seed);
 				if( (1 + ((thread_state[i + num_par*j].thread_num + thread_state[i + num_par*j].serial_seed) % 2)) == 2 ) {
 					fprintf(fp2,"%lf,",thread_state[i + num_par*j].
@@ -830,7 +832,7 @@ service(void *arg)
      * Lets put the pkt id in the very beginning
      */
 #ifdef SLICE_TO_OTHER_MME
-    pkt_identifier.slice_id = 1 + ((thread_state->thread_num + thread_state->serial_seed) % 2);
+    pkt_identifier.slice_id = 1 + ((thread_state->thread_num + thread_state->serial_seed) % 10);
 #else
     pkt_identifier.slice_id = 1;
 #endif
@@ -1022,6 +1024,43 @@ service(void *arg)
 }
 
 static int
+migrate(void *arg)
+{
+    uint32_t            slen=sizeof(struct sockaddr_in);
+    char                buf_array[BUFLEN], *buf_start, *buf;
+    thread_state_t      *thread_state = (thread_state_t*)arg;
+    uint32_t            enb_ue_s1ap_id = 0;
+    enb_ue_s1ap_id = (thread_state->thread_num + thread_state->thread_seed)* 10000 +
+                    thread_state->serial_seed;
+
+
+    /* Keep the start pointer to use for sending
+     */
+    buf = buf_array;
+    buf_start = buf;
+	/*migration req send*/
+	pkt_identifier_t mig_pkt_identifier;
+	mig_pkt_identifier.msg_type = PKT_TYPE_MIGRATE;
+
+	memcpy(buf_start, &mig_pkt_identifier, sizeof(pkt_identifier_t));
+	buf = buf_start + sizeof(pkt_identifier_t);
+	put_enb_ue_s1ap_id((uint8_t*)buf, enb_ue_s1ap_id);
+
+	getsockname(thread_state->socket, (struct sockaddr*)thread_state->si_us, &slen);
+
+	if (sendto(thread_state->socket, buf_start,
+					BUFLEN, 0,(struct sockaddr *) thread_state->si_other,
+					slen)==-1) {
+		diep("sendto()");
+	} else {
+		thread_state->state = STAT_ATTACH_ACCEPT_COMPLETE_SENT;
+					increment_system_stat(&thread_state->thread_stats,
+					STAT_ATTACH_ACCEPT_COMPLETE_SENT);
+	}
+	return 0;
+}
+
+static int
 attach(void *arg)
 {
     uint32_t            slen=sizeof(struct sockaddr_in);
@@ -1042,7 +1081,7 @@ attach(void *arg)
      * Lets put the pkt id in the very beginning
      */
 #ifdef SLICE_TO_OTHER_MME
-    pkt_identifier.slice_id = 1 + ((thread_state->thread_num + thread_state->serial_seed) % 2);
+    pkt_identifier.slice_id = 1 + ((thread_state->thread_num + thread_state->serial_seed) % 10);
 #else
     pkt_identifier.slice_id = 1;
 #endif
@@ -1216,28 +1255,8 @@ attach(void *arg)
                     increment_system_stat(&thread_state->thread_stats, 
                                           STAT_ATTACH_ACCEPT_COMPLETE_SENT);
                 }
-				/*migration req send*/
-				pkt_identifier_t mig_pkt_identifier;
-				mig_pkt_identifier.msg_type = PKT_TYPE_MIGRATE;
-
-				memcpy(buf_start, &mig_pkt_identifier, sizeof(pkt_identifier_t));
-				buf = buf_start + sizeof(pkt_identifier_t);
-				put_enb_ue_s1ap_id((uint8_t*)buf, enb_ue_s1ap_id);
-#if 1
-				sleep(12);
-#endif
-				if (sendto(thread_state->socket, buf_start,
-						BUFLEN, 0,(struct sockaddr *) thread_state->si_other,
-						slen)==-1) {
-					diep("sendto()");
-				} else {
-					thread_state->state = STAT_ATTACH_ACCEPT_COMPLETE_SENT;
-						increment_system_stat(&thread_state->thread_stats,
-						STAT_ATTACH_ACCEPT_COMPLETE_SENT);
-				}
-				return 0;
-
-			} else {
+                return 0;
+            } else {
 #if 0
                 printf("\%d received garbage \n",thread_state->thread_num);
 #endif
@@ -1448,7 +1467,6 @@ execute_thread(void *arg)
             perror("Error");
             pthread_exit(&thread_state->state);
     }
-
     if (msg_type_global == PKT_TYPE_ATTACH) {
         attach(arg);
     } else if (msg_type_global == PKT_TYPE_SERVICE) {
@@ -1458,7 +1476,9 @@ execute_thread(void *arg)
     } else if (msg_type_global == PKT_TYPE_TAU_TEST) {
         attach(arg);
         detach(arg);
-    }
+    } else if (msg_type_global == PKT_TYPE_MIGRATE) {
+		migrate(arg);
+	}
 
     close(thread_state->socket);
     pthread_exit(&thread_state->state);
@@ -1509,15 +1529,20 @@ int main(int argc, char *argv[])
         printf("\ncan't catch SIGINT\n");
         return -1;
     }
-
-    send_signal(PKT_TYPE_TEST_MME, EXP_START_PORT);
-
+	if(msg_type_global == 10) {
+	    send_signal(PKT_TYPE_TEST_MME, EXP_START_PORT);
+		return 0;
+	}
+	else if (msg_type_global == 11) {
+		send_signal(PKT_TYPE_TEST_MME, EXP_STOP_PORT);
+		return 0;
+	}
     for (j=0; j<serial_num; j++) {
         for (i=0; i<num_threads; i++) {
             thread_state[i + num_threads*j].thread_num = i;
             thread_state[i + num_threads*j].thread_seed = seed;
             thread_state[i + num_threads*j].serial_seed = j;
-            ret = pthread_create(&attach_thread[i + num_threads*j], NULL, execute_thread, 
+			ret = pthread_create(&attach_thread[i + num_threads*j], NULL, execute_thread, 
                            &thread_state[i + num_threads*j]);
             if (ret != 0) {
                 fprintf(stderr, "Failed to create thread %dx%d (%d) : %d (%s)\n", i, j, ret, i+num_threads*j, strerror(ret));
@@ -1604,7 +1629,7 @@ int main(int argc, char *argv[])
         }
     }
 
-    send_signal(PKT_TYPE_TEST_MME, EXP_STOP_PORT);
+    //send_signal(PKT_TYPE_TEST_MME, EXP_STOP_PORT);
 
 //    show_time_thread_stats(thread_state, num_threads, serial_num);
 //    show_system_thread_stats(thread_state, num_threads, serial_num);

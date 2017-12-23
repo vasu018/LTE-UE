@@ -14,15 +14,22 @@
 #include <signal.h>
 
 //#define DEBUG 1
-#define DEF_GET_ONE_SEC_CONN
-
+#define CAPTURE_ALL_TIME
+//#define DEF_GET_ONE_SEC_CONN
 #define SLICE_TO_OTHER_MME
+#define PANIC_SERVICE_FAIL
+#ifdef SLICE_TO_OTHER_MME
+//	#define DST_MME1
+	#define DST_MME2
+#endif
 
 int rrval = 1;
 double serv_time = 0;
 int serial_num=1;
-int max_retry_count = 5;
-int timeout_between_retry = 10;
+
+int max_retry_count = 10;
+int timeout_between_retry = 100;
+
 system_stats_t global_system_stats;
 time_stats_t global_time_stats;
 int first_time_flag = 1;
@@ -30,11 +37,13 @@ int all_start_flag = 1;
 int break_flag = 0;
 double              rand_total_time;
 uint32_t            rand_thread, rand_serial;
-struct timeval all_start, all_end;
+struct timeval all_start, all_end = {0,0};
 thread_state_t  *min_attach_thread=NULL, *max_attach_thread=NULL;
 thread_state_t  *min_service_thread=NULL, *max_service_thread=NULL;
 thread_state_t  *min_detach_thread=NULL, *max_detach_thread=NULL;
 uint8_t msg_type_global;
+uint8_t panic_service_fail_flag = 0;
+struct timeval panic_service_sleep = {0,0};
 
 int compare (const void* p1, const void* p2)
 {
@@ -82,10 +91,10 @@ void
 write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 {
     FILE *fp;
-    char filename[40];
+    char filename[100];
     int i,j;
 
-#if 1
+#if 0
 	FILE *fp2 = NULL;
 #endif
 	if (msg_type_global == PKT_TYPE_ATTACH) {
@@ -102,21 +111,28 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 			fprintf(fp,"\n");
 		}
 	} else if(msg_type_global == PKT_TYPE_SERVICE) {
-		sprintf(filename,"logs/service_%d_%d_mme1.txt",num_par,num_ser);
+#ifdef DST_MME1
+		sprintf(filename,"logs/service_%d_%d_1.txt",num_par,num_ser);
+#endif
+
+#ifdef DST_MME2
+		sprintf(filename,"logs/service_%d_%d_2.txt",num_par,num_ser);
+#endif
+#ifndef DST_MME1
+#ifndef DST_MME2
+		sprintf(filename,"logs/service_%d_%d.txt",num_par,num_ser);
+#endif
+#endif
 		if((fp=fopen(filename, "wb+"))==NULL) {
-			printf("Cannot open file.\n");
+			printf("Cannot open file %s.\n", filename);
 		}
 
-		sprintf(filename,"logs/service_%d_%d_mme2.txt",num_par,num_ser);
-		if((fp2=fopen(filename, "wb+"))==NULL) {
-			printf("Cannot open file.\n");
-		}
 		for (j=0; j<num_ser; j++) {
 			for (i=0; i<num_par; i++) {
-#if 1 
-//				printf("LINE:%d thnum %d  serseed %d\n",__LINE__, thread_state[i + num_par*j].thread_num, thread_state[i + num_par*j].serial_seed);
+#if 0
+				printf("LINE:%d thnum %d  serseed %d\n",__LINE__, thread_state[i + num_par*j].thread_num, thread_state[i + num_par*j].serial_seed);
 				if( (1 + ((thread_state[i + num_par*j].thread_num + thread_state[i + num_par*j].serial_seed) % 2)) == 2 ) {
-				fprintf(fp2,"%lf,",thread_state[i + num_par*j].
+					fprintf(fp2,"%lf,",thread_state[i + num_par*j].
 						thread_time_stats.service_total);
 					fprintf(fp2,"\n");
 				} else {
@@ -133,7 +149,7 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 		}
 	} else if(msg_type_global == PKT_TYPE_DETACH) {
 		sprintf(filename,"logs/detach_%d_%d.txt",num_par,num_ser);
-		if((fp=fopen(filename, "ab+"))==NULL) {
+		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
 
@@ -146,7 +162,7 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 		}
 	} else if(msg_type_global == PKT_TYPE_TAU_TEST) {
 		sprintf(filename,"logs/tau_%d_%d.txt",num_par,num_ser);
-		if((fp=fopen(filename, "ab+"))==NULL) {
+		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
 
@@ -176,6 +192,9 @@ write_value_file()
 		if((fp=fopen("attach_test_values.csv", "a"))==NULL) {
 			printf("Cannot open output file.\n");
 			return;
+		} else if (!max_attach_thread || !min_attach_thread) {
+			printf("max_attach_thread or min_attach_thread not there.\n");
+			return;
 		}
 		fprintf(fp,"%lf,%lf,%lf,%lu,%lu,%lu,%lf,%lf,%lf,%lf,%lf\n",
 			all_time,
@@ -193,6 +212,9 @@ write_value_file()
 		if((fp=fopen("service_test_values.csv", "a"))==NULL) {
 			printf("Cannot open output file. error:%d\n",errno);
 			return;
+		} else if (!max_service_thread || !min_service_thread) {
+			printf("max_service_thread or min_service_thread not there.\n");
+			return;
 		}
 		fprintf(fp,"%lf,%lf,%lf,%lu,%lu,%lu,%lf,%lf,%lf,%lf,%lf\n",
 			all_time,
@@ -209,6 +231,9 @@ write_value_file()
     } else if (msg_type_global == PKT_TYPE_DETACH) {
 		if((fp=fopen("detach_test_values.csv", "a"))==NULL) {
 			printf("Cannot open output file. error:%d\n",errno);
+			return;
+		} else if (!max_detach_thread || !min_detach_thread) {
+			printf("max_detach_thread or min_detach_thread not there.\n");
 			return;
 		}
 		fprintf(fp,"%lf,%lf,%lf,%lu,%lu,%lu,%lf,%lf,%lf,%lf\n",
@@ -348,6 +373,8 @@ aggregate_system_stat(system_stats_t *dest_stats, system_stats_t *src_stats, uin
         dest_stats->detach_context_release	+= src_stats->detach_context_release;
         dest_stats->detach_fail			+= src_stats->detach_fail;
     }
+
+	dest_stats->retry			+= src_stats->retry;
     return;
 }
 
@@ -414,6 +441,9 @@ increment_system_stat(system_stats_t *stats, int stat)
         break;
     case STAT_DETACH_CONTEXT_RELEASE:
         stats->detach_context_release++;
+        break;
+    case STAT_RETRY:
+        stats->retry = 1;
         break;
     default:
         break;
@@ -522,6 +552,7 @@ show_exit_counter_stats(system_stats_t *stats)
            stats->detach_attempt,
            stats->detach_context_release,
            stats->detach_fail);
+	printf("\nRetries:\t%lu\n",stats->retry);
 }
 
 void
@@ -553,10 +584,12 @@ show_time_global_stats()
         global_time_stats.attach_nas_recv_to_accept /
         global_system_stats.attach_accept_complete_sent);
         //Vasu Commented
-        printf("\nMin attach time = %lf\n",
-               min_attach_thread->thread_time_stats.attach_total);
-        printf("Max attach time = %lf\n",
-               max_attach_thread->thread_time_stats.attach_total);
+		if (min_attach_thread && max_attach_thread) {
+			printf("\nMin attach time = %lf\n",
+				   min_attach_thread->thread_time_stats.attach_total);
+			printf("Max attach time = %lf\n",
+				   max_attach_thread->thread_time_stats.attach_total);
+		}
     } else if (msg_type_global == PKT_TYPE_SERVICE) {
         printf("\nMean Stats");
         printf("\nAttach Total \t\t\t= %lf\n"
@@ -588,10 +621,12 @@ show_time_global_stats()
         global_system_stats.detach_context_release,
         global_time_stats.detach_accept_to_context_release_recv /
         global_system_stats.detach_context_release);
-        printf("\nMin detach time = %lf\n",
-               min_detach_thread->thread_time_stats.detach_total);
-        printf("Max detach time = %lf\n",
-               max_detach_thread->thread_time_stats.detach_total);
+		if (min_attach_thread && max_attach_thread) {
+			printf("\nMin detach time = %lf\n",
+				   min_detach_thread->thread_time_stats.detach_total);
+			printf("Max detach time = %lf\n",
+				   max_detach_thread->thread_time_stats.detach_total);
+		}
     }
 }
 
@@ -825,6 +860,14 @@ service(void *arg)
      */
 #ifdef SLICE_TO_OTHER_MME
     pkt_identifier.slice_id = 1 + ((thread_state->thread_num + thread_state->serial_seed) % 2);
+#ifdef DST_MME1
+	if (pkt_identifier.slice_id == 2)
+		return 0;
+#endif
+#ifdef DST_MME2
+	if (pkt_identifier.slice_id == 1)
+		return 0;
+#endif
 #else
     pkt_identifier.slice_id = 1;
 #endif
@@ -869,19 +912,51 @@ service(void *arg)
     while (1) {
         if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
 			thread_state->retry_count++;
+            increment_system_stat(&thread_state->thread_stats, 
+                                  STAT_RETRY);
+#if 1
+#ifdef CAPTURE_ALL_TIME
+			gettimeofday(&t2, NULL);
+			cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0;
+			cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
+
+			thread_state->thread_time_stats.service_total = cpu_time_used;
+#endif
+#endif
 			if (thread_state->retry_count < max_retry_count) {
                 if (sendto(thread_state->socket, buf_start,
                            BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
                            slen)==-1) {
                     diep("sendto()");
 				}
+#ifdef PANIC_SERVICE_FAIL
+				if (panic_service_fail_flag) {
+					break;
+				}
+#endif
 				//printf("Retrying for %d,%d!\n",thread_state->thread_num, thread_state->serial_seed);
 				continue;
+			} else {
+#if 0
+#ifdef CAPTURE_ALL_TIME
+				gettimeofday(&t2, NULL);
+				cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0; 
+				cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
+
+				thread_state->thread_time_stats.service_total +=
+					cpu_time_used;
+				//printf("%f\n", cpu_time_used);
+#endif
+#endif
+				err = ETIME;
+				increment_system_stat(&thread_state->thread_stats, 
+									  STAT_SERVICE_FAIL);
+#ifdef PANIC_SERVICE_FAIL
+				usleep(panic_service_sleep.tv_sec*1000000 + panic_service_sleep.tv_usec);
+				panic_service_fail_flag = 1;
+#endif
+				break;
 			}
-            err = ETIME;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_SERVICE_FAIL);
-            break;
         } else {
             /*
              * Process packet header
@@ -969,7 +1044,7 @@ service(void *arg)
                     rand_serial = thread_state->serial_seed;
                     first_time_flag = 0;
                 }
-                thread_state->thread_time_stats.service_total += 
+                thread_state->thread_time_stats.service_total = 
                     cpu_time_used;
                 thread_state->thread_time_stats.service_nas_recv_to_accept += 
                     (t2.tv_sec - nas_recv.tv_sec) * 1000.0;
@@ -1001,7 +1076,9 @@ service(void *arg)
                 }
                 return 0;
             } else {
+#if 0
                 printf("\%d received garbage \n",thread_state->thread_num);
+#endif
 
             }
 
@@ -1033,6 +1110,16 @@ attach(void *arg)
      */
 #ifdef SLICE_TO_OTHER_MME
     pkt_identifier.slice_id = 1 + ((thread_state->thread_num + thread_state->serial_seed) % 2);
+
+#ifdef DST_MME1
+	if (pkt_identifier.slice_id == 2)
+		return 0;
+#endif
+#ifdef DST_MME2
+	if (pkt_identifier.slice_id == 1)
+		return 0;
+#endif
+
 #else
     pkt_identifier.slice_id = 1;
 #endif
@@ -1074,19 +1161,31 @@ attach(void *arg)
         if (recvfrom(thread_state->socket,
 			buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
 			thread_state->retry_count++;
+            increment_system_stat(&thread_state->thread_stats, 
+                                  STAT_RETRY);
 			if (thread_state->retry_count < max_retry_count) {
                 if (sendto(thread_state->socket, buf_start,
                            BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
                            slen)==-1) {
                     diep("sendto()");
 				}
-				//printf("Retrying for %d,%d!\n",thread_state->thread_num, thread_state->serial_seed);
+				//printf("Retrying %d for %d,%d : %d!\n",thread_state->retry_count, thread_state->thread_num,
+				//	   thread_state->serial_seed, thread_state->state);
 				continue;
+			} else {
+#ifdef CAPTURE_ALL_TIME
+				gettimeofday(&t2, NULL);
+				cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0; 
+				cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
+
+				thread_state->thread_time_stats.attach_total +=
+					cpu_time_used;
+#endif
+				err = ETIME;
+				increment_system_stat(&thread_state->thread_stats, 
+									  STAT_ATTACH_FAIL);
+				break;
 			}
-            err = ETIME;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_ATTACH_FAIL);
-            break;
         } else {
             /*
              * Process packet header
@@ -1205,7 +1304,9 @@ attach(void *arg)
                 }
                 return 0;
             } else {
+#if 0
                 printf("\%d received garbage \n",thread_state->thread_num);
+#endif
 
             }
 
@@ -1278,19 +1379,30 @@ detach(void *arg)
     while (1) {
         if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)<0) {
 			thread_state->retry_count++;
+            increment_system_stat(&thread_state->thread_stats,
+                                  STAT_RETRY);
 			if (thread_state->retry_count < max_retry_count) {
                 if (sendto(thread_state->socket, buf_start,
-                           BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
+                           BUFLEN, 0,(struct sockaddr *) thread_state->si_other,
                            slen)==-1) {
                     diep("sendto()");
 				}
 				//printf("Retrying for %d,%d!\n",thread_state->thread_num, thread_state->serial_seed);
 				continue;
+			} else {
+#ifdef CAPTURE_ALL_TIME
+				gettimeofday(&t2, NULL);
+				cpu_time_used = (t2.tv_sec - t1.tv_sec) * 1000.0; 
+				cpu_time_used += (t2.tv_usec - t1.tv_usec) / 1000.0;
+
+				thread_state->thread_time_stats.detach_total +=
+					cpu_time_used;
+#endif
+				err = ETIME;
+				increment_system_stat(&thread_state->thread_stats,
+									  STAT_DETACH_FAIL);
+				break;
 			}
-            err = ETIME;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_DETACH_FAIL);
-            break;
         } else {
             /*
              * Process packet header
@@ -1365,7 +1477,9 @@ detach(void *arg)
 				}
 				return 0;
             } else {
+#if 0
                 printf("\%d received garbage \n",thread_state->thread_num);
+#endif
 
             }
 
@@ -1383,8 +1497,8 @@ execute_thread(void *arg)
     struct sockaddr_in  si_other, si_us;
     struct timeval tv;
 
-    tv.tv_sec = 0;
-    tv.tv_usec = timeout_between_retry*1000; // 100 ms
+    tv.tv_sec = timeout_between_retry / 1000;
+    tv.tv_usec = (timeout_between_retry % 1000)*1000; // 100 ms
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
         diep("socket");
@@ -1417,8 +1531,9 @@ execute_thread(void *arg)
     } else if (msg_type_global == PKT_TYPE_DETACH) {
         detach(arg);
     } else if (msg_type_global == PKT_TYPE_TAU_TEST) {
-        attach(arg);
-        detach(arg);
+        if (attach(arg) == 0) {
+			detach(arg);
+		}
     }
 
     close(thread_state->socket);
@@ -1435,8 +1550,8 @@ int main(int argc, char *argv[])
 
     if (argc < 5) {
         printf("Usage: ./ue <pkt_type> <num_par> <num_ser> <Thread IMSI seed>\n");
-        printf("Usage: ./ue_nonblock_serial <pkt_type> <num_par> <num_ser> <Thread IMSI seed> <burst interval>\n");
-        printf("Usage: ./ue_nonblock_serial <pkt_type> <num_par> <num_ser> <Thread IMSI seed> <burst interval> <max_retry_count> <timeout_between_retries>\n");
+        printf("Usage: ./ue <pkt_type> <num_par> <num_ser> <Thread IMSI seed> <burst interval>\n");
+        printf("Usage: ./ue <pkt_type> <num_par> <num_ser> <Thread IMSI seed> <burst interval> <max_retry_count> <timeout_between_retries>\n");
         printf("pkt_type:\n0\tATTACH\n1\tSERVICE\n2\tDETACH\nATTACH+DETACH\n");
         exit(0);
     }
@@ -1449,7 +1564,7 @@ int main(int argc, char *argv[])
         serial_num = atoi(argv[3]);
         seed = atoi(argv[4]);
         burst_interval = atoi(argv[5]);
-    } else if (argc == 7) {
+    } else if (argc == 8) {
         serial_num = atoi(argv[3]);
         seed = atoi(argv[4]);
         burst_interval = atoi(argv[5]);
@@ -1480,6 +1595,9 @@ int main(int argc, char *argv[])
             thread_state[i + num_threads*j].serial_seed = j;
             ret = pthread_create(&attach_thread[i + num_threads*j], NULL, execute_thread, 
                            &thread_state[i + num_threads*j]);
+			if (panic_service_fail_flag) {
+				ret = -1;
+			}
             if (ret != 0) {
                 fprintf(stderr, "Failed to create thread %dx%d (%d) : %d (%s)\n", i, j, ret, i+num_threads*j, strerror(ret));
                 break;
@@ -1572,7 +1690,9 @@ int main(int argc, char *argv[])
     show_system_global_stats();
     show_exit_counter_stats(&global_system_stats);
     show_time_global_stats();
+#ifndef NOWRITE
     write_array_file(thread_state, num_threads, serial_num);
+#endif
     show_time_median(thread_state, num_threads, serial_num);
 #ifndef NOWRITE
 	write_value_file();

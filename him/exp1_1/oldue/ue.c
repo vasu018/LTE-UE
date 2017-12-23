@@ -16,7 +16,7 @@
 //#define DEBUG 1
 #define DEF_GET_ONE_SEC_CONN
 
-//#define SLICE_TO_OTHER_MME
+#define SLICE_TO_OTHER_MME
 
 int rrval = 1;
 double serv_time = 0;
@@ -82,15 +82,15 @@ void
 write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 {
     FILE *fp;
-    char filename[100];
+    char filename[40];
     int i,j;
 
-#ifdef SLICE_TO_OTHER_MME
+#if 0
 	FILE *fp2 = NULL;
 #endif
 	if (msg_type_global == PKT_TYPE_ATTACH) {
 		sprintf(filename,"logs/attach_%d_%d.txt",num_par,num_ser);
-		if((fp=fopen(filename, "ab+"))==NULL) {
+		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
 
@@ -102,17 +102,22 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 			fprintf(fp,"\n");
 		}
 	} else if(msg_type_global == PKT_TYPE_SERVICE) {
-		sprintf(filename,"logs/service_%d_%d.txt",num_par,num_ser);
-		if((fp=fopen(filename, "ab+"))==NULL) {
-			printf("Cannot open file %s.\n", filename);
+		sprintf(filename,"logs/service_%d_%d_mme1.txt",num_par,num_ser);
+		if((fp=fopen(filename, "wb+"))==NULL) {
+			printf("Cannot open file.\n");
 		}
-
+#if 0
+		sprintf(filename,"logs/service_%d_%d_mme2.txt",num_par,num_ser);
+		if((fp2=fopen(filename, "wb+"))==NULL) {
+			printf("Cannot open file.\n");
+		}
+#endif
 		for (j=0; j<num_ser; j++) {
 			for (i=0; i<num_par; i++) {
-#ifdef SLICE_TO_OTHER_MME
-				printf("LINE:%d thnum %d  serseed %d\n",__LINE__, thread_state[i + num_par*j].thread_num, thread_state[i + num_par*j].serial_seed);
+#if 0 
+//				printf("LINE:%d thnum %d  serseed %d\n",__LINE__, thread_state[i + num_par*j].thread_num, thread_state[i + num_par*j].serial_seed);
 				if( (1 + ((thread_state[i + num_par*j].thread_num + thread_state[i + num_par*j].serial_seed) % 2)) == 2 ) {
-					fprintf(fp2,"%lf,",thread_state[i + num_par*j].
+				fprintf(fp2,"%lf,",thread_state[i + num_par*j].
 						thread_time_stats.service_total);
 					fprintf(fp2,"\n");
 				} else {
@@ -344,8 +349,6 @@ aggregate_system_stat(system_stats_t *dest_stats, system_stats_t *src_stats, uin
         dest_stats->detach_context_release	+= src_stats->detach_context_release;
         dest_stats->detach_fail			+= src_stats->detach_fail;
     }
-
-	dest_stats->retry			+= src_stats->retry;
     return;
 }
 
@@ -412,9 +415,6 @@ increment_system_stat(system_stats_t *stats, int stat)
         break;
     case STAT_DETACH_CONTEXT_RELEASE:
         stats->detach_context_release++;
-        break;
-    case STAT_RETRY:
-        stats->retry = 1;
         break;
     default:
         break;
@@ -523,7 +523,6 @@ show_exit_counter_stats(system_stats_t *stats)
            stats->detach_attempt,
            stats->detach_context_release,
            stats->detach_fail);
-	printf("\nRetries:\t%lu\n",stats->retry);
 }
 
 void
@@ -555,12 +554,10 @@ show_time_global_stats()
         global_time_stats.attach_nas_recv_to_accept /
         global_system_stats.attach_accept_complete_sent);
         //Vasu Commented
-		if (min_attach_thread && max_attach_thread) {
-			printf("\nMin attach time = %lf\n",
-				   min_attach_thread->thread_time_stats.attach_total);
-			printf("Max attach time = %lf\n",
-				   max_attach_thread->thread_time_stats.attach_total);
-		}
+        printf("\nMin attach time = %lf\n",
+               min_attach_thread->thread_time_stats.attach_total);
+        printf("Max attach time = %lf\n",
+               max_attach_thread->thread_time_stats.attach_total);
     } else if (msg_type_global == PKT_TYPE_SERVICE) {
         printf("\nMean Stats");
         printf("\nAttach Total \t\t\t= %lf\n"
@@ -592,12 +589,10 @@ show_time_global_stats()
         global_system_stats.detach_context_release,
         global_time_stats.detach_accept_to_context_release_recv /
         global_system_stats.detach_context_release);
-		if (min_attach_thread && max_attach_thread) {
-			printf("\nMin detach time = %lf\n",
-				   min_detach_thread->thread_time_stats.detach_total);
-			printf("Max detach time = %lf\n",
-				   max_detach_thread->thread_time_stats.detach_total);
-		}
+        printf("\nMin detach time = %lf\n",
+               min_detach_thread->thread_time_stats.detach_total);
+        printf("Max detach time = %lf\n",
+               max_detach_thread->thread_time_stats.detach_total);
     }
 }
 
@@ -875,8 +870,6 @@ service(void *arg)
     while (1) {
         if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
 			thread_state->retry_count++;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_RETRY);
 			if (thread_state->retry_count < max_retry_count) {
                 if (sendto(thread_state->socket, buf_start,
                            BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
@@ -1009,9 +1002,7 @@ service(void *arg)
                 }
                 return 0;
             } else {
-#if 0
                 printf("\%d received garbage \n",thread_state->thread_num);
-#endif
 
             }
 
@@ -1084,16 +1075,13 @@ attach(void *arg)
         if (recvfrom(thread_state->socket,
 			buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)==-1) {
 			thread_state->retry_count++;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_RETRY);
 			if (thread_state->retry_count < max_retry_count) {
                 if (sendto(thread_state->socket, buf_start,
                            BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
                            slen)==-1) {
                     diep("sendto()");
 				}
-				//printf("Retrying %d for %d,%d : %d!\n",thread_state->retry_count, thread_state->thread_num,
-				//	   thread_state->serial_seed, thread_state->state);
+				//printf("Retrying for %d,%d!\n",thread_state->thread_num, thread_state->serial_seed);
 				continue;
 			}
             err = ETIME;
@@ -1216,31 +1204,9 @@ attach(void *arg)
                     increment_system_stat(&thread_state->thread_stats, 
                                           STAT_ATTACH_ACCEPT_COMPLETE_SENT);
                 }
-				/*migration req send*/
-				pkt_identifier_t mig_pkt_identifier;
-				mig_pkt_identifier.msg_type = PKT_TYPE_MIGRATE;
-
-				memcpy(buf_start, &mig_pkt_identifier, sizeof(pkt_identifier_t));
-				buf = buf_start + sizeof(pkt_identifier_t);
-				put_enb_ue_s1ap_id((uint8_t*)buf, enb_ue_s1ap_id);
-#if 1
-				sleep(12);
-#endif
-				if (sendto(thread_state->socket, buf_start,
-						BUFLEN, 0,(struct sockaddr *) thread_state->si_other,
-						slen)==-1) {
-					diep("sendto()");
-				} else {
-					thread_state->state = STAT_ATTACH_ACCEPT_COMPLETE_SENT;
-						increment_system_stat(&thread_state->thread_stats,
-						STAT_ATTACH_ACCEPT_COMPLETE_SENT);
-				}
-				return 0;
-
-			} else {
-#if 0
+                return 0;
+            } else {
                 printf("\%d received garbage \n",thread_state->thread_num);
-#endif
 
             }
 
@@ -1313,8 +1279,6 @@ detach(void *arg)
     while (1) {
         if (recvfrom(thread_state->socket, buf, BUFLEN, 0,(struct sockaddr *) thread_state->si_us, &slen)<0) {
 			thread_state->retry_count++;
-            increment_system_stat(&thread_state->thread_stats, 
-                                  STAT_RETRY);
 			if (thread_state->retry_count < max_retry_count) {
                 if (sendto(thread_state->socket, buf_start,
                            BUFLEN, 0,(struct sockaddr *) thread_state->si_other, 
@@ -1402,9 +1366,7 @@ detach(void *arg)
 				}
 				return 0;
             } else {
-#if 0
                 printf("\%d received garbage \n",thread_state->thread_num);
-#endif
 
             }
 
@@ -1422,8 +1384,8 @@ execute_thread(void *arg)
     struct sockaddr_in  si_other, si_us;
     struct timeval tv;
 
-    tv.tv_sec = timeout_between_retry / 1000;
-    tv.tv_usec = (timeout_between_retry % 1000)*1000; // 100 ms
+    tv.tv_sec = 0; //timeout_between_retry;
+    tv.tv_usec = timeout_between_retry*1000; // 100 ms
 
     if ((s=socket(AF_INET, SOCK_DGRAM, IPPROTO_UDP))==-1)
         diep("socket");
@@ -1488,7 +1450,7 @@ int main(int argc, char *argv[])
         serial_num = atoi(argv[3]);
         seed = atoi(argv[4]);
         burst_interval = atoi(argv[5]);
-    } else if (argc == 8) {
+    } else if (argc == 7) {
         serial_num = atoi(argv[3]);
         seed = atoi(argv[4]);
         burst_interval = atoi(argv[5]);

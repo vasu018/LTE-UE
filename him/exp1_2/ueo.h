@@ -9,10 +9,7 @@
 #define US_PORT 23432
 #define RECPACK 10
 #define OTHER_IP "10.10.10.30"
-//#define OTHER_IP "55.55.55.57"
 #define US_IP "10.10.10.185"
-
-//#define DEBUG
 
 #define PACKET_ID_NAS_SEC_REQ   0x02
 #define PACKET_ID_AUTH_REQ      0x03
@@ -23,7 +20,6 @@
 
 //const char * const iplist[] = {"10.10.10.185", "10.10.10.186", "10.10.10.187"};
 const char * const iplist[] = {"10.10.10.185"};
-//const char * const iplist[] = {"55.55.55.56"};
 
 typedef struct udp_conn_context_s {
     int fd;
@@ -32,11 +28,10 @@ typedef struct udp_conn_context_s {
 }udp_conn_context_t;
 
 typedef enum {
-	PKT_TYPE_ATTACH=0,
-	PKT_TYPE_SERVICE,
-	PKT_TYPE_DETACH,
-	PKT_TYPE_TAU_TEST,
-	PKT_TYPE_TEST_MME,
+    PKT_TYPE_ATTACH=0,
+    PKT_TYPE_SERVICE,
+    PKT_TYPE_DETACH,
+    PKT_TYPE_TEST_MME,
 	PKT_TYPE_MIGRATE
 }pkt_type;
 
@@ -67,8 +62,7 @@ typedef enum {
 	STAT_DETACH_ATTEMPT,
 	STAT_DETACH_FAIL,
 	STAT_DETACH_ACCEPT,
-	STAT_DETACH_CONTEXT_RELEASE,
-	STAT_RETRY
+	STAT_DETACH_CONTEXT_RELEASE
 }stat_type;
 
 typedef struct system_stats_s {
@@ -94,8 +88,6 @@ typedef struct system_stats_s {
 	unsigned long int     detach_accept;
 	unsigned long int     detach_context_release;
 	unsigned long int     detach_fail;
-
-	unsigned long int	  retry;
 }system_stats_t;
 
 typedef struct time_stats_s {
@@ -115,17 +107,16 @@ typedef struct time_stats_s {
 }time_stats_t;
 
 typedef struct thread_state_s {
-	uint32_t    thread_num;
-	uint32_t    udp_port;
-	uint32_t    thread_seed;
-	uint32_t    serial_seed;
-	int         socket;
-	int         state;
-	int			retry_count;
-	system_stats_t  thread_stats;
-	time_stats_t    thread_time_stats;
-	struct sockaddr_in  *si_other;
-	struct sockaddr_in  *si_us;
+    uint32_t    thread_num;
+    uint32_t    udp_port;
+    uint32_t    thread_seed;
+    uint32_t    serial_seed;
+    int         socket;
+    int         state;
+    system_stats_t  thread_stats;
+    time_stats_t    thread_time_stats;
+    struct sockaddr_in  *si_other;
+    struct sockaddr_in  *si_us;
 } thread_state_t;
 
 #endif
