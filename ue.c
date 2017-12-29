@@ -18,6 +18,8 @@
 //#define DEF_GET_ONE_SEC_CONN
 //#define SLICE_TO_OTHER_MME
 //#define PANIC_SERVICE_FAIL
+//#define LOG_SLICE
+
 int SLICE_ID = 1;
 int rrval = 1;
 double serv_time = 0;
@@ -94,8 +96,11 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 	FILE *fp2 = NULL;
 #endif
 	if (msg_type_global == PKT_TYPE_ATTACH) {
-		//sprintf(filename,"logs/attach_%d_%d.txt",num_par,num_ser);
+#ifndef LOG_SLICE
+		sprintf(filename,"logs/attach_%d_%d.txt",num_par,num_ser);
+#else
 		sprintf(filename,"logs/attach_%d_%d_%d.txt",num_par,num_ser,SLICE_ID);
+#endif
 		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
@@ -108,8 +113,11 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 			fprintf(fp,"\n");
 		}
 	} else if(msg_type_global == PKT_TYPE_SERVICE) {
-		//sprintf(filename,"logs/service_%d_%d.txt",num_par,num_ser);
+#ifndef LOG_SLICE
+		sprintf(filename,"logs/service_%d_%d.txt",num_par,num_ser);
+#else
 		sprintf(filename,"logs/service_%d_%d_%d.txt",num_par,num_ser,SLICE_ID);
+#endif
 		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file %s.\n", filename);
 		}
@@ -135,8 +143,11 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 			fprintf(fp,"\n");
 		}
 	} else if(msg_type_global == PKT_TYPE_DETACH) {
-		//sprintf(filename,"logs/detach_%d_%d.txt",num_par,num_ser);
+#ifndef LOG_SLICE
+		sprintf(filename,"logs/detach_%d_%d.txt",num_par,num_ser);
+#else
 		sprintf(filename,"logs/detach_%d_%d_%d.txt",num_par,num_ser,SLICE_ID);
+#endif
 		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
@@ -149,8 +160,11 @@ write_array_file(thread_state_t *thread_state, int num_par, int num_ser)
 			fprintf(fp,"\n");
 		}
 	} else if(msg_type_global == PKT_TYPE_TAU_TEST) {
-		//sprintf(filename,"logs/tau_%d_%d.txt",num_par,num_ser);
+#ifndef LOG_SLICE
+		sprintf(filename,"logs/tau_%d_%d.txt",num_par,num_ser);
+#else
 		sprintf(filename,"logs/tau_%d_%d_%d.txt",num_par,num_ser,SLICE_ID);
+#endif
 		if((fp=fopen(filename, "wb+"))==NULL) {
 			printf("Cannot open file.\n");
 		}
