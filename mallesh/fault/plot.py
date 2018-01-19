@@ -17,33 +17,16 @@ def readXL(f, col):
 
 ax = plt.gca()
 
-#data1 = readXL('fault.xlsx', 2)
-#data2 = readXL('fault.xlsx', 4)
+data = np.loadtxt('flood.txt', delimiter='\t')
+data1 = []
+data2 = []
 
-#data1 = range(1, 101)
-#data2 = []
-#for i in data1:
-#    data2.append(np.mean(data[(i-1)*100:i*100]))
-#plt.plot(data1, data2)
+for i in data:
+    data1.append(i[0])
+    data2.append(i[1])
 
-#plt.scatter(data1, data2, marker='d', s=16, color='b', label='Service Latency')
-data1 = readXL('fault.xlsx', 5)
-#data1 = range(80, 101)
-data2 = readXL('fault.xlsx', 7)
-#data2 = []
-#for i in data1:
-#    data2.append(np.mean(data[(i-1)*100:i*100]))
-#plt.plot(data1, data2)
-plt.scatter(data1, data2, marker='o', facecolors='none', s=16, color='r', label='Re-attach Flood')
-#
 
-tfile = open('flood.txt', 'w')
-
-for i, j in zip(data1, data2):
-    tfile.write('%s\t'%(i))
-    tfile.write('%s\n'%(j))
-
-tfile.close()
+plt.scatter(data1, data2, marker='d', s=16, color='b', label='Service Latency')
 
 ax.set_yscale('symlog')
 ax.set_ylim([0.1, 50000])
