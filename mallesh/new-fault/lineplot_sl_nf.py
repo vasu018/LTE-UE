@@ -15,27 +15,27 @@ def readXL(f, col):
             x.append(0)
     return x
 
-data1 = readXL('fault_tolerance stateless.xlsx', 1)
-data2 = readXL('fault_tolerance stateless.xlsx', 0)
+#data1 = readXL('fault_tolerance_stateless.xlsx', 1)
+#data2 = readXL('fault_tolerance_stateless.xlsx', 0)
 
-data3 = readXL('fault_tolerance stateless.xlsx', 1)
-data4 = readXL('fault_tolerance stateless.xlsx', 3)
+#data3 = readXL('fault_tolerance_stateless.xlsx', 1)
+#data4 = readXL('fault_tolerance_stateless.xlsx', 3)
 
 
-#data1 = []
-#data2 = []
-#with open("./sl_host_failure_data.txt", "r") as ins:
-#    for line in ins:
-#	line = line.strip()
-#        words = line.split(",")  
-#        x = words[0]
-#        y = words[1]
-#        data1.append(float(x))
-#        data2.append(float(y))
+data1 = []
+data2 = []
+with open("./sl_nf_failure_data_modified.txt", "r") as ins:
+    for line in ins:
+	line = line.strip()
+        words = line.split(",")  
+        x = words[0]
+        y = words[1]
+        data1.append(float(x))
+        data2.append(float(y))
 
 ax = plt.gca()
-plt.scatter(data1, data2, marker='d', s=16, color='g', label='No Application Failure')
-plt.scatter(data3, data4, marker='o', facecolors='none', s=16, color='b', label='Application Failure Scenario')
+#plt.scatter(data1, data2, marker='d', s=16, color='g', label='No Application Failure')
+plt.scatter(data1, data2, marker='o', facecolors='none', s=16, color='b', label='Application Failure Scenario')
 #plt.scatter(data5, data6, marker='d', facecolors='none', s=16, color='b', label='No Host Failure')
 
 ax.set_yscale('symlog')

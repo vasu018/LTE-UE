@@ -1,11 +1,11 @@
 #!/usr/bin/perl -w
 
 my $modbucket = 5;
-my $sparse0 = 2; # should be greater than or equals to 1
-my $sparse1 = 2;
-my $sparse2 = 3;
+my $sparse0 = 1; # should be greater than or equals to 1
+my $sparse1 = 1;
+my $sparse2 = 2;
 my $sparse3 = 3;
-my $sparse4 = 4;
+my $sparse4 = 3;
 
 my $val5 = 4999;
 my $val4 = 3999;
@@ -51,7 +51,7 @@ else {
                 my $newmod = $modbucket * $sparse0;
                 my $rem2 = $x*100 % $newmod;
                 if ($rem2 == 0) {
-                    $y = $val5;
+                    #$y = $val5;
                     print "Bucket0: $x $y\n";
                     print OUTPUTFILE "$x,$y\n";
                 }
@@ -160,7 +160,7 @@ else {
                 }
             }
         }
-        if ($x <= 78.74  || $x >= 83.73) {
+        if ($x <= 79.74  || $x >= 83.73) {
             #print "$x,$y\n";
             #print OUTPUTFILE "$x,$y\n";
             if ($y >= 980) {
