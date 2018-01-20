@@ -35,8 +35,13 @@ fig.tight_layout()
 fig.subplots_adjust(left=0.1, right=0.99)
 #plt.xticks(rotation='90')
 
-bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, boxprops=dict(linewidth=3))
-bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, boxprops=dict(linewidth=3))
+bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, boxprops=dict(linewidth=3), patch_artist=True)
+bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, boxprops=dict(linewidth=3), patch_artist=True)
+
+for patch in bq['boxes']:
+    patch.set(facecolor='lightgreen')
+for patch in bp['boxes']:
+    patch.set(facecolor='lightblue')
 
 ax.set_ylabel('Latency (ms)')
 ax.set_xticks([0, 1, 2, 3])
@@ -58,6 +63,6 @@ ax.set_xticklabels(['Mixed', 'Naive\nDecomposition', 'Prioritization', 'Increase
 ax.grid(which='major', linestyle='--', linewidth='0.5')
 ax.grid(which='minor', linestyle='--', linewidth='0.5')
 #plt.grid(linestyle='--')
-
+plt.legend()
 plt.ylim([-1, 100])
 plt.show()
