@@ -55,7 +55,7 @@ for patch in bp['boxes']:
 
 ax.set_ylabel('Latency (ms)')
 ax.set_xticks([0, 1, 2, 3, 4])
-ax.set_xticklabels(['Handled\nIndividually', 'Unified\nMME', 'Naive\nDecomposition', 'Prioritization', 'Increased\nResource'])
+ax.set_xticklabels(['(a)\nHandled\nIndividually', '(b)\nUnified\nMME', '(c)\nNaive\nDecomposition', '(d)\nPrioriti\nzation', '(e)\nIncreased\nResource'])
 
 #for box in bp['boxes']:
 #    box.set( color='b', linewidth=3)

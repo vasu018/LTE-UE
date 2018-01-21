@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 matplotlib.rcParams.update({'font.size':18})
 
-means = [3635, 250, 2600000, 43017557, 3780387]
+means = [3635, 250, 2600000, 4301755, 3780387]
 
 ind = np.arange(5)  # the x locations for the groups
 width = 0.25
@@ -18,7 +18,8 @@ def autolabel(rects):
     """
     Attach a text label above each bar displaying its height
     """
-    la = ['4.3K', '250', '4.5M', '5.3M']
+    #la = ['4.3K', '250', '4.5M', '5.3M']
+    #la = [3635, 250, 2600000, 43017557, 3780387]
     c = 0
     for rect in rects:
         height = rect.get_height()

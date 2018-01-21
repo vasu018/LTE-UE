@@ -5,7 +5,7 @@ import matplotlib.patches as mpatches
 
 matplotlib.rcParams.update({'font.size':18})
 
-means = [21.25, 20.75, 0.75, 3.25]
+means = [21.25, 20.75, 2.35, 0.75]
 
 ind = np.arange(4)  # the x locations for the groups
 width = 0.3
