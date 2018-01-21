@@ -2,10 +2,10 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams.update({'font.size':18})
 
-means = [25, 22, 5]
-stds = [3, 2, 1]
+means = [25.65, 23.873, 4.789]
+stds = [4.2, 3.85, 1.109]
 
 ind = np.arange(3)  # the x locations for the groups
 width = 0.25
@@ -30,7 +30,7 @@ def autolabel(rects):
 #autolabel(rects1)
 
 plt.xticks(np.arange(len(means)), ['W-RR', 'CH', 'Skewed-CH'])
-plt.ylabel('CPU Utilization (%)')
+plt.ylabel('Standard Deviation of CPU Utilization (%)')
 ax1.grid(linestyle='--')
-
+plt.savefig("./cpu-util-all.pdf", bbox_inches='tight')
 plt.show()

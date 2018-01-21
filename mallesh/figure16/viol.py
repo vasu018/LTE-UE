@@ -2,9 +2,9 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams.update({'font.size':18})
 
-means = [25, 22, 5]
+means = [18, 22, 2]
 stds = [5, 2, 1]
 
 ind = np.arange(3)  # the x locations for the groups
@@ -32,5 +32,5 @@ def autolabel(rects):
 plt.xticks(np.arange(len(means)), ['W-RR', 'CH', 'Skewed-CH'])
 plt.ylabel('Violations (%)')
 ax1.grid(linestyle='--')
-
+plt.savefig("./violations-all.pdf", bbox_inches='tight')
 plt.show()
