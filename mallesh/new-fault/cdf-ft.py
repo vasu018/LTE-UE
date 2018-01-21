@@ -3,7 +3,7 @@ import random
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams.update({'font.size':18})
 
 f = plt.figure()
 
@@ -69,5 +69,6 @@ cdf(sf, 'orange', 'Stateful Host Failure')
 cdf(sl1, 'navy', 'Stateless Host Failure')
 cdf(sl2, 'green', 'Stateless NF Failure')
 plt.xscale('log')
-#plt.grid(linestyle='--')
+plt.grid(linestyle='--')
+plt.savefig("./cdf-ft.pdf", bbox_inches='tight')
 plt.show()

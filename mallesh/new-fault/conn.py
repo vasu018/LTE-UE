@@ -3,7 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams.update({'font.size':18})
 
 means = [21.5, 20.5, 0.5, 3.25]
 
@@ -36,5 +36,5 @@ ax1.grid(linestyle='--')
 b_patch = mpatches.Patch(color='lightblue', label='Stateless')
 g_patch = mpatches.Patch(color='lightgreen', label='stateful')
 plt.legend(handles=[b_patch, g_patch])
-
+plt.savefig("./dropp-conn-ft.pdf", bbox_inches='tight')
 plt.show()

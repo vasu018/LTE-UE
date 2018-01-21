@@ -2,7 +2,7 @@ import xlrd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams.update({'font.size':18})
 
 def readXL(f, col):
     x = []
