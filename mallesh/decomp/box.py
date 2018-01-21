@@ -45,7 +45,7 @@ for patch in bp['boxes']:
 
 ax.set_ylabel('Latency (ms)')
 ax.set_xticks([0, 1, 2, 3])
-ax.set_xticklabels(['Mixed', 'Naive\nDecomposition', 'Prioritization', 'Increased\nResource'])
+ax.set_xticklabels(['Unified MME', 'Naive\nDecomposition', 'Prioritization', 'Increased\nResource'])
 
 #for box in bp['boxes']:
 #    box.set( color='b', linewidth=3)
@@ -65,4 +65,5 @@ ax.grid(which='minor', linestyle='--', linewidth='0.5')
 #plt.grid(linestyle='--')
 plt.legend()
 plt.ylim([-1, 100])
+plt.savefig("./decomposition-f.pdf", bbox_inches='tight')
 plt.show()
