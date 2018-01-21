@@ -5,7 +5,7 @@ import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 
-mpl.rcParams.update({'font.size':36})
+mpl.rcParams.update({'font.size':18})
 
 
 d11 = np.loadtxt('handover-mixed.txt', delimiter=',')
@@ -35,8 +35,10 @@ fig.tight_layout()
 fig.subplots_adjust(left=0.1, right=0.99)
 #plt.xticks(rotation='90')
 
-bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, boxprops=dict(linewidth=3), patch_artist=True)
-bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, boxprops=dict(linewidth=3), patch_artist=True)
+bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, patch_artist=True)
+bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, patch_artist=True)
+#bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, boxprops=dict(linewidth=3), patch_artist=True)
+#bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, boxprops=dict(linewidth=3), patch_artist=True)
 
 for patch in bq['boxes']:
     patch.set(facecolor='lightgreen')
@@ -61,9 +63,12 @@ ax.set_xticklabels(['Unified MME', 'Naive\nDecomposition', 'Prioritization', 'In
 
 #ax.minorticks_on()
 ax.grid(which='major', linestyle='--', linewidth='0.5')
-ax.grid(which='minor', linestyle='--', linewidth='0.5')
+#ax.grid(which='minor', linestyle='--', linewidth='0.5')
+#ax.grid(which='major', linestyle='--', linewidth='0.5')
+#ax.grid(which='minor', linestyle='--', linewidth='0.5')
 #plt.grid(linestyle='--')
 plt.legend()
 plt.ylim([-1, 100])
-plt.savefig("./decomposition-f.pdf", bbox_inches='tight')
+#plt.savefig("./decomposition-f.pdf", bbox_inches='tight')
+plt.savefig("./decomposition-f.pdf")
 plt.show()

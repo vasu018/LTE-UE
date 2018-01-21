@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 
 matplotlib.rcParams.update({'font.size':18})
 
-means = [4535, 250, 2600000, 4500000, 5300000]
+means = [3635, 250, 2600000, 43017557, 3780387]
 
 ind = np.arange(5)  # the x locations for the groups
 width = 0.25
