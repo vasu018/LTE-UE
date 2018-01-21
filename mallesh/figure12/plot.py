@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams.update({'font.size':18})
 
 means = [4535, 250, 2600000, 4500000, 5300000]
 
@@ -13,6 +13,7 @@ fig.tight_layout()
 fig.subplots_adjust(left=0.1, bottom=0.3, right=0.95)
 
 rects1 = ax1.bar(ind, means, width, edgecolor='k', fill=False, linewidth=6, log=True)
+#rects1 = ax1.bar(ind, means, width, edgecolor='k', fill=False, linewidth=6)
 def autolabel(rects):
     """
     Attach a text label above each bar displaying its height
@@ -28,8 +29,8 @@ def autolabel(rects):
 
 #autolabel(rects1)
 
-plt.xticks(np.arange(len(means)), ['OAI', 'PhantomNet\n(OpenEPC)', 'CloudRAM', 'Our Stateful\n(Intel DPDK)', 'Our Stateless\n(Intel DPDK)'], fontsize=32)
+plt.xticks(np.arange(len(means)), ['OAI', 'PhantomNet\n(OpenEPC)', 'CloudRAM', 'Our Stateful\n(Intel DPDK)', 'Our Stateless\n(Intel DPDK)'], fontsize=18)
 plt.ylabel('Throughput (PPS)')
 ax1.grid(linestyle='--')
-
+plt.savefig("./throughput-fig12.pdf", bbox_inches='tight')
 plt.show()
