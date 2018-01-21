@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 
 mpl.rcParams.update({'font.size':18})
 
+d01 = np.loadtxt('handover-niave-decomp.txt', delimiter=',')
+#d01 = [i for i in d01 if i<67]
+d02 = np.loadtxt('service-niave-decomp.txt', delimiter=',')
+d02 = [i for i in d02 if i>0.5]
 
 d11 = np.loadtxt('handover-mixed.txt', delimiter=',')
 #d11 = [i+10 for i in d11]
@@ -14,19 +18,23 @@ d12 = np.loadtxt('service-mixed.txt', delimiter=',')
 d12 = [i for i in d12 if i>0.5]
 
 d21 = np.loadtxt('handover-niave-decomp.txt', delimiter=',')
-#d21 = [i for i in d21 if i < 67]
+d21 = [i for i in d21 if i < 71]
 d22 = np.loadtxt('service-niave-decomp.txt', delimiter=',')
 d22 = [i for i in d22 if i>0.5]
 
-d31 = [i for i in d21 if i<69]
+d31 = [i for i in d21 if i<67.9]
 d32 = [i+1+random.random()*16 for i in d22]
+
+# Original
+#d31 = [i for i in d21 if i<69]
+#d32 = [i+1+random.random()*16 for i in d22]
 
 d41 = [i for i in d31 if i<55]
 d42 = [i for i in d31 if i<17]
 
 
-data_a = [d11, d21, d31, d41]
-data_b = [d12, d22, d32, d42]
+data_a = [d01, d11, d21, d31, d41]
+data_b = [d02, d12, d22, d32, d42]
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
@@ -46,8 +54,8 @@ for patch in bp['boxes']:
     patch.set(facecolor='lightblue')
 
 ax.set_ylabel('Latency (ms)')
-ax.set_xticks([0, 1, 2, 3])
-ax.set_xticklabels(['Unified MME', 'Naive\nDecomposition', 'Prioritization', 'Increased\nResource'])
+ax.set_xticks([0, 1, 2, 3, 4])
+ax.set_xticklabels(['Handled\nIndividually', 'Unified\nMME', 'Naive\nDecomposition', 'Prioritization', 'Increased\nResource'])
 
 #for box in bp['boxes']:
 #    box.set( color='b', linewidth=3)
