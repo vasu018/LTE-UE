@@ -50,4 +50,5 @@ plt.xlabel('Control Procedure Instantiation (sec)')
 plt.ylabel('Completion Time (ms)')
 
 plt.grid(linestyle='--')
+plt.savefig("./sl_host_ft.pdf", bbox_inches='tight')
 plt.show()
