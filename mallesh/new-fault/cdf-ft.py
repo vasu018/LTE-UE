@@ -53,7 +53,8 @@ with open("./sf_failure_data.txt", "r") as ins:
         x = words[0]
         y = words[1]
         sf.append(float(y))
-
+        print x, y
+        
 with open("./sl_host_failure_data.txt", "r") as ins:
     for line in ins:
         line = line.strip()

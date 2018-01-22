@@ -1,11 +1,16 @@
 #!/usr/bin/perl -w
 
 my $modbucket = 5;
-my $sparse0 = 2; # should be greater than or equals to 1
-my $sparse1 = 2;
-my $sparse2 = 3;
-my $sparse3 = 4;
-my $sparse4 = 5;
+#my $sparse0 = 2; # should be greater than or equals to 1
+#my $sparse1 = 2;
+#my $sparse2 = 3;
+#my $sparse3 = 4;
+#my $sparse4 = 5;
+my $sparse0 = 1; # should be greater than or equals to 1
+my $sparse1 = 1;
+my $sparse2 = 2;
+my $sparse3 = 3;
+my $sparse4 = 3;
 
 my $val5 = 4999;
 my $val4 = 3999;
