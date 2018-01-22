@@ -12,23 +12,29 @@ setup_text_plots(fontsize=8, usetex=True)
 
 #------------------------------------------------------------
 # Define the distribution parameters to be plotted
-mu_values = [5, 15]
+mu_values = [50, 50]
 linestyles = ['-', ':']
 
 #fig, ax = plt.subplots(figsize=(5, 3.75))
 
+c = 1
 for mu, ls in zip(mu_values, linestyles):
     # create a poisson distribution
     # we could generate a random sample from this distribution using, e.g.
     #   rand = dist.rvs(1000)
     dist = poisson(mu)
-    x = np.arange(-1, 200)
+    x = np.arange(1, 100)
 
-    plt.plot(x, dist.pmf(x), linestyle=ls, color='black',
-             label=r'$\mu=%i$' % mu)#), drawstyle='steps')
+    if c != 0:
+        plt.plot(x, dist.pmf(x), linestyle=ls, color='black',
+             label=r'$\mu=%i$' % mu, drawstyle='steps')
+        c  = 0
+    else:
+        plt.plot(x, dist.pmf(x), linestyle=ls, color='blue',
+                label=r'$\mu=%i$' % mu)#, drawstyle='steps')
 
-plt.xlim(-0.5, 30)
-plt.ylim(0, 0.4)
+#plt.xlim(-0.5, 30)
+#plt.ylim(0, 0.4)
 
 plt.xlabel('$x$')
 plt.ylabel(r'$p(x|\mu)$')

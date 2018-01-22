@@ -52,7 +52,8 @@ with open("./sf_failure_data.txt", "r") as ins:
         words = line.split(",")
         x = words[0]
         y = words[1]
-        sf.append(float(y))
+        if x > 77 or x < 90:
+            sf.append(float(y))
 
 with open("./sl_host_failure_data.txt", "r") as ins:
     for line in ins:
@@ -60,7 +61,8 @@ with open("./sl_host_failure_data.txt", "r") as ins:
         words = line.split(",")
         x = words[0]
         y = words[1]
-        sl1.append(float(y))
+        if x > 77 or x < 90:
+            sl1.append(float(y))
 
 with open("./sl_nf_failure_data_modified.txt", "r") as ins:
     for line in ins:
@@ -68,10 +70,10 @@ with open("./sl_nf_failure_data_modified.txt", "r") as ins:
         words = line.split(",")
         x = words[0]
         y = words[1]
-        sl2.append(float(y))
+        if x > 77 or x < 90:
+            sl2.append(float(y))
 
 
-#sl2 = readXL('fault_tolerance stateless.xlsx', 3)
 #sf = sf[int(len(sf)/1.2):]
 #sl1 = sl1[int(len(sl1)/1.2):]
 #sl2 = sl2[int(len(sl2)/1.2):]
