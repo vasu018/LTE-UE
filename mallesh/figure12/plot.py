@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.rcParams.update({'font.size':18})
+matplotlib.rcParams.update({'font.size':36})
 
 means = [3635, 250, 2600000, 4301755, 3780387]
 
@@ -30,7 +30,7 @@ def autolabel(rects):
 
 #autolabel(rects1)
 
-plt.xticks(np.arange(len(means)), ['OAI', 'PhantomNet\n(OpenEPC)', 'CloudRAM', 'Our Stateful\n(Intel DPDK)', 'Our Stateless\n(Intel DPDK)'], fontsize=18)
+plt.xticks(np.arange(len(means)), ['OAI', 'PhantomNet\n(OpenEPC)', 'CloudRAM', 'Stateful\n(Intel DPDK)', 'Stateless\n(Intel DPDK)'], fontsize=18)
 plt.ylabel('Throughput (PPS)')
 ax1.grid(linestyle='--')
 plt.savefig("./throughput-fig12.pdf", bbox_inches='tight')
