@@ -3,17 +3,20 @@ import matplotlib
 import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-matplotlib.rcParams.update({'font.size':18})
+matplotlib.rcParams.update({'font.size':36})
 
-means = [21.25, 20.75, 2.35, 0.75]
+means = [19.12, 18.75, 2.35, 0.75]
+#means = [21.25, 20.75, 2.35, 0.75]
 
 ind = np.arange(4)  # the x locations for the groups
+#ind = np.arange(3)  # the x locations for the groups
 width = 0.3
 fig, ax1 = plt.subplots()
 fig.tight_layout()
 fig.subplots_adjust(left=0.1, bottom=0.2, right=0.99)
 
 colors = ['lightgreen', 'lightgreen', 'lightblue', 'lightblue']
+#colors = ['lightgreen', 'lightblue', 'lightblue']
 rects1 = ax1.bar(ind, means, width, edgecolor='k', linewidth=6, color=colors)
 def autolabel(rects):
     """
@@ -31,6 +34,7 @@ def autolabel(rects):
 #autolabel(rects1)
 
 plt.xticks(np.arange(len(means)), ['Host\nFailure', 'Application\nFailure', 'Host\nFailure', 'Application\nFailure'])
+#plt.xticks(np.arange(len(means)), ['Stateful Host/Application\nFailure FT', 'Stateless Host\nFailure FT', 'Stateless Application\nFailure FT'])
 plt.ylabel('Dropped Connections (%)')
 ax1.grid(linestyle='--')
 b_patch = mpatches.Patch(color='lightblue', label='Stateless')
