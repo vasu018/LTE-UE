@@ -12,7 +12,7 @@ def readXL(f, col):
     return x
 
 data = {}
-for i in range(1, 15):
+for i in range(1, 19):
     d = readXL('overload-protection.xlsx', i)
     data[i] = d
 

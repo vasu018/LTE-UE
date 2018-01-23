@@ -22,13 +22,13 @@ def readXL(f, col):
 def cdf(data, Colour, Label):
 	global f
 	data_size=len(data)
-	
 	# Set bins edges
 	data_set=sorted(set(data))
 	bins=np.append(data_set, data_set[-1]+1)
 	
 	# Use the histogram function to bin the data
 	counts, bin_edges = np.histogram(data, bins=bins, density=False)
+	#counts, bin_edges = np.histogram(data, density=False)
 	
 	counts=counts.astype(float)/data_size
 	
@@ -52,8 +52,10 @@ with open("./sf_failure_data.txt", "r") as ins:
         words = line.split(",")
         x = words[0]
         y = words[1]
-        if x > 77 or x < 90:
+        if x > 77 and x < 90:
             sf.append(float(y))
+            #print x, y
+            #break 
 
 with open("./sl_host_failure_data.txt", "r") as ins:
     for line in ins:
@@ -61,7 +63,7 @@ with open("./sl_host_failure_data.txt", "r") as ins:
         words = line.split(",")
         x = words[0]
         y = words[1]
-        if x > 77 or x < 90:
+        if x > 77 and x < 90:
             sl1.append(float(y))
 
 with open("./sl_nf_failure_data_modified.txt", "r") as ins:
@@ -70,9 +72,11 @@ with open("./sl_nf_failure_data_modified.txt", "r") as ins:
         words = line.split(",")
         x = words[0]
         y = words[1]
-        if x > 77 or x < 90:
+        if x > 77 and x < 90:
             sl2.append(float(y))
 
+
+print sf
 
 #sf = sf[int(len(sf)/1.2):]
 #sl1 = sl1[int(len(sl1)/1.2):]

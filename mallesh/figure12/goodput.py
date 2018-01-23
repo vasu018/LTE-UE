@@ -3,7 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 matplotlib.rcParams.update({'font.size':36})
-
+matplotlib.rcParams['figure.figsize'] = 14, 10
 tr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 rc = [0, 1, 2, 3, 4, 4.76, 5.3, 5.35, 5.42, 5.42, 5.42]
