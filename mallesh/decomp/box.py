@@ -1,14 +1,14 @@
 import json
+import matplotlib
 import os
 import random
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
-import matplotlib
-#import matplotlib.pyplot as plt
 
 mpl.rcParams.update({'font.size':36})
 matplotlib.rcParams['figure.figsize'] = 14, 10
+
 
 #handover_1 = np.loadtxt('handover-mixed.txt', delimiter=',')
 #handover_2 = np.loadtxt('handover-niave-decomp.txt', delimiter=',')
@@ -242,6 +242,6 @@ ax.grid(which='major', linestyle='--', linewidth='0.5')
 plt.grid(linestyle='--')
 plt.legend()
 plt.ylim([-1, 100])
-plt.savefig("./decomposition-f.pdf", bbox_inches='tight')
-#plt.savefig("./decomposition-f.pdf")
+#plt.savefig("./decomposition-f.pdf", bbox_inches='tight')
+plt.savefig("./decomposition-f.pdf")
 plt.show()
