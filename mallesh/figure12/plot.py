@@ -1,13 +1,15 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams['figure.figsize'] = 14, 10
 
 means = [3635, 250, 2600000, 4301755, 3780387]
 
 ind = np.arange(5)  # the x locations for the groups
-width = 0.25
+width = 0.3
 fig, ax1 = plt.subplots()
 fig.tight_layout()
 fig.subplots_adjust(left=0.1, bottom=0.3, right=0.95)
@@ -30,8 +32,13 @@ def autolabel(rects):
 
 #autolabel(rects1)
 
-plt.xticks(np.arange(len(means)), ['OAI', 'PhantomNet\n(OpenEPC)', 'CloudRAM', 'Stateful\n(Intel DPDK)', 'Stateless\n(Intel DPDK)'], fontsize=18)
+plt.xticks(np.arange(len(means)), ['OAI', 'PhantomNet\n(OpenEPC)', 'RAMCloud', 'Stateful\n(Intel DPDK)', 'Stateless\n(Intel DPDK)'], fontsize=18)
 plt.ylabel('Throughput (PPS)')
+#b_patch = mpatches.Patch(color='lightblue', label='Stateless')
+#b_patch = mpatches.Patch(color='lightblue', label='Stateless')
+#g_patch = mpatches.Patch(color='lightgreen', label='stateful')
+#plt.legend(handles=[b_patch, g_patch])
+
 ax1.grid(linestyle='--')
 plt.savefig("./throughput-fig12.pdf", bbox_inches='tight')
 plt.show()

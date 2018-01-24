@@ -2,7 +2,8 @@ import xlrd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams.update({'font.size':18})
+matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams['figure.figsize'] = 14, 10
 
 def readXL(f, col):
     x = []
@@ -32,8 +33,9 @@ with open("./sf_failure_data.txt", "r") as ins:
         words = line.split(",")  
         x = words[0]
         y = words[1]
-        data1.append(float(x))
-        data2.append(float(y))
+        if (x > 70):
+            data1.append(float(x))
+            data2.append(float(y))
 
 
 data3 = []
@@ -44,8 +46,9 @@ with open("./attach_flood_manipulated.txt", "r") as ins:
         words = line.split(",")  
         x = words[0]
         y = words[1]
-        data3.append(float(x))
-        data4.append(float(y))
+        if (x > 60):
+            data3.append(float(x))
+            data4.append(float(y))
 
 
 ax = plt.gca()
@@ -54,9 +57,10 @@ plt.scatter(data3, data4, marker='o', facecolors='none', s=16, color='r', label=
 plt.scatter(data1, data2, marker='d', s=16, color='g', label='Host Failure Scenario')
 
 ax.set_yscale('symlog')
-ax.set_yscale('symlog')
+#ax.set_yscale('symlog')
 ax.set_ylim([0.1, 50000])
-ax.set_xlim([0, 100])
+#ax.set_xlim([0, 100])
+ax.set_xlim([60, 100])
 
 plt.legend(loc='upper left', ncol=3, fontsize=28)
 plt.xlabel('Control Procedure Instantiation (sec)')
