@@ -4,7 +4,6 @@ my $serial = 0;
 my $data1 = 0;
 my $data2 = 0;
 open (OUTPUTFILE1, "> ./scale_data.txt");
-open (OUTPUTFILE2, "> ./nf_scale_data.txt");
 my $i =0;
 my $totalrange = 300;
 for ($i =0; $i <300; $i++) {
@@ -30,3 +29,4 @@ for ($i =0; $i <300; $i++) {
 }
 close(OUTPUTFILE1);
 close(OUTPUTFILE2);
+
