@@ -24,7 +24,10 @@ for i in data:
     c -= 1
 
 plt.step(range(100), d, color='r')
-plt.scatter(range(100), data)
+#plt.scatter(range(100), data)
+
+plt.xlabel("Time (Seconds)")
+plt.ylabel("Number of Control Procedures (K)")
 
 plt.ylim([0, 500])
 plt.show()
