@@ -45,6 +45,7 @@ with open("./nf_scale_data.txt", "r") as ins:
 
 fig, ax1 = plt.subplots()
 ax2 = ax1.twinx()
+ax1.set_xlim([0,399])
 ax1.plot(data1, data2, 'r--')
 #ax2.plot(data3, data4, 'b--')
 #ax2.plot(data3, data5, 'r--')
@@ -58,8 +59,8 @@ plt.plot(data3, data4, linewidth=3, linestyle='--', color='b', label='NF Scaling
 #plt.ylim([0, 13000])
 #plt.ylim([0, 130])
 plt.xlim([0, 350])
-ax1.set_ylim([0,13000])
-ax2.set_ylim([0,13])
+ax1.set_ylim([0,15000])
+ax2.set_ylim([0,20])
 
 #plt.grid(linestyle='--')
 plt.savefig("./scale-nf.pdf", bbox_inches='tight')

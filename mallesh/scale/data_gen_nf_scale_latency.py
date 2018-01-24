@@ -1,8 +1,16 @@
 #!/usr/bin/python
+import random
+
 # NF Scaling Plot.
+
 nfcount = 1
 hostcount = 1
+latency = 10
+lowlatency = 5
+highlatency = 50
+
 f = open('./nf_scale_data.txt', 'w')
+f_latency = open('./latency_data.txt', 'w')
 
 with open("./scale_data.txt", "r") as ins:
     for line in ins:
@@ -63,7 +71,10 @@ with open("./scale_data.txt", "r") as ins:
             nfcount = nfcount - 1
         elif (x == 373):
             nfcount = nfcount - 3
+        latency = random.randint(lowlatency,highlatency)
         f.write(str(x) + "," + str(nfcount) + "," + str(hostcount) + "\n")
+        f_latency.write(str(x) + "," + str(nfcount) + "," + str(hostcount) + "," + str(latency) + "\n")
         print x, y, nfcount, hostcount    
 
 f.close()
+f_latency.close()
