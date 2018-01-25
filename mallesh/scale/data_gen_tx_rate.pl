@@ -23,7 +23,20 @@ for ($i =0; $i < $idlerange; $i++) {
     else {
         if ($i >= $totalrange/2) {
             if ($i % $seconds_bucket eq 0) {
-                $data2 = $data2 - $step_size;
+                #$data2 = $data2 - $step_size;
+                $data2 = $data2 - $step_size/3;
+                if ($data2 < 0 ) {
+                    $data2 = 0;
+                }
+            }
+            elsif ($i % $seconds_bucket eq 1) {
+                $data2 = $data2 - $step_size/3;
+                if ($data2 < 0 ) {
+                    $data2 = 0;
+                }
+            }
+            elsif ($i % $seconds_bucket eq 2) {
+                $data2 = $data2 - $step_size/3;
                 if ($data2 < 0 ) {
                     $data2 = 0;
                 }
@@ -32,7 +45,20 @@ for ($i =0; $i < $idlerange; $i++) {
         else {
             if ($i % $seconds_bucket eq 0) {
                 #$data1 = $data1 + $step_size;
-                $data2 = $data2 + $step_size + rand(2);
+                #$data2 = $data2 + $step_size + rand(2);
+                $data2 = $data2 + $step_size/3 + rand(2);
+            }
+            elsif ($i % $seconds_bucket eq 1) {
+                $data2 = $data2 + $step_size/3 + rand(2);
+                if ($data2 < 0 ) {
+                    $data2 = 0;
+                }
+            }
+            elsif ($i % $seconds_bucket eq 2) {
+                $data2 = $data2 + $step_size/3 + rand(2);
+                if ($data2 < 0 ) {
+                    $data2 = 0;
+                }
             }
         }
         if ($i > $totalrange) {

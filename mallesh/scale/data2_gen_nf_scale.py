@@ -12,9 +12,6 @@ highlatency = 50
 # Generate Scaling Data
 f = open('./nf_scale_data.txt', 'w')
 
-# Generate Latency Data.
-f_latency = open('./latency_data.txt', 'w')
-
 with open("./scale_data.txt", "r") as ins:
     for line in ins:
         line = line.strip()
@@ -80,8 +77,6 @@ with open("./scale_data.txt", "r") as ins:
         
         latency = random.randint(lowlatency,highlatency)
         f.write(str(x) + "," + str(nfcount) + "," + str(hostcount) + "\n")
-        f_latency.write(str(x) + "," + str(y) + "," + str(nfcount) + "," + str(hostcount) + "," + str(latency) + "\n")
         #print x, y, nfcount, hostcount, latency   
 
 f.close()
-f_latency.close()

@@ -68,6 +68,7 @@ plt.plot(range(4, 14), [i/1000 for i in flood], linewidth=5, marker='o', markers
 plt.xlabel('Control Procedure Instantiation (sec)')
 plt.ylabel('Completion Time (sec)')
 plt.xlim([0, 20])
+#plt.ylim([0, 5000])
 plt.grid(linestyle='--')
 plt.legend()
 plt.savefig("./bins-line-sf.pdf", bbox_inches='tight')
