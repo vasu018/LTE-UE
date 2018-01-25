@@ -51,25 +51,27 @@ with open("./scale_data.txt", "r") as ins:
         #elif (y == 11200):
         elif (x == 135):
             nfcount = nfcount +1
-        elif (x == 151):
+        elif (x == 161):
             nfcount = nfcount - 1
         elif (x == 176):
             nfcount = nfcount - 1
-        elif (x == 193):
+        elif (x == 191):
             nfcount = nfcount - 1
-        elif (x == 211):
+        elif (x == 206):
             nfcount = nfcount - 1
-        elif (x == 233):
+        elif (x == 223):
             nfcount = nfcount - 1
-        elif (x == 257):
+        elif (x == 242):
+            nfcount = nfcount - 1
+        elif (x == 258):
             nfcount = nfcount - 1
         elif (x == 278):
             nfcount = nfcount - 1
-        elif (x == 298):
+        elif (x == 293):
             nfcount = nfcount - 1
-        elif (x == 333):
+        elif (x == 311):
             nfcount = nfcount - 1
-        elif (x == 373):
+        elif (x == 323):
             nfcount = nfcount - 3
         latency = random.randint(lowlatency,highlatency)
         f.write(str(x) + "," + str(nfcount) + "," + str(hostcount) + "\n")
