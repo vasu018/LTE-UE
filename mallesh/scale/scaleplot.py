@@ -5,6 +5,7 @@ matplotlib.rcParams.update({'font.size':36})
 import scipy.stats as stats
 import math
 import matplotlib.mlab as mlab
+matplotlib.rcParams['figure.figsize'] = 14, 10
 
 #from mpl_toolkits.axes_grid1 import host_subplot
 #import mpl_toolkits.axisartist as AA
@@ -45,9 +46,6 @@ with open("./nf_scale_data.txt", "r") as ins:
         data3.append(float(x))
         data4.append(float(y))
         data5.append(float(z))
-#plt.plot(data1, data2, linewidth=3, linestyle='--', color='r', label='Traffic Generation')
-#plt.plot(data3, data4, linewidth=3, linestyle='--', color='b', label='NF Scaling')
-#plt.ylim([0, 13000])
 
 fig, ax1 = plt.subplots()
 ax2 = ax1.twinx()
@@ -64,7 +62,7 @@ ax3 = ax1.twinx()
 ax1.set_xlabel('Time (sec)')
 ax1.set_ylabel('Traffic Generation (Gbps)', color='b')
 ax2.set_ylabel('NF Scaling \n', color='m')
-ax3.set_ylabel('Host Scaling \n', color='r')
+ax3.set_ylabel('Host Scaling', color='r')
 
 #plt.xlim([0, 400])
 ax1.set_xlim([0,399])
@@ -73,8 +71,8 @@ ax2.set_ylim([0,14])
 ax3.set_ylim([0,14])
 
 ax1.plot(data1, data2, linewidth=3, linestyle='--', color='b', label='Traffic Generation (Gbps)')
-ax2.plot(data3, data4, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
-ax3.plot(data3, data5, linewidth=3, linestyle='--', color='r', label='Host Scaling (#)')
+ax2.plot(data3, data4, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)\n')
+ax3.plot(data3, data5, linewidth=3, linestyle='--', color='r', label='Host Scaling (#)\n')
 
 #plt.plot(data1, data2, linewidth=3, linestyle='--', color='r', label='Traffic Generation')
 #plt.plot(data1, data2, linewidth=3, linestyle='--', color='b', label='Traffic Rate (Gbps)')
