@@ -26,11 +26,11 @@ with open("./sf_failure_data.txt", "r") as ins:
         words = line.split(",")  
         x = words[0]
         y = words[1]
-        if float(x) > 75 and float(x) < 95:
+        if float(x) > 60 and float(x) < 100:
             data1.append(float(x))
             data2.append(float(y))
 
-c = 75
+c = 60
 t = []
 for i, j in zip(data1, data2):
     t.append(j)
@@ -62,13 +62,13 @@ for i, j in zip(data3, data4):
 
 ax = plt.gca()
 
-plt.plot(range(20), [i/1000 for i in data], linewidth=5, marker='o', markersize=18, color='maroon', label='Service Requests')
-plt.plot(range(4, 14), [i/1000 for i in flood], linewidth=5, marker='o', markersize=18, color='green', label='Re-attach Flood')
+plt.plot(range(40), [i/1000 for i in data], linewidth=5, marker='o', markersize=18, color='green', label='Host Failure')
+plt.plot(range(18, 28), [i/1000 for i in flood], linewidth=5, marker='*', markersize=18, color='red', label='Re-attach Flood')
 
-plt.xlabel('Control Procedure Instantiation (sec)')
+plt.xlabel('Time (sec)')
 plt.ylabel('Completion Time (sec)')
-plt.xlim([0, 20])
+plt.xlim([0, 40])
 plt.grid(linestyle='--')
 plt.legend()
-plt.savefig("./bins-line-sf.pdf", bbox_inches='tight')
+plt.savefig("./sf-nf-failure.pdf", bbox_inches='tight')
 plt.show()

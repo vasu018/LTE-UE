@@ -5,9 +5,10 @@ import random
 import numpy as np
 import matplotlib as mpl
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 mpl.rcParams.update({'font.size':36})
-matplotlib.rcParams['figure.figsize'] = 14, 10
+matplotlib.rcParams['figure.figsize'] = 20, 10
 
 
 #handover_1 = np.loadtxt('handover-mixed.txt', delimiter=',')
@@ -153,7 +154,6 @@ with open("./handoverDecomp_manipulated.txt", "r") as ins:
 
 count =0
 d42 = []
-#with open("./serviceDecomp_manipulated.txt", "r") as ins:
 with open("./serviceDecomp_manipulated.txt", "r") as ins:
     for line in ins:
         line = line.strip()
@@ -166,82 +166,30 @@ with open("./serviceDecomp_manipulated.txt", "r") as ins:
 data_a = [d11, d21, d31, d41]
 data_b = [d12, d22, d32, d42]
 
-#count =0
-#d31 = []
-#x =0
-#with open("./handoverMixed_manipulated.txt", "r") as ins:
-#    for line in ins:
-#        line = line.strip()
-#        words = line.split(",")
-#        x = float(words[0])
-#        if (x > 0.1 and x< 67.9):
-#            d31.append(float(x))
-#
-
-#count =0
-#d32 = []
-##with open("./serviceDecomp_manipulated.txt", "r") as ins:
-#with open("./serviceDecomp_manipulated.txt", "r") as ins:
-#    for line in ins:
-#        line = line.strip()
-#        words = line.split(",")
-#        x = float(words[0])
-#        if x > 0.5:
-#            d32.append(float(x))
-#
-
-#d11 = [i for i in handover_1 if i>0.5]
-#d12 = [i for i in service_1 if i > 0.75]
-
-#d21 = [i+5 for i in handover_1 if i > 2.5]
-#d22 = [i for i in service_2 if i>0.5]
-#d22 = [i+1+random.random()*16 for i in service_2 if i>0.5]
-
-#d31 = [i for i in d21 if 0.1<i<67.9]
-#d32 = [i+1+random.random()*16 for i in d22]
-
-#d11 = [i for i in handover_1 if i>0.5]
-#d12 = [i for i in service_1 if i > 0.75]
-
-#d21 = [i+5 for i in handover_1 if i > 2.5]
-#d22 = [i for i in service_2 if i>0.5]
-#d22 = [i+1+random.random()*16 for i in service_2 if i>0.5]
-
-#d31 = [i for i in d21 if 0.1<i<67.9]
-#d32 = [i+1+random.random()*16 for i in d22]
-
-
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
 fig.tight_layout()
 fig.subplots_adjust(left=0.1, right=0.99)
-#plt.xticks(rotation='90')
 
 bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, patch_artist=True)
 bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, patch_artist=True)
-#bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, boxprops=dict(linewidth=3), patch_artist=True)
-#bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, boxprops=dict(linewidth=3), patch_artist=True)
 
 for patch in bq['boxes']:
-    patch.set(facecolor='lightgreen')
+    patch.set(facecolor='maroon')
 for patch in bp['boxes']:
-    patch.set(facecolor='lightblue')
+    patch.set(facecolor='green')
 
 ax.set_ylabel('Latency (ms)')
 ax.set_xticks([0, 1, 2, 3])
-ax.set_xticklabels(['(a)\nUnified\nMME', '(b)\nNaive\nDecomposition', '(c1)\nPrioritize\n(H over S)', '(c2)\n Prioritize\n(S over H)'])
-#ax.set_xticklabels(['(a)\nHandled\nIndividually', '(b)\nUnified\nMME', '(c)\nNaive\nDecomposition', '(d)\nPrioriti\nzation', '(e)\nIncreased\nResource'])
+ax.set_xticklabels(['Unified\nMME', 'Naive\nDecomposition', 'Prioritize\n(H over S)', 'Prioritize\n(S over H)'])
 
+mar = mpatches.Patch(color='maroon', label='Handover')
+gre = mpatches.Patch(color='green', label='Service')
+plt.legend(handles=[mar, gre])
 
-#ax.minorticks_on()
 ax.grid(which='major', linestyle='--', linewidth='0.5')
-#ax.grid(which='minor', linestyle='--', linewidth='0.5')
-#ax.grid(which='major', linestyle='--', linewidth='0.5')
-#ax.grid(which='minor', linestyle='--', linewidth='0.5')
 plt.grid(linestyle='--')
-plt.legend()
 plt.ylim([-1, 100])
-#plt.savefig("./decomposition-f.pdf", bbox_inches='tight')
 plt.savefig("./decomposition-f.pdf")
 plt.show()

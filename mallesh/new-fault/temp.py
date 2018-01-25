@@ -37,7 +37,7 @@ for i, j in zip(data1, data2):
     if i > c:
         data.append(np.mean(t))
         t = []
-        c += 1
+        c += 0.1
 
 data3 = []
 data4 = []
@@ -58,16 +58,18 @@ for i, j in zip(data3, data4):
     if i > c:
         flood.append(np.mean(t))
         t = []
-        c += 1
+        c += 0.1
+
+print len(data), len(flood)
 
 ax = plt.gca()
 
-plt.plot(range(20), [i/1000 for i in data], linewidth=5, marker='o', markersize=18, color='maroon', label='Service Requests')
-plt.plot(range(4, 14), [i/1000 for i in flood], linewidth=5, marker='o', markersize=18, color='green', label='Re-attach Flood')
+plt.plot(range(200), [i/1000 for i in data], linewidth=5, marker='o', markersize=18, color='maroon', label='Service Requests')
+plt.plot(range(35, 134), [i/1000 for i in flood], linewidth=5, marker='o', markersize=18, color='green', label='Re-attach Flood')
 
 plt.xlabel('Control Procedure Instantiation (sec)')
 plt.ylabel('Completion Time (sec)')
-plt.xlim([0, 20])
+plt.xlim([0, 200])
 plt.grid(linestyle='--')
 plt.legend()
 plt.savefig("./bins-line-sf.pdf", bbox_inches='tight')

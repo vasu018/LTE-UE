@@ -2,7 +2,8 @@ import xlrd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams.update({'font.size':18})
+matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams['figure.figsize'] = 20, 10
 
 def readXL(f, col):
     x = []
@@ -23,7 +24,7 @@ with open("./sf_failure_data.txt", "r") as ins:
         words = line.split(",")  
         x = words[0]
         y = words[1]
-        if float(x) > 0:
+        if float(x) > 75 and float(x) < 100:
             data1.append(float(x))
             data2.append(float(y))
 
@@ -47,13 +48,13 @@ t = []
 for i in data2:
     t.append(i)
     data.append(np.mean(t))
-#plt.plot(data1, data)
-plt.scatter(data1, data)
+plt.plot(data1, [float(i)/1000 for i in data], linewidth=5, marker='+', markersize=15, color='maroon')
+#plt.scatter(data1, data)
 
-plt.legend(loc='upper left', ncol=3, fontsize=28)
+#plt.legend(loc='upper left', ncol=3, fontsize=28)
 plt.xlabel('Control Procedure Instantiation (sec)')
-plt.ylabel('Completion Time (ms)')
-
+plt.ylabel('Completion Time (sec)')
+plt.ylim([0, 2])
 plt.grid(linestyle='--')
-#plt.savefig("./line-sf.pdf", bbox_inches='tight')
+plt.savefig("./mv-line-sf.pdf", bbox_inches='tight')
 plt.show()
