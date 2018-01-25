@@ -77,11 +77,8 @@ with open("./scale_data.txt", "r") as ins:
         
         latency = random.randint(lowlatency,highlatency)
         f.write(str(x) + "," + str(nfcount) + "," + str(hostcount) + "\n")
-        f_latency.write(str(x) + "," + str(nfcount) + "," + str(hostcount) + "," + str(latency) + "\n")
-        print x, y, nfcount, hostcount    
-
-
-
+        f_latency.write(str(x) + "," + str(y) + "," + str(nfcount) + "," + str(hostcount) + "," + str(latency) + "\n")
+        #print x, y, nfcount, hostcount, latency   
 
 f.close()
 f_latency.close()
