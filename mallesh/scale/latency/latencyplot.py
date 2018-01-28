@@ -64,7 +64,8 @@ ax1.set_ylim([0,15])
 #ax2.set_ylim([0,13])
 ax3.set_ylim([0,500])
 
-ax1.plot(data3, data5, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
+#ax1.plot(data3, data5, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
+ax1.plot(data1, data2, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
 #ax2.plot(data3, data6, linewidth=3, linestyle='--', color='r', label='Host Scaling (#)')
 ax3.plot(data3, data7, linewidth=3, linestyle='--', color='b', label='Control Procedure Latency (msec)')
 
