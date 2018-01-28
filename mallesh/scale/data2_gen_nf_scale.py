@@ -68,9 +68,9 @@ with open("./scale_data.txt", "r") as ins:
         elif (x == 293):
             hostcount = hostcount - 1
         elif (x == 297):
+            nfcount = nfcount - 1
+        elif (x == 311):
             nfcount = 0 
-        #elif (x == 311):
-        #    nfcount = nfcount - 1
         #elif (x == 323):
         #    nfcount = 0        
         elif (x == 383):
