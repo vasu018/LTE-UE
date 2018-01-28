@@ -3,9 +3,13 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':36})
-matplotlib.rcParams['figure.figsize'] = 20, 10
+matplotlib.rcParams['figure.figsize'] = 14, 10
 
 f = plt.figure()
+ax = f.add_subplot(111)
+
+f.tight_layout()
+f.subplots_adjust(left=0.1, right=0.99)
 
 def cdf(data, Colour, Label, ls):
 	global f
@@ -52,14 +56,12 @@ for i in p:
         i = i.strip().split(',')
         service = [float(j) for j in i]
 
-#mk = ['o', 'x', '*', '+']
-mk = ['--', ':', '-', '-.']
+mk = ['-', '--', '-.', ':']
 
 cdf(attach_alone, 'orange', 'Attach Alone', mk[0])
 cdf(service_alone, 'navy', 'Service Alone', mk[1])
 cdf(attach, 'm', 'Attach', mk[2])
 cdf(service, 'k', 'Service', mk[3])
-plt.savefig('Motivation_for_decomposition_1us_modified.pdf')
-
 plt.grid(linestyle='--')
+plt.savefig('Motivation_for_decomposition_1us_modified.pdf')
 plt.show()
