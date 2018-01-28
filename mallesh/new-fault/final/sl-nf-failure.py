@@ -32,7 +32,7 @@ plt.plot(range(40), [i/1000 for i in data], linewidth=5, marker='o', markersize=
 
 plt.xlabel('Time (sec)')
 plt.ylabel('Completion Time (sec)')
-#plt.ylim([0, 5])
+plt.ylim([0, 5.5])
 
 plt.grid(linestyle='--')
 plt.savefig("./sl-nf-failure.pdf", bbox_inches='tight')

@@ -3,6 +3,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams['figure.figsize'] = 20, 10
 
 def readXL(f, col):
     x = []
@@ -81,5 +82,5 @@ plt.xlabel('Time (sec)')
 plt.ylabel('CPU Utilization (%)')
 
 plt.grid(linestyle='--')
-plt.savefig("./line-sf.pdf", bbox_inches='tight')
+plt.savefig("./dest-cpu.pdf", bbox_inches='tight')
 plt.show()

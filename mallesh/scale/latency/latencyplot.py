@@ -6,6 +6,7 @@ import scipy.stats as stats
 import math
 import matplotlib.mlab as mlab
 
+#data1 = [10.234, 18.448, 22.29, 28.204, 31.57, 39.45, 42.95]
 
 data1 = []
 data2 = []
@@ -15,12 +16,12 @@ data5 = []
 data6 = []
 data7 = []
 count = 0
-with open("./scale_data.txt", "r") as ins:
+with open("./../scale_data.txt", "r") as ins:
     for line in ins:
         count = count +1
 
 # Traffic Rate.
-with open("./scale_data.txt", "r") as ins:
+with open("./../nf_scale_data.txt", "r") as ins:
     for line in ins:
         line = line.strip()
         words = line.split(",")

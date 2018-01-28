@@ -68,7 +68,10 @@ plt.plot(range(18, 28), [i/1000 for i in flood], linewidth=5, marker='*', marker
 plt.xlabel('Time (sec)')
 plt.ylabel('Completion Time (sec)')
 plt.xlim([0, 40])
+plt.ylim([0,5.5])
 plt.grid(linestyle='--')
+
+
 plt.legend()
 plt.savefig("./sf-nf-failure.pdf", bbox_inches='tight')
 plt.show()
