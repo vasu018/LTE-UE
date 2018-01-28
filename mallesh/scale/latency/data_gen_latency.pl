@@ -4,11 +4,6 @@ my $serial = 0;
 my $data1 = 0;
 my $data2 = 0;
 
-open (NFSCALEDATA, "./../nf_scale_data.txt");
-while (<>) {
-}
-close ();
-
 open (OUTPUTFILE1, "> ./latency_data.txt");
 my $i =0;
 my $totalrange = 300;
