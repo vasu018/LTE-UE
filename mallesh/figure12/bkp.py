@@ -17,11 +17,11 @@ sl = [0, 1, 2, 3, 4, 5, 5.92, 6.85, 7.47, 8.34, 8.44]
 oa = [0, 0.6, 1.1, 0.8, 0.9, 0.9, 0, 0, 0, 0, 0]
 op = [0, 0.7, 0.9, 1.2, 0.9, 0, 0, 0, 0, 0, 0]
 
-plt.plot(tr, sl, linestyle='-', linewidth=4, color='red', marker='o', markersize=10, label='Stateless')
-plt.plot(tr, sf, linestyle='-', linewidth=4, color='chartreuse', marker='s', markersize=10, label='Stateful')
-plt.plot(tr, rc, linestyle='-', linewidth=4, color='magenta', marker='D', markersize=10, label='RamCloud')
-plt.plot(tr[:3], oa[:3], linestyle='-', linewidth=4, color='orange', marker='^', markersize=10, label='OAI')
-plt.plot(tr[:3], op[:3], linestyle='-', linewidth=4, color='blue', marker='*', markersize=10, label='OpenEPC')
+plt.plot(tr, sl, linestyle='-', linewidth=4, color='darkblue', marker='o', markersize=14, label='Stateless')
+plt.plot(tr, sf, linestyle='-', linewidth=4, color='chartreuse', marker='s', markersize=14, label='Stateful')
+plt.plot(tr, rc, linestyle='-', linewidth=4, color='magenta', marker='D', markersize=14, label='RamCloud')
+plt.plot(tr[:3], oa[:3], linestyle='-', linewidth=4, color='orange', marker='^', markersize=14, label='OAI')
+plt.plot(tr[:3], op[:3], linestyle='-', linewidth=4, color='navy', marker='*', markersize=14, label='OpenEPC')
 
 plt.xlabel('Transmission Rate (Gbps)')
 plt.ylabel('Goodput (Gbps)')
@@ -29,5 +29,5 @@ plt.ylabel('Goodput (Gbps)')
 plt.legend(loc='upper left')
 plt.ylim([0, 10])
 plt.grid(linestyle='--')
-plt.savefig("./goodput-fig12.pdf", bbox_inches='tight')
+plt.savefig("./bgoodput-fig12.pdf", bbox_inches='tight')
 plt.show()
