@@ -38,7 +38,7 @@ with open("./scale_data.txt", "r") as ins:
         #if (y == 6700):
         elif (x == 87):
             hostcount = hostcount +1
-            nfcount = nfcount +1
+            nfcount = nfcount +2
         #if (y == 7900):
         elif (x == 102):
             nfcount = nfcount +1
@@ -49,7 +49,9 @@ with open("./scale_data.txt", "r") as ins:
         elif (x == 129):
             nfcount = nfcount +1
         #elif (y == 11200):
-        elif (x == 152):
+        #elif (x == 152):
+        #    nfcount = nfcount -1
+        elif (x == 161):
             nfcount = nfcount -1
         elif (x == 176):
             nfcount = nfcount - 1
@@ -70,9 +72,9 @@ with open("./scale_data.txt", "r") as ins:
         elif (x == 297):
             nfcount = nfcount - 1
         elif (x == 311):
-            nfcount = 0 
-        #elif (x == 323):
-        #    nfcount = 0        
+            nfcount = 2 
+        elif (x == 323):
+            nfcount = 0        
         elif (x == 383):
             hostcount = hostcount - 1
         
