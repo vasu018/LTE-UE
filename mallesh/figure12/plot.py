@@ -6,7 +6,7 @@ import matplotlib.patches as mpatches
 matplotlib.rcParams.update({'font.size':36})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
-means = [3635, 250, 2600000, 4301755, 4180387]
+means = [3635, 250, 2600000, 4301755, 4120387]
 
 ind = np.arange(5)  # the x locations for the groups
 width = 0.3

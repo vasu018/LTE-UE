@@ -3,7 +3,7 @@ import random
 
 # NF Scaling Plot.
 
-nfcount = 1
+nfcount = 2 
 hostcount = 1
 latency = 10
 lowlatency = 5
@@ -67,11 +67,12 @@ with open("./scale_data.txt", "r") as ins:
             nfcount = nfcount - 1
         elif (x == 293):
             hostcount = hostcount - 1
-            nfcount = nfcount - 1
-        elif (x == 311):
-            nfcount = nfcount - 1
-        elif (x == 323):
-            nfcount = 0        
+        elif (x == 297):
+            nfcount = 0 
+        #elif (x == 311):
+        #    nfcount = nfcount - 1
+        #elif (x == 323):
+        #    nfcount = 0        
         elif (x == 383):
             hostcount = hostcount - 1
         
