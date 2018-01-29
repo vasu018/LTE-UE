@@ -3,6 +3,8 @@ import random
 
 # NF Scaling Plot.
 
+data1 = [10.234, 18.448, 22.29, 28.204, 31.57, 39.45, 42.95]
+
 nfcount = 2 
 hostcount = 1
 latency = 10
@@ -11,6 +13,9 @@ highlatency = 50
 
 # Generate Scaling Data
 f = open('./nf_scale_data.txt', 'w')
+
+# Generate Scaling Data
+f = open('./latency_data.txt', 'w')
 
 with open("./scale_data.txt", "r") as ins:
     for line in ins:
