@@ -4,4 +4,4 @@
 `python data2_gen_nf_scale_latency.py`;
 `python scaleplot.py`;
 #`python latency/data2_gen_nf_latency.py`;
-#`python latency/latencyplot.py`;
+`python latencyplot.py`;
