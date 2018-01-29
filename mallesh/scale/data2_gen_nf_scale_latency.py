@@ -14,8 +14,8 @@ highlatency = 50
 # Generate Scaling Data
 f = open('./nf_scale_data.txt', 'w')
 
-# Generate Scaling Data
-f = open('./latency_data.txt', 'w')
+# Generate latency Data
+flatency = open('./latency_data.txt', 'w')
 
 with open("./scale_data.txt", "r") as ins:
     for line in ins:
