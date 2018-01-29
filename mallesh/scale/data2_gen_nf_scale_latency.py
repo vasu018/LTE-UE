@@ -8,6 +8,7 @@ data1 = [10.234, 18.448, 22.29, 28.204, 31.57, 39.45, 42.95]
 nfcount = 2 
 hostcount = 1
 latency = 5 
+latencysf = 5 
 lowlatency = 5
 highlatency = 50
 
@@ -29,6 +30,7 @@ with open("./scale_data.txt", "r") as ins:
         if (x == 11):
             #latency = dataLatency[count-1] - 1*random.random()   
             latency = 4.87 + 1*random.random()   
+            latencysf = 4.87 + 1*random.random()   
         if (x == 21):
             nfcount = nfcount +1
             latency = 5 + 1*random.random()   
@@ -130,8 +132,9 @@ with open("./scale_data.txt", "r") as ins:
             #print random.random()
             #latency = random.randint(lowlatency,highlatency)
             print latency
+            print latencysf
         f.write(str(x) + "," + str(nfcount) + "," + str(hostcount) + "\n")
-        flatency.write(str(x) + "," + str(y) + "," + str(nfcount) + "," + str(hostcount) + "," + str(latency) + "\n")
+        flatency.write(str(x) + "," + str(y) + "," + str(nfcount) + "," + str(hostcount) + "," + str(latency) + "," + str(latencysf) + "\n")
         dataLatency.append(float(latency))
         #print x, y, nfcount, hostcount, latency   
 

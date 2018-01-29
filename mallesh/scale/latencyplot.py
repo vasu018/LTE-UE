@@ -46,6 +46,7 @@ with open("./latency_data.txt", "r") as ins:
 fig, ax1 = plt.subplots()
 #ax2 = ax1.twinx()
 ax3 = ax1.twinx()
+ax4 = ax1.twinx()
 
 
 fig.tight_layout()
@@ -60,16 +61,18 @@ ax1.set_xlim([0,350])
 ax1.set_xlabel('Time (sec)')
 ax1.set_ylim([0,15])
 #ax2.set_ylim([0,13])
-ax3.set_ylim([0,100])
+#ax3.set_ylim([0,5000])
+ax3.set_ylim([0,40])
 
 #ax1.plot(data3, data5, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
 #ax2.plot(data1, data2, linewidth=3, linestyle='--', color='gold', label='Tx. Rate')
 ax1.plot(data1, data3, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
 ax3.plot(data1, data5, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='r', label='Control Procedure Latency (msec)')
+ax4.plot(data1, data5, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='r', label='Control Procedure Latency (msec)')
 
 #plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=8, color='red', label='Restoration and Attach Flood')
 
-
+#ax3.set_yscale('symlog')
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
 ax1.grid(True, which='both')
