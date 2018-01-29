@@ -45,18 +45,21 @@ fig, ax1 = plt.subplots()
 ax2 = ax1.twinx()
 ax3 = ax1.twinx()
 
+fig.tight_layout()
+fig.subplots_adjust(left=0.1, bottom=0.3, right=0.92)
+
 ax1.set_xlabel('Time (sec)')
 ax1.set_ylabel('Traffic Generation (Gbps)')
-ax2.set_ylabel('Host/NF Scaling \n')
+ax2.set_ylabel('Host / NF Scaling (#)\n')
 
 ax1.set_xlim([0,399])
 ax1.set_ylim([0,14])
-ax2.set_ylim([0,14])
-ax3.set_ylim([0,14])
+ax2.set_ylim([0,18])
+ax3.set_ylim([0,18])
 
-a = ax1.plot(data1, [i/1000 for i in data2], linewidth=3, linestyle='--', color='b', label='Traffic Generation (Gbps)')
-b = ax2.plot(data3, data4, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
-c = ax3.plot(data3, data5, linewidth=3, linestyle='--', color='r', label='Host Scaling (#)')
+a = ax1.plot(data1, [i/1000 for i in data2], linewidth=3, linestyle='--', color='gold', label='Traffic Generation (Gbps)')
+b = ax2.plot(data3, data4, linewidth=3, linestyle='--', color='m', label='NF Scaling')
+c = ax3.plot(data3, data5, linewidth=3, linestyle='--', color='b', label='Host Scaling')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')

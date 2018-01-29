@@ -3,13 +3,13 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':36})
-matplotlib.rcParams['figure.figsize'] = 20, 10
+matplotlib.rcParams['figure.figsize'] = 14, 10
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
-fig.tight_layout()
-fig.subplots_adjust(left=0.1, bottom=0.3, right=0.99)
+#fig.tight_layout()
+#fig.subplots_adjust(left=0.1, bottom=0.3, right=0.99)
 
 def readXL(f, col):
     x = []
@@ -62,4 +62,5 @@ cdf(sl, 'orange', 'Moderate Load')
 cdf(hv, 'navy', 'Overload')
 plt.xscale('symlog')
 plt.grid(linestyle='--')
+plt.savefig("./legacy_overload_condition_modified.pdf", bbox_inches='tight')
 plt.show()
