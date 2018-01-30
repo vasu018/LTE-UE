@@ -22,31 +22,67 @@ with open("./scale_data.txt", "r") as ins:
         count = count +1
 
 
+# NF, Host and Tx Rate.
+#with open("./scale_data.txt", "r") as ins:
+#    for line in ins:
+#        line = line.strip()
+#        words = line.split(",")
+#        x = words[0]
+#        #txrate = words[1]
+#        nfcount = words[1]
+#        #hostcount = words[3]
+#        data1.append(float(x))
+#        data2.append(float(nfcount))
+#        data3.append(float(latency))
+#        data4.append(float(latencysf))
+#        #data2.append(float(txrate))
+#        #data3.append(float(nfcount))
+#        #data4.append(float(hostcount))
+#        #data5.append(float(latency))
+#        #data6.append(float(latencysf))
+#        #print x, nfcount, hostcount
+
+
+
+# LAtency.
 step_count = 0 
-# Traffic Rate.
-with open("./latency_data.txt", "r") as ins:
+with open("./latency_datasf_sl_final.txt", "r") as ins:
     for line in ins:
         line = line.strip()
         words = line.split(",")
         x = words[0]
-        txrate = words[1]
-        nfcount = words[2]
-        hostcount = words[3]
-        latency = words[4]
+        #txrate = words[1]
+        nfcount = words[1]
+        #hostcount = words[3]
+        latency = words[2]
+        latencysf = words[3]
         data1.append(float(x))
-        data2.append(float(txrate))
-        data3.append(float(nfcount))
-        data4.append(float(hostcount))
-        data5.append(float(latency))
-        print x, nfcount, hostcount
+        data2.append(float(nfcount))
+        data3.append(float(latency))
+        data4.append(float(latencysf))
+        #print x, nfcount, hostcount
         if step_count <= 6:
-            print dataLatency[step_count]
+            #print dataLatency[step_count]
             step_count = step_count +1
+
+# LAtency.
+#with open("./latency_datasf_sl_final.txt", "r") as ins:
+#    for line in ins:
+#        line = line.strip()
+#        words = line.split(",")
+#        x = words[0]
+#        latencysf = words[1]
+#        data6.append(float(latencysf))
+#
+
+#print data4
+print data5
 
 fig, ax1 = plt.subplots()
 #ax2 = ax1.twinx()
 ax3 = ax1.twinx()
 ax4 = ax1.twinx()
+ax5 = ax1.twinx()
 
 
 fig.tight_layout()
@@ -55,24 +91,31 @@ fig.subplots_adjust(left=0.1, bottom=0.3, right=0.92)
 ax1.set_xlabel('Time (sec)')
 ax1.set_ylabel('NF Scaling \n', color='k')
 #ax2.set_ylabel('Host Scaling \n', color='r')
-ax3.set_ylabel('Control Procedure Latency (msec)', color='k')
+#ax3.set_ylabel('Control Procedure Latency (msec)', color='k')
+#ax4.set_ylabel('Control Procedure Latency (msec)', color='k')
 
 ax1.set_xlim([0,350])
 ax1.set_xlabel('Time (sec)')
 ax1.set_ylim([0,15])
 #ax2.set_ylim([0,13])
 #ax3.set_ylim([0,5000])
-ax3.set_ylim([0,40])
+ax3.set_ylim([0,1000])
+ax4.set_ylim([0,1000])
+ax3.set_yscale('symlog')
+ax4.set_yscale('symlog')
 
-#ax1.plot(data3, data5, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
+#ax1.plot(data3, data5, linewidth=3, linestyle='-', color='m', label='NF Scaling (#)')
 #ax2.plot(data1, data2, linewidth=3, linestyle='--', color='gold', label='Tx. Rate')
-ax1.plot(data1, data3, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
-ax3.plot(data1, data5, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='r', label='Control Procedure Latency (msec)')
-ax4.plot(data1, data5, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='r', label='Control Procedure Latency (msec)')
+ax1.plot(data1, data2, linewidth=3, linestyle='--', color='m', label='NF Scaling (#)')
+#ax2.plot(data1, data2, linewidth=3, linestyle='--', color='g', label='Host Scaling (#)')
+ax3.plot(data1, data3, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='r', label='Average Latency (msec)')
+ax4.plot(data1, data4, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='blue', label='Average Latency (msec)')
+#ax5.plot(data1, data2, linewidth=3, linestyle='-.', marker='o', markersize=10 , color='gold', label='Control Procedure Latency (msec)')
+
+#print data6
 
 #plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=8, color='red', label='Restoration and Attach Flood')
 
-#ax3.set_yscale('symlog')
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
 ax1.grid(True, which='both')
