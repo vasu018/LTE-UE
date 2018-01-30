@@ -9,6 +9,8 @@ means = [35.65, 33.873, 7.789]
 #means = [25.65, 23.873, 4.789]
 #stds = [4.2, 3.85, 1.109]
 
+
+
 ind = np.arange(3)  # the x locations for the groups
 width = 0.25
 fig, ax1 = plt.subplots()
