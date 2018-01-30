@@ -57,9 +57,9 @@ ax1.set_ylim([0,14])
 ax2.set_ylim([0,18])
 ax3.set_ylim([0,18])
 
-a = ax1.plot(data1, [i/1000 for i in data2], linewidth=3, linestyle='--', color='gold', label='Traffic Generation (Gbps)')
-b = ax2.plot(data3, data4, linewidth=3, linestyle='--', color='m', label='NF Scaling')
-c = ax3.plot(data3, data5, linewidth=3, linestyle='--', color='b', label='Host Scaling')
+a = ax1.plot(data1, [i/1000 for i in data2], linewidth=4, linestyle='-.', color='blue', label='Traffic Generation (Gbps)')
+b = ax2.plot(data3, data4, linewidth=2, linestyle='--', color='m', label='NF Scaling')
+c = ax3.plot(data3, data5, linewidth=2, linestyle='--', color='green', label='Host Scaling')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
