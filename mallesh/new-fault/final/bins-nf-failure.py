@@ -66,10 +66,61 @@ for i, j in zip(data3, data4):
         t = []
         c += 0.1
 
-#ax = plt.gca()
+plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='x', markersize=14, color='g', label='Stateful Host/NF Failure')
+#plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=14, color='magenta', label='Restoration and Attach Flood')
+#plt.scatter(range(200), [i/1000 for i in data], linewidth=1, marker='x', color='g', label='Stateful Host/NF Failure')
+plt.scatter(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', s=100, color='magenta', label='Restoration and Attach Flood')
 
-plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='x', markersize=14, color='green', label='Background Control Procedures')
-plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=14, color='red', label='Restoration and Attach Flood')
+data1 = []
+data2 = []
+with open("./sl_nf_failure_data_modified.txt", "r") as ins:
+    for line in ins:
+        line = line.strip()
+        words = line.split(",")
+        x = words[0]
+        y = words[1]
+        if float(x)>75 and float(x)<95:
+            data1.append(float(x))
+            data2.append(float(y))
+c = 75
+t = []
+data = []
+for i, j in zip(data1, data2):
+    t.append(j)
+    if i > c:
+        data.append(np.mean(t))
+        t = []
+        c += 0.1
+
+ax = plt.gca()
+
+plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='*', markersize=10, color='maroon', label='Stateless NF Failure')
+#plt.scatter(range(200), [i/1000 for i in data], linewidth=1, marker='*', color='gold', label='Stateless NF Failure')
+
+data1 = []
+data2 = []
+with open("./sl_host_failure_data.txt", "r") as ins:
+    for line in ins:
+        line = line.strip()
+        words = line.split(",")
+        x = words[0]
+        y = words[1]
+        if float(x)>75 and float(x)<95:
+            data1.append(float(x))
+            data2.append(float(y))
+
+c = 75
+t = []
+data = []
+for i, j in zip(data1, data2):
+    t.append(j)
+    if i > c:
+        data.append(np.mean(t))
+        t = []
+        c += 0.1
+
+plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='^', markersize=12, color='gold', label='Stateless Host Failure')
+#plt.scatter(range(200), [i/1000 for i in data], linewidth=1, marker='x', color='maroon', label='Stateless Host Failure')
 
 plt.xticks(np.arange(0, 225, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
 
