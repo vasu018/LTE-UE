@@ -191,8 +191,8 @@ ax.set_ylabel('Latency (ms)')
 ax.set_xticks([0, 1, 2, 3])
 ax.set_xticklabels(['Unified\nMME', 'Naive\nDecomposition', 'Prioritize\n(H over S)', 'Prioritize\n(S over H)'])
 
-mar = mpatches.Patch(color='salmon', label='Handover Procedure (H)')
-gre = mpatches.Patch(color='gold', label='Service Procedure (S)')
+mar = mpatches.Patch(color='gold', label='Handover Procedure (H)')
+gre = mpatches.Patch(color='salmon', label='Service Procedure (S)')
 plt.legend(handles=[mar, gre], loc='upper left')
 
 ax.grid(which='major', linestyle='--', linewidth='0.5')

@@ -67,9 +67,9 @@ for i, j in zip(data3, data4):
         c += 0.1
 
 plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='x', markersize=14, color='g', label='Stateful Host/NF Failure')
-#plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=14, color='magenta', label='Restoration and Attach Flood')
+plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=14, color='magenta', label='Restoration and Attach Flood')
 #plt.scatter(range(200), [i/1000 for i in data], linewidth=1, marker='x', color='g', label='Stateful Host/NF Failure')
-plt.scatter(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', s=100, color='magenta', label='Restoration and Attach Flood')
+#plt.scatter(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', s=100, color='magenta', label='Restoration and Attach Flood')
 
 data1 = []
 data2 = []
@@ -95,7 +95,6 @@ for i, j in zip(data1, data2):
 ax = plt.gca()
 
 plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='*', markersize=10, color='maroon', label='Stateless NF Failure')
-#plt.scatter(range(200), [i/1000 for i in data], linewidth=1, marker='*', color='gold', label='Stateless NF Failure')
 
 data1 = []
 data2 = []
@@ -120,7 +119,6 @@ for i, j in zip(data1, data2):
         c += 0.1
 
 plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='^', markersize=12, color='gold', label='Stateless Host Failure')
-#plt.scatter(range(200), [i/1000 for i in data], linewidth=1, marker='x', color='maroon', label='Stateless Host Failure')
 
 plt.xticks(np.arange(0, 225, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
 
@@ -130,5 +128,5 @@ plt.ylabel('Average Completion Time (sec)')
 #plt.ylim([0, 5000])
 plt.grid(linestyle='--')
 plt.legend(ncol=1, fontsize=30)
-plt.savefig("./sl-nf-failure.pdf", bbox_inches='tight')
+plt.savefig("./sf-nf-failure.pdf", bbox_inches='tight')
 plt.show()
