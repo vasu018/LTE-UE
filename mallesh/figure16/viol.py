@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':36})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
-s1 = [4.52, 5.95, 1.7, 1.25]
+s1 = [1.62, 1.95, 1.7, 1.25]
 s2 = [17.25, 19.23, 2.1, 1.25]
 stds1 = [5, 2, 1, 1]
 stds2 = [5, 2, 1, 1]
