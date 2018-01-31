@@ -37,7 +37,7 @@ def cdf(data, Colour, Label):
 	cdf = np.cumsum(counts)
 	
 	# Plot the cdf
-	plt.plot(bin_edges[0:-1], cdf,linestyle='--',linewidth=5, color=Colour, label=Label)
+	plt.plot(bin_edges[0:-1], cdf,linestyle='--',linewidth=8, color=Colour, label=Label)
 	plt.ylim((0,1))
 	plt.ylabel("CDF")
 	plt.xlabel("Latency (ms)")

@@ -57,7 +57,7 @@ data = [2.6163952941176478, 6.14276079999999999, 45.933223399999996, 84.30328700
 
 ax = plt.gca()
 
-plt.plot(range(len(data)), data, marker='+', markersize=10, color='green', label='Src Host (TAU)')
+plt.plot(range(len(data)), data, marker='s', linewidth=5, markersize=16, color='green', label='Src Host (TAU)')
 
 data = []
 c = 1
@@ -70,7 +70,7 @@ for i, j in zip(data1, data3):
         c += sampling
 
 data = [5.5609795294117612, 6.0634179200000009, 9.8138712799999999, 8.0078698399999988, 7.0932653599999984, 6.0957836799999985, 6.0030740000000007, 7.2077175999999987, 9.3337489599999994, 8.1489461599999995, 5.8398306399999989, 5.742683519999999, 6.1557865600000001]
-plt.plot(range(len(data)), data, marker='o', markersize=10, color='orange', label='Src Host (Migration)')
+plt.plot(range(len(data)), data, marker='o', markersize=16, linewidth=5, color='blue', label='Src Host (Migration)')
 
 data4 = []
 with open("./manipulatedata/coloumn1.txt", "r") as ins:
@@ -120,7 +120,7 @@ for i, j in zip(data4, data5):
         c += sampling
 
 data = [5.4862177492156858, 5.3692090983999989, 29.659330543600001, 45.541586565999999, 43.633664569599993, 44.195828146399997, 45.055874788399997, 45.947195999600005, 43.511384590399999, 41.4871100951999994, 36.1964885443999993, 5.6787850307999994, 5.6232690471999991]
-plt.plot(range(len(data)), data, marker='x', markersize=10, color='m', label='Dst Host (TAU)')
+plt.plot(range(len(data)), data, linewidth=5, marker='^', markersize=16, color='m', label='Dst Host (TAU)')
 
 data = []
 c = 1
@@ -132,11 +132,11 @@ for i, j in zip(data4, data6):
         t = []
         c += sampling
 data = [3.1379813058823527, 7.4215001120000004, 7.2806845079999998, 11.3901551240000005, 10.438342596, 12.439763648, 3.3874489000000008, 9.50292636, 8.5740440559999995, 4.4697624760000001, 6.2953330040000002, 5.2405142720000004, 3.473622416]
-plt.plot(range(len(data)), data, marker='^', markersize=10, color='red', label='Dst Host (Migration)')
+plt.plot(range(len(data)), data, linewidth=5, marker='x', markersize=16, color='red', label='Dst Host (Migration)')
 
 ax.set_ylim([0.1, 115])
 
-plt.legend(loc='upper left', ncol=2, fontsize=26)
+plt.legend(loc='upper center', ncol=2, fontsize=27)
 plt.xlabel('Time (sec)')
 plt.ylabel('Average CPU Utilization (%)')
 

@@ -2,8 +2,14 @@ import xlrd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams.update({'font.size':40})
 matplotlib.rcParams['figure.figsize'] = 14, 10
+
+f = plt.figure()
+ax = f.add_subplot(111)
+
+f.tight_layout()
+f.subplots_adjust(left=0.12, right=0.975)
 
 def readXL(f, col):
     x = []
@@ -45,20 +51,22 @@ data3 = [i-60 for i in data3]
 data1 = [i-60 for i in data1]
 
 
-ax = plt.gca()
-plt.scatter(data3, data4, marker='o', facecolors='none', s=16, color='r', label='Restoration and Attach Flood')
-#plt.scatter(data5, data6, marker='d', facecolors='none', s=16, color='b', label='No Host Failure')
 plt.scatter(data1, data2, marker='d', s=16, color='g', label='Background Conrol Procedures')
+plt.scatter(data3, data4, marker='o', facecolors='none', s=16, color='r', label='Restoration and Attach Procedures')
+#plt.scatter(data5, data6, marker='d', facecolors='none', s=16, color='b', label='No Host Failure')
 
 ax.set_yscale('symlog')
 #ax.set_yscale('symlog')
-ax.set_ylim([0.1, 70000])
+ax.set_ylim([0.1, 1000000])
 #ax.set_xlim([0, 100])
 ax.set_xlim([0, 40])
 
-plt.legend(loc='upper left', ncol=1, fontsize=28)
+lgnd = plt.legend(loc='upper center', ncol=1)
 plt.xlabel('Time (sec)')
-plt.ylabel('Procedure Completion Time (ms)')
+plt.ylabel('Average Completion Time (ms)', fontsize=38)
+
+lgnd.legendHandles[0]._sizes = [120]
+lgnd.legendHandles[1]._sizes = [120]
 
 plt.grid(linestyle='--')
 plt.savefig("./legacy_ft_with_attach_flooding.pdf", bbox_inches='tight')

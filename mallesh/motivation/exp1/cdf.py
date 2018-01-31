@@ -2,14 +2,14 @@ import random
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams.update({'font.size':36})
+matplotlib.rcParams.update({'font.size':40})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
 f = plt.figure()
 ax = f.add_subplot(111)
 
 f.tight_layout()
-f.subplots_adjust(left=0.1, right=0.99)
+f.subplots_adjust(left=0.12, right=0.99)
 
 def cdf(data, Colour, Label, ls):
 	global f
@@ -28,7 +28,7 @@ def cdf(data, Colour, Label, ls):
 	cdf = np.cumsum(counts)
 	
 	# Plot the cdf
-	plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=5, color=Colour, label=Label)
+	plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=8, color=Colour, label=Label)
 	plt.ylim((0,1))
 	plt.ylabel("CDF")
 	plt.xlabel("Latency (ms)")
@@ -59,9 +59,9 @@ for i in p:
 mk = ['-', '--', '-.', ':']
 
 cdf(attach_alone, 'orange', 'Attach Alone', mk[0])
-cdf(service_alone, 'navy', 'Service Alone', mk[1])
-cdf(attach, 'm', 'Attach', mk[2])
-cdf(service, 'k', 'Service', mk[3])
+cdf(service_alone, 'magenta', 'Service Alone', mk[1])
+cdf(attach, 'blue', 'Attach', mk[2])
+cdf(service, 'maroon', 'Service', mk[3])
 plt.grid(linestyle='--')
 plt.savefig('Motivation_for_decomposition_1us_modified.pdf')
 plt.show()

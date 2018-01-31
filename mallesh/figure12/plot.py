@@ -14,7 +14,7 @@ fig, ax1 = plt.subplots()
 fig.tight_layout()
 fig.subplots_adjust(left=0.12, right=0.99)
 
-rects1 = ax1.bar(ind, means, width, edgecolor='k', color='lightblue', linewidth=6)#, log=True)
+rects1 = ax1.bar(ind, means, width, edgecolor='k', color='gold', linewidth=6)#, log=True)
 #rects1 = ax1.bar(ind, means, width, edgecolor='k', fill=False, linewidth=6)
 def autolabel(rects):
     """
@@ -39,7 +39,7 @@ plt.ylabel('Throughput (PPS)')
 #g_patch = mpatches.Patch(color='lightgreen', label='stateful')
 #plt.legend(handles=[b_patch, g_patch])
 plt.yscale('symlog')
-plt.ylim([10, 10200000])
+plt.ylim([10, 100000000])
 ax1.grid(linestyle='--')
 plt.savefig("./throughput-fig12.pdf", bbox_inches='tight')
 plt.show()
