@@ -6,8 +6,8 @@ matplotlib.rcParams['figure.figsize'] = 14, 10
 
 rr = [20.8, 9.4, 4.86, 3.2]
 ch = [18.7, 7.6, 4.35, 3.81]
-skch = [4.7, 2.6, 1.35, 1.11]
-ilp = [3.5, 2.35, 1, 0.81]
+skch = [4.25, 2.9, 1.95, 1.11]
+ilp = [2.3, 1.9, 1, 0.81]
 hs = [3, 4, 5, 6]
 
 plt.plot(hs, rr, marker='o', markersize='20', color='magenta', linewidth=4, linestyle='--', label='RR')

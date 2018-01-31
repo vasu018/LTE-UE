@@ -58,8 +58,8 @@ ax3.set_ylim([0,1000])
 ax3.set_yscale('symlog')
 
 a = ax1.plot(data1, data2, linewidth=5, linestyle='--', color='magenta', label='NF Scaling (#)')
-b = ax3.plot(data1, data3, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='green', label='Stateless')
-c = ax3.plot(data1, data4, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='gold', label='Stateful')
+b = ax3.plot(data1, data3, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='blue', label='Stateless')
+c = ax3.plot(data1, data4, linewidth=3, linestyle='-.', marker='+', markersize=10 , color='maroon', label='Stateful')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
