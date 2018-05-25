@@ -2,8 +2,21 @@ import random
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+plt.style.use('seaborn-paper')
+
 matplotlib.rcParams.update({'font.size':40})
 matplotlib.rcParams['figure.figsize'] = 14, 10
+
+SMALL_SIZE = 55
+MEDIUM_SIZE = 48
+BIGGER_SIZE = 80
+
+plt.rc('font', size=SMALL_SIZE)          # controls default text sizes
+plt.rc('axes', titlesize=SMALL_SIZE)     # fontsize of the axes title
+plt.rc('axes', labelsize=BIGGER_SIZE)    # fontsize of the x and y labels
+plt.rc('xtick', labelsize=BIGGER_SIZE)    # fontsize of the tick labels
+plt.rc('ytick', labelsize=BIGGER_SIZE)    # fontsize of the tick labels
+plt.rc('legend', fontsize=SMALL_SIZE)    # legend fontsize
 
 f = plt.figure()
 ax = f.add_subplot(111)
@@ -28,8 +41,10 @@ def cdf(data, Colour, Label, ls):
 	cdf = np.cumsum(counts)
 	
 	# Plot the cdf
-	plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=8, color=Colour, label=Label)
+	plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=8, label=Label)
 	plt.ylim((0,1))
+	plt.xlim((0, 120))
+	plt.xticks([0, 20, 40, 60, 80, 100])
 	plt.ylabel("CDF")
 	plt.xlabel("Latency (ms)")
 	plt.legend(loc='lower right')
