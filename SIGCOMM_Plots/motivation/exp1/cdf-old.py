@@ -5,7 +5,7 @@ import matplotlib
 #import matplotlib.style
 #matplotlib.use
 import matplotlib.pyplot as plt
-#plt.style.use('seaborn-paper')
+plt.style.use('seaborn-paper')
 
 matplotlib.rcParams.update({'font.size':40})
 matplotlib.rcParams['figure.figsize'] = 14, 10
