@@ -8,7 +8,7 @@ import random
 
 csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
 csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'46'}
-hfont = {'fontname':'Helvetica'}
+hfont = {'fontname':'Helvetica', 'fontsize':'80'}
 
 f = plt.figure()
 ax = f.add_subplot(111)
@@ -35,8 +35,8 @@ def cdf(data, Colour, Label, ls):
 	# Plot the cdf
 	plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=6, color=Colour, label=Label)
 	plt.ylim((0,1))
-	plt.ylabel("CDF", **csfont)
-	plt.xlabel("Latency (ms)", **csfont)
+	plt.ylabel("CDF", **hfont)
+	plt.xlabel("Latency (ms)", **hfont)
 	plt.legend(loc='lower right')
     #plt.legend(shadow=True, loc=(0.01, 0.73), fontsize=46)
 
