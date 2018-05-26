@@ -7,7 +7,7 @@ matplotlib.rcParams['figure.figsize'] = 16, 12
 
 csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
 csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'46'}
-hfont = {'fontname':'Helvetica'}
+hfont = {'fontname':'Helvetica', 'fontsize':'60'}
 
 f = plt.figure()
 ax = f.add_subplot(111)
@@ -33,8 +33,8 @@ with open("./sf_failure_data.txt", "r") as ins:
 	line = line.strip()
         words = line.split(",")  
         x = words[0]
-        y = words[1]
-        if (x > 70):
+        y = float(words[1])
+        if (x > 70 and y >= 0.5):
             data1.append(float(x))
             data2.append(float(y))
 
@@ -46,8 +46,8 @@ with open("./attach_flood_manipulated.txt", "r") as ins:
 	line = line.strip()
         words = line.split(",")  
         x = words[0]
-        y = words[1]
-        if (x > 60):
+        y = float(words[1])
+        if (x > 60 and y >= 1):
             data3.append(float(x))
             data4.append(float(y))
 
@@ -61,15 +61,16 @@ plt.scatter(data3, data4, marker='o', s=20, facecolors='none', color='r', label=
 
 ax.set_yscale('symlog')
 #ax.set_yscale('symlog')
-ax.set_ylim([0.1, 100000000])
+ax.set_ylim([0.1, 10000])
 #ax.set_xlim([0, 100])
 ax.set_xlim([0, 40])
 
-lgnd = plt.legend(loc='upper right', ncol=1, fontsize=52)
-plt.xlabel('Time (sec)', csfont)
-plt.ylabel('Finish Time (ms)', csfont)
+#lgnd = plt.legend(loc='upper left', loc=(0.01, 0.73), ncol=1, fontsize=42)
+lgnd = plt.legend(loc=(0.01, 0.53), ncol=1, fontsize=42)
+plt.xlabel('Time (sec)', **hfont)
+plt.ylabel('Finish Time (ms)', **hfont)
 
-plt.ylim((0,100000000))
+plt.ylim((0,10000))
 #plt.yticks(fontsize=46)
 #plt.yticks(range(0, 100000000, 10000000), fontsize=46)
 

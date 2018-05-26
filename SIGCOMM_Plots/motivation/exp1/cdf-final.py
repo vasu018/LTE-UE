@@ -8,7 +8,7 @@ import random
 
 csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
 csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'46'}
-hfont = {'fontname':'Helvetica', 'fontsize':'80'}
+hfont = {'fontname':'Helvetica', 'fontsize':'52'}
 
 f = plt.figure()
 ax = f.add_subplot(111)
@@ -68,10 +68,10 @@ for i in p:
 
 mk = ['-', '--', '-.', ':']
 
-cdf(attach_alone, 'royalblue', 'Attach Alone', '-')
-cdf(service_alone, 'tomato', 'Service Alone', '-')
 cdf(attach, 'green', 'Attach', '--')
 cdf(service, 'maroon', 'Service', '--')
+cdf(attach_alone, 'royalblue', 'Attach Alone', '-')
+cdf(service_alone, 'tomato', 'Service Alone', '-')
 plt.xlim((0,110))
 plt.yticks(fontsize=46)
 plt.xticks(range(0, 110, 20), fontsize=46)
