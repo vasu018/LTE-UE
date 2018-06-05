@@ -37,8 +37,7 @@ def cdf(data, Colour, Label, ls):
 	plt.ylim((0,1))
 	plt.ylabel("CDF", **hfont)
 	plt.xlabel("Latency (ms)", **hfont)
-	plt.legend(loc='lower right')
-    #plt.legend(shadow=True, loc=(0.01, 0.73), fontsize=46)
+    plt.legend(shadow=True, loc=(0.01, 0.53), ncol=1, fontsize=46)
 
 attach_alone = []
 service_alone = []
@@ -68,10 +67,10 @@ for i in p:
 
 mk = ['-', '--', '-.', ':']
 
-cdf(attach, 'green', 'Attach', '--')
-cdf(service, 'maroon', 'Service', '--')
-cdf(attach_alone, 'royalblue', 'Attach Alone', '-')
-cdf(service_alone, 'tomato', 'Service Alone', '-')
+cdf(attach, 'royalblue', 'Attach (Mixed)', '--')
+cdf(service, 'tomato', 'Service (Mixed)', '--')
+cdf(attach_alone, 'royalblue', 'Attach (Alone)', '-')
+cdf(service_alone, 'tomato', 'Service (Alone)', '-')
 plt.xlim((0,110))
 plt.yticks(fontsize=46)
 plt.xticks(range(0, 110, 20), fontsize=46)
