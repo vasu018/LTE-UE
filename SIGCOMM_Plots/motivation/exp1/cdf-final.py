@@ -17,27 +17,27 @@ f.tight_layout()
 f.subplots_adjust(left=0.14, right=0.99, bottom=0.15)
 
 def cdf(data, Colour, Label, ls):
-	global f
-	data_size=len(data)
+    global f
+    data_size=len(data)
 	
 	# Set bins edges
-	data_set=sorted(set(data))
-	bins=np.append(data_set, data_set[-1]+1)
+    data_set=sorted(set(data))
+    bins=np.append(data_set, data_set[-1]+1)
 	
 	# Use the histogram function to bin the data
-	counts, bin_edges = np.histogram(data, bins=bins, density=False)
-	
-	counts=counts.astype(float)/data_size
+    counts, bin_edges = np.histogram(data, bins=bins, density=False)
+    counts=counts.astype(float)/data_size
 	
 	# Find the cdf
-	cdf = np.cumsum(counts)
+    cdf = np.cumsum(counts)
 	
 	# Plot the cdf
-	plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=6, color=Colour, label=Label)
-	plt.ylim((0,1))
-	plt.ylabel("CDF", **hfont)
-	plt.xlabel("Latency (ms)", **hfont)
+    plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=6, color=Colour, label=Label)
+    plt.ylim(0,1)
+    plt.ylabel("CDF", **hfont)
+    plt.xlabel("Latency (ms)", **hfont)
     plt.legend(shadow=True, loc=(0.01, 0.53), ncol=1, fontsize=46)
+    plt.legend(loc='lower right')
 
 attach_alone = []
 service_alone = []
@@ -46,14 +46,16 @@ service = []
 
 p = open('actual/attach_10000_1.txt', 'r')
 for i in p:
-	i = i.strip().split(',')
+    i = i.strip().split(',')
 	#attach_alone = [float(j) for j in i if float(j)<65]
-	attach_alone = [float(j) for j in i if float(j)<63]
-
+    attach_alone = [float(j) for j in i if float(j)<63]
+    print attach_alone
+    
 p = open('actual/service_10000_1.txt', 'r')
 for i in p:
-        i = i.strip().split(',')
-        service_alone = [float(j)+random.random() for j in i]
+    i = i.strip().split(',')
+    service_alone = [float(j)+random.random() for j in i]
+    #print attach_alone
 
 p = open('actual/attach_5000_1.txt', 'r')
 for i in p:
