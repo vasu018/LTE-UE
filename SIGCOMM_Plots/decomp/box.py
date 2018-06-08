@@ -172,10 +172,12 @@ ax = fig.add_subplot(111)
 fig.tight_layout()
 fig.subplots_adjust(left=0.1, bottom=0.3, right=0.99)
 
-boxprops = dict(linestyle='--', linewidth=3)
+# boxprops = dict(linestyle='--', linewidth=3)
 
-bp = ax.boxplot(data_a, 0, ' ', widths=0.1, boxprops=boxprops, positions=np.array(xrange(len(data_a)))*1.0-0.1, patch_artist=True)
-bq = ax.boxplot(data_b, 0, ' ', widths=0.1, boxprops=boxprops, positions=np.array(xrange(len(data_a)))*1.0+0.1, patch_artist=True)
+#bp = ax.boxplot(data_a, 0, ' ', widths=0.1, boxprops=boxprops, positions=np.array(xrange(len(data_a)))*1.0-0.1, patch_artist=True)
+#bq = ax.boxplot(data_b, 0, ' ', widths=0.1, boxprops=boxprops, positions=np.array(xrange(len(data_a)))*1.0+0.1, patch_artist=True)
+bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, patch_artist=True)
+bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, patch_artist=True)
 
 for patch in bq['boxes']:
     patch.set(facecolor='salmon')
@@ -187,6 +189,7 @@ for median in bp['medians']:
 for median in bq['medians']:
         median.set(color='k', linewidth=3)
 
+
 ax.set_ylabel('Latency (ms)')
 ax.set_xticks([0, 1, 2, 3])
 ax.set_xticklabels(['Unified\nMME', 'Naive\nDecomposition', 'Prioritize\n(H over S)', 'Prioritize\n(S over H)'])
@@ -194,6 +197,7 @@ ax.set_xticklabels(['Unified\nMME', 'Naive\nDecomposition', 'Prioritize\n(H over
 mar = mpatches.Patch(color='gold', label='Handover Procedure (H)')
 gre = mpatches.Patch(color='salmon', label='Service Procedure (S)')
 plt.legend(handles=[mar, gre], loc='upper left')
+
 
 ax.grid(which='major', linestyle='--', linewidth='0.5')
 plt.grid(linestyle='--')
