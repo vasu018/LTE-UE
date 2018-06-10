@@ -5,8 +5,8 @@ import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':60})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
-s1 = [1.25, 7.75, 5.25, 1.6, 1.25]
-s2 = [16.65, 18.73, 14.72, 2.78, 1.25]
+s1 = [0.05, 10.4, 0.5, 0.4, 0.2]
+s2 = [0.05, 10.8, 0.5, 3.78, 0.5]
 
 ind = np.arange(5)  # the x locations for the groups
 width = 0.25
@@ -21,16 +21,14 @@ rects2 = ax1.bar(ind+width+0.15, s1, width, color='sandybrown', error_kw=dict(el
 #plt.xticks(np.arange(len(s1))+0.15, ['RR', 'CH', 'Skewed-CH', 'ILP'])
 #plt.xticks(np.arange(len(s1))+0.35, ['RR', 'CH', 'SK-CH', 'ILP'], fontsize='52')
 plt.xticks(np.arange(len(s1))+0.35, ['RR', 'CH', 'Maglev', 'SK-CH', 'ILP'], fontsize='48')
-plt.ylabel('Std Dev of Load Dist. (%)')
+plt.ylabel('Std Dev of Key Dist. (%)')
 #ax1.grid(linestyle='--')
 #plt.legend(loc=(0.01, 0.75),ncol=1)
-#plt.legend(loc='upper right',ncol=1, fontsize=60, framealpha=None,borderpad=None, borderaxespad=None)
-plt.legend(loc='upper right',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+plt.legend(loc='upper right',ncol=1, fontsize=60)
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
-ax1.xaxis.grid(color='gray', linestyle='dashed')
 plt.grid(linestyle='--')
-plt.ylim([0, 33])
-plt.yticks(range(0, 33, 10))
-plt.savefig("./cpu-util-all.pdf", bbox_inches='tight')
+plt.ylim([0, 21])
+plt.yticks(range(0, 21, 5))
+plt.savefig("./key-util-all.pdf", bbox_inches='tight')
 plt.show()
