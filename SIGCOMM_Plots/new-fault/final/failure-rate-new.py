@@ -3,7 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 matplotlib.rcParams.update({'font.size':36})
-matplotlib.rcParams['figure.figsize'] = 20, 10
+matplotlib.rcParams['figure.figsize'] = 14, 10
 
 f = plt.figure()
 ax = f.add_subplot(111)

@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':36})
-matplotlib.rcParams['figure.figsize'] = 20, 10
+matplotlib.rcParams['figure.figsize'] = 14, 10
 
 f = plt.figure()
 ax = f.add_subplot(111)
@@ -45,29 +45,29 @@ for i, j in zip(data1, data2):
         t = []
         c += 0.1
 
-data3 = []
-data4 = []
-with open("./attach_flood_manipulated.txt", "r") as ins:
-    for line in ins:
-	line = line.strip()
-        words = line.split(",")  
-        x = words[0]
-        y = words[1]
-        data3.append(float(x))
-        data4.append(float(y))
+#data3 = []
+#data4 = []
+#with open("./attach_flood_manipulated.txt", "r") as ins:
+#    for line in ins:
+#	line = line.strip()
+#        words = line.split(",")  
+#        x = words[0]
+#        y = words[1]
+#        data3.append(float(x))
+#        data4.append(float(y))
+#
+#c = data3[20]
+#t = []
+#flood = []
+#for i, j in zip(data3, data4):
+#    t.append(j)
+#    if i > c:
+#        flood.append(np.mean(t))
+#        t = []
+#        c += 0.1
 
-c = data3[20]
-t = []
-flood = []
-for i, j in zip(data3, data4):
-    t.append(j)
-    if i > c:
-        flood.append(np.mean(t))
-        t = []
-        c += 0.1
-
-plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='x', markersize=14, color='g', label='Stateful Host/NF Failure')
-plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=14, color='magenta', label='Restoration and Attach Flood')
+plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='x', markersize=14, color='green', label='Stateful Host/NF Failure')
+#plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=14, color='magenta', label='Restoration and Attach Flood')
 #plt.scatter(range(200), [i/1000 for i in data], linewidth=1, marker='x', color='g', label='Stateful Host/NF Failure')
 #plt.scatter(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', s=100, color='magenta', label='Restoration and Attach Flood')
 
@@ -118,15 +118,18 @@ for i, j in zip(data1, data2):
         t = []
         c += 0.1
 
-plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='^', markersize=12, color='gold', label='Stateless Host Failure')
+plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='^', markersize=12, color='magenta', label='Stateless Host Failure')
 
-plt.xticks(np.arange(0, 225, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
+#plt.xticks(np.arange(0, 225, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
+plt.xticks(np.arange(0, 150, 25), ['0', '5', '10', '15', '20', '25', '30'])
 
 plt.xlabel('Time (sec)')
-plt.ylabel('Average Completion Time (sec)')
-#plt.xlim([0, 20])
-#plt.ylim([0, 5000])
+plt.ylabel('Avg. Completion Time (sec)')
+#plt.xlim([0, 30])
+#plt.xticks(range(0, 30, 5))
+plt.ylim([0, 5.2])
+plt.yticks(range(0, 6, 2))
 plt.grid(linestyle='--')
 plt.legend(ncol=1, fontsize=30)
-plt.savefig("./sf-nf-failure.pdf", bbox_inches='tight')
+plt.savefig("./sf-nf-failure_new.pdf", bbox_inches='tight')
 plt.show()
