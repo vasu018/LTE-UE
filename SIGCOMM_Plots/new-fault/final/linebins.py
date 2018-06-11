@@ -25,7 +25,7 @@ def readXL(f, col):
 data1 = []
 data2 = []
 c = 1
-data = []
+data_sf = []
 with open("./sf_failure_data.txt", "r") as ins:
     for line in ins:
 	line = line.strip()
@@ -41,7 +41,7 @@ t = []
 for i, j in zip(data1, data2):
     t.append(j)
     if i > c:
-        data.append(np.mean(t))
+        data_sf.append(np.mean(t))
         t = []
         c += 0.1
 
@@ -66,13 +66,12 @@ for i, j in zip(data1, data2):
 #        t = []
 #        c += 0.1
 
-plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='x', markersize=14, color='green', label='Stateful Host/NF Failure')
 #plt.plot(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', markersize=14, color='magenta', label='Restoration and Attach Flood')
 #plt.scatter(range(200), [i/1000 for i in data], linewidth=1, marker='x', color='g', label='Stateful Host/NF Failure')
 #plt.scatter(range(37, 136), [i/1000 for i in flood], linewidth=1, marker='+', s=100, color='magenta', label='Restoration and Attach Flood')
 
-data1 = []
-data2 = []
+data3 = []
+data4 = []
 with open("./sl_nf_failure_data_modified.txt", "r") as ins:
     for line in ins:
         line = line.strip()
@@ -80,24 +79,23 @@ with open("./sl_nf_failure_data_modified.txt", "r") as ins:
         x = words[0]
         y = words[1]
         if float(x)>75 and float(x)<95:
-            data1.append(float(x))
-            data2.append(float(y))
+            data3.append(float(x))
+            data4.append(float(y))
 c = 75
 t = []
-data = []
-for i, j in zip(data1, data2):
+data_sl_nf = []
+for i, j in zip(data3, data4):
     t.append(j)
     if i > c:
-        data.append(np.mean(t))
+        data_sl_nf.append(np.mean(t))
         t = []
         c += 0.1
 
 ax = plt.gca()
 
-plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='*', markersize=10, color='maroon', label='Stateless NF Failure')
 
-data1 = []
-data2 = []
+data5 = []
+data6 = []
 with open("./sl_host_failure_data.txt", "r") as ins:
     for line in ins:
         line = line.strip()
@@ -105,31 +103,36 @@ with open("./sl_host_failure_data.txt", "r") as ins:
         x = words[0]
         y = words[1]
         if float(x)>76 and float(x)<96:
-            data1.append(float(x))
-            data2.append(float(y))
+            data5.append(float(x))
+            data6.append(float(y))
 
 c = 76
 t = []
-data = []
-for i, j in zip(data1, data2):
+data_sl_host = []
+for i, j in zip(data5, data6):
     t.append(j)
     if i > c:
-        data.append(np.mean(t))
+        data_sl_host.append(np.mean(t))
         t = []
         c += 0.1
 
-plt.plot(range(200), [i/1000 for i in data], linewidth=1, marker='^', markersize=12, color='magenta', label='Stateless Host Failure')
+plt.plot(range(200), [i/1000 for i in data_sf], linewidth=1, marker='x', markersize=10, color='green', label='Stateful Host/NF Failure')
+plt.plot(range(200), [i/1000 for i in data_sl_host], linewidth=1, marker='^', markersize=10, color='magenta', label='Stateless Host Failure')
+plt.plot(range(200), [i/1000 for i in data_sl_nf], linewidth=1, marker='*', markersize=10, color='maroon', label='Stateless NF Failure')
 
 #plt.xticks(np.arange(0, 225, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
-plt.xticks(np.arange(0, 150, 25), ['0', '5', '10', '15', '20', '25', '30'])
+plt.xticks(np.arange(0, 200, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
 
-plt.xlabel('Time (sec)')
-plt.ylabel('Avg. Completion Time (sec)')
+plt.xlabel('Time (sec)',  fontsize='48')
+plt.ylabel('Avg. Completion Time (sec)',  fontsize='48')
 #plt.xlim([0, 30])
 #plt.xticks(range(0, 30, 5))
 plt.ylim([0, 5.2])
 plt.yticks(range(0, 6, 2))
 plt.grid(linestyle='--')
-plt.legend(ncol=1, fontsize=30)
+#plt.legend(ncol=1, fontsize=40)
+plt.legend(loc='upper right',ncol=1, fontsize=42, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+ax.yaxis.grid(color='gray', linestyle='dashed')
+ax.xaxis.grid(color='gray', linestyle='dashed')
 plt.savefig("./sf-nf-failure_new.pdf", bbox_inches='tight')
 plt.show()
