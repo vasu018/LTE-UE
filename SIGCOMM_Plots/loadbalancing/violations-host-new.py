@@ -7,7 +7,7 @@ matplotlib.rcParams['figure.figsize'] = 14, 10
 ch = [21.8, 9.4, 4.86, 3.2, 2.1]
 rr = [19.7, 7.6, 4.35, 3.81, 1.8]
 skch = [2.75, 2.1, 1.15, 0.95, 0.4]
-ilp = [2.03, 1, 1, 0.81, 0.37]
+ilp = [1.39, 1, 1, 0.81, 0.37]
 maglev = [16.3, 8.2, 3.2, 2.81, 1.6]
 hs = [3, 4, 5, 6, 7]
 dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
@@ -24,7 +24,7 @@ line.set_dashes([8, 4, 2, 4, 2, 4])
 plt.plot(hs, rr, marker='o', color='tomato', linewidth=5, markersize=18, linestyle='--', label='RR')
 plt.plot(hs, ch, marker='D', color='gold', linewidth=5, markersize=18, linestyle='--', label='CH')
 plt.plot(hs, ilp, marker='s', color='salmon', linewidth=5, markersize=18, linestyle='--', label='ILP')
-plt.plot(hs, maglev, marker='*', color='lightgreen', linewidth=5, markersize=18, linestyle='--', label='Maglev')
+plt.plot(hs, maglev, marker='*', color='green', linewidth=5, markersize=18, linestyle='--', label='Maglev')
 plt.plot(hs, skch, marker='^', color='royalblue', linewidth=5, markersize=18, linestyle='--', label='SK-CH')
 #plt.plot(hs, ch, marker='D', color='gold', linewidth=6, markersize=18, linestyle='--', dashes=dashList[1], label='CH')
 #plt.plot(hs, ilp, marker='s', color='salmon', linewidth=6, markersize=18, linestyle='--', dashes=dashList[2], label='ILP')
