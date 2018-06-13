@@ -52,6 +52,6 @@ ax1.yaxis.grid(color='grey', linestyle='dashed')
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
 plt.grid(linestyle='--')
-plt.savefig("./composition-latency.pdf", bbox_inches='tight')
+plt.savefig("./pareto_dist.pdf", bbox_inches='tight')
 plt.show()
 
