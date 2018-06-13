@@ -21,15 +21,15 @@ tr = [i/1000 for i in tr]
 
 #sf = [9.35, 13.25, 19.12, 20.95, 23.45]
 sf = [7.35, 11.25, 19.12, 27.95, 43.45]
-sl_cold = [0.75, 1.28, 2.35, 3.62, 4.75]
-sl_hot = [0.66, 1.12, 1.74, 2.39, 2.57]
+sl_cold = [1.25, 2.28, 3.35, 4.62, 6.75]
+sl_hot = [0.66, 1.12, 1.74, 2.39, 3.97]
 
 #plt.plot(tr, sf, linewidth=5, color='magenta', ls='--', marker='^', markersize=14, label='Stateful Host/NF Failure')
 #plt.plot(tr, sl_cold, linewidth=5, color='maroon', ls='--', marker='s', markersize=14, label='Stateless Cold Migration')
 #plt.plot(tr, sl_hot, linewidth=5, color='blue', ls='--', marker='D', markersize=14, label='Stateless Hot Migration')
 
-plt.plot(tr, sf, marker='o', color='green', linewidth=5, markersize=18, linestyle='--', label='Stateful Host/NF Failure')
-plt.plot(tr, sl_cold, marker='D', color='gold', linewidth=5, markersize=18, linestyle='--', label='Stateless Cold Migration')
+plt.plot(tr, sf, marker='o', color='green', linewidth=5, markersize=18, linestyle='--', label='Stateful Session Restoration')
+plt.plot(tr, sl_cold, marker='D', color='royalblue', linewidth=5, markersize=18, linestyle='--', label='Stateless Cold Migration')
 plt.plot(tr, sl_hot, marker='s', color='tomato', linewidth=5, markersize=18, linestyle='--', label='Stateless Hot Migration')
 
 plt.xlabel('# Control Procedures/Second')
