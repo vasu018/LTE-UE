@@ -196,11 +196,15 @@ ax.set_xticklabels(['Unified\nMME', 'Naive\nDecomposition', 'Prioritize\n(H over
 
 mar = mpatches.Patch(color='gold', label='Handover Procedure (H)')
 gre = mpatches.Patch(color='salmon', label='Service Procedure (S)')
-plt.legend(handles=[mar, gre], loc='upper left')
+plt.legend(handles=[mar, gre], loc='upper left', fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
+#plt.legend(loc='upper left',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+#ax.set_axisbelow(True)
+#ax.yaxis.grid(color='gray', linestyle='dashed')
+#ax.xaxis.grid(color='gray', linestyle='dashed')
 
 ax.grid(which='major', linestyle='--', linewidth='0.5')
 plt.grid(linestyle='--')
 plt.ylim([-1, 100])
-plt.savefig("./decomposition-f.pdf")
+plt.savefig("./decomposition-f_new.pdf")
 plt.show()
