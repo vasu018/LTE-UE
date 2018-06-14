@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':60})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
+pepc = [25.6, 14.4, 11.86, 9.2, 8]
 ch = [21.8, 9.4, 4.86, 3.2, 2.1]
 rr = [19.7, 7.6, 4.35, 3.81, 1.8]
 skch = [2.75, 2.1, 1.15, 0.95, 0.4]
@@ -21,6 +22,7 @@ line.set_dashes([8, 4, 2, 4, 2, 4])
 #plt.plot(hs, skch, marker='^', markersize='20', color='blue', linewidth=4, linestyle='--', label='Skewed-CH')
 #plt.plot(hs, ilp, marker='*', markersize='20', color='maroon', linewidth=4, linestyle='--', label='ILP')
 
+plt.plot(hs, pepc, marker='p', color='red', linewidth=5, markersize=18, linestyle='--', label='PEPC')
 plt.plot(hs, rr, marker='o', color='tomato', linewidth=5, markersize=18, linestyle='--', label='RR')
 plt.plot(hs, ch, marker='D', color='gold', linewidth=5, markersize=18, linestyle='--', label='CH')
 plt.plot(hs, ilp, marker='s', color='salmon', linewidth=5, markersize=18, linestyle='--', label='ILP')

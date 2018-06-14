@@ -8,6 +8,8 @@ matplotlib.rcParams['figure.figsize'] = 14, 10
 #s1 = [3.62, 5.95, 3.24, 1.7, 1.25]
 s1 = [13.62, 15.95, 13.24, 1.7, 1.35]
 s2 = [21.25, 24.23, 18.53, 3.1, 1.51]
+s3 = [28, 25.23, 19.53, 5.1, 3.51]
+
 #stds1 = [5, 2, 1, 1]
 #stds2 = [5, 2, 1, 1]
 
@@ -22,8 +24,10 @@ fig, ax1 = plt.subplots()
 
 rects2 = ax1.bar(ind+0.1, s2, width, color='lightgreen', error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, capsize=10, label='50% Skew', hatch='/')
 rects1 = ax1.bar(ind+width+0.15, s1, width, color='salmon', error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, capsize=10, label='Without Skew', hatch='.')
+rects3 = ax1.bar(ind+width+width+0.20, s3, width, color='royalblue', error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, capsize=10, label='PEPC', hatch='-')
 
-plt.xticks(np.arange(len(s1))+0.35, ['RR', 'CH', 'Maglev', 'SK-CH', 'ILP'], fontsize='48')
+
+plt.xticks(np.arange(len(s1))+0.35, ['RR', 'PEPC', 'CH', 'Maglev', 'SK-CH', 'ILP'], fontsize='48')
 plt.ylabel('Violations (%)')
 ax1.grid(linestyle='--')
 #plt.legend(loc='upper right',ncol=1, fontsize=60, fancybox=True, framealpha=0.5)

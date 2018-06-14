@@ -2,8 +2,8 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
-csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'46'}
+#csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
+#csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'46'}
 hfont = {'fontname':'Helvetica'}
 dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
 
@@ -15,10 +15,10 @@ fig.tight_layout()
 fig.subplots_adjust(left=0.12, right=0.99)
 
 
-approach1_new = [1,1,1,1,1,1,1,1]
-approach2_new = [1,0.9,0.8,0.7,0.7,0.7,0.7,0.7]
-approach3_new = [1,0.8,0.6,0.5,0.5,0.5,0.5,0.5]
-approach4_new = [1,0.6,0.4,0.2,0.2,0.2,0.2,0.2]
+approach1_new = [1,1,1,1,1,1,1,1,1,1,1,1,1]
+approach2_new = [1,0.83,0.82,0.81,0.8,0.8,0.79,0.78,0.75,0.75,0.74,0.74,0.73]
+approach3_new = [1,0.73,0.72,0.71,0.7,0.7,0.69,0.68,0.65,0.65,0.64,0.64,0.63]
+approach4_new = [1,0.63,0.62,0.61,0.6,0.6,0.59,0.58,0.55,0.55,0.54,0.54,0.53]
 #approach1_x1 = [0,1000,2000,3000,4000,5000,6000,7000,8000,9000,10000,11000,12000,13000,14000,15000,16000,17000,18000,19000,20000]
 
 
@@ -41,8 +41,8 @@ plt.plot(approach3_new, linestyle='--', dashes=dashList[4], linewidth=6, color='
 plt.plot(approach4_new, linestyle='--', dashes=dashList[4], linewidth=6, color='orange', marker='d', markersize=18, label='Approach4')
 
 
-plt.xlabel('# Pane to distributions', **csfont)
-plt.ylabel('# of requests per min', **csfont)
+plt.xlabel('# Pane to distributions', **hfont)
+plt.ylabel('# of requests per min', **hfont)
 #plt.legend(loc='upper left')
 plt.legend(loc='upper right', fontsize=40, ncol=1, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 ax1.xaxis.grid(color='grey', linestyle='dashed')
