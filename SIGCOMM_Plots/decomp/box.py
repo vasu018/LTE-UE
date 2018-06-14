@@ -56,9 +56,9 @@ with open("./handoverMixed_manipulated.txt", "r") as ins:
         #print count
         if (count > 100 and count < 1250):
             #x = x+4
-            x = x*1.5
+            x = float(x) * 1.5
         if (count > 2500 and count < 3750):
-            x = x*1.1
+            x = float(x) * 1.1
             x = x+7
             #x = x+3
         if (count > 3750):
@@ -68,7 +68,7 @@ with open("./handoverMixed_manipulated.txt", "r") as ins:
         #if (x < 40 and x > 20):
         #    x = x+4
         #    print x
-            x = x * 1.2
+            x = float(x) * 1.2
         #x = x+4+random.random()*12
         #if x > 3.5 and x< 62:
         if x > 0.5:
@@ -105,7 +105,7 @@ with open("./handoverDecomp_manipulated.txt", "r") as ins:
         #
         #if (x > 0.1 and x < 62.9):
         if (x > 0.1):
-            x = x / 2.7 
+            x = float(x) / 2.7
             d31.append(float(x))
             #if (count > 2500 and count < 5000):
             #    x = x / 1.1
@@ -124,7 +124,7 @@ with open("./serviceDecomp_manipulated.txt", "r") as ins:
         words = line.split(",")
         x = float(words[0])
         if x > 0.5:
-            x = x * 2.7 
+            x = float(x) * 2.7 
             d32.append(float(x))
 
 count =0
@@ -142,7 +142,7 @@ with open("./handoverDecomp_manipulated.txt", "r") as ins:
         #
         #if (x > 0.1 and x < 62.9):
         if (x > 0.1):
-            x = x * 1.05 
+            x = float(x) * 1.05 
             d41.append(float(x))
             #if (count > 2500 and count < 5000):
             #    x = x / 1.1
@@ -160,7 +160,7 @@ with open("./serviceDecomp_manipulated.txt", "r") as ins:
         words = line.split(",")
         x = float(words[0])
         if x > 0.5:
-            x = x / 2.2
+            x = float(x) / 2.2
             d42.append(float(x))
 
 data_a = [d11, d21, d31, d41]
@@ -172,12 +172,19 @@ ax = fig.add_subplot(111)
 fig.tight_layout()
 fig.subplots_adjust(left=0.1, bottom=0.3, right=0.99)
 
-# boxprops = dict(linestyle='--', linewidth=3)
+boxprops = dict(linestyle='--', linewidth=3)
 
-#bp = ax.boxplot(data_a, 0, ' ', widths=0.1, boxprops=boxprops, positions=np.array(xrange(len(data_a)))*1.0-0.1, patch_artist=True)
-#bq = ax.boxplot(data_b, 0, ' ', widths=0.1, boxprops=boxprops, positions=np.array(xrange(len(data_a)))*1.0+0.1, patch_artist=True)
-bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0-0.1, patch_artist=True)
-bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(xrange(len(data_a)))*1.0+0.1, patch_artist=True)
+#bp = ax.boxplot(data_a, 0, ' ', widths=0.1, boxprops=boxprops, positions=np.array(range(len(data_a)))*1.0-0.1, patch_artist=True)
+#bq = ax.boxplot(data_b, 0, ' ', widths=0.1, boxprops=boxprops, positions=np.array(range(len(data_a)))*1.0+0.1, patch_artist=True)
+
+#bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=[1,2,3,4], patch_artist=True)
+#bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=[1,2,3,4], patch_artist=True)
+
+bp = ax.boxplot(data_a, patch_artist=True, widths=0.1, positions=[0,1,2,3])
+bq = ax.boxplot(data_b, patch_artist=True, widths=0.1, positions=[0.1,1.1,2.1,3.1])
+
+#bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(range(len(data_a)))*1.0-0.1, patch_artist=True)
+#bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(range(len(data_a)))*1.0+0.1, patch_artist=True)
 
 for patch in bq['boxes']:
     patch.set(facecolor='salmon')
@@ -191,6 +198,7 @@ for median in bq['medians']:
 
 
 ax.set_ylabel('Latency (ms)')
+plt.yticks(range(0, 100, 20))
 ax.set_xticks([0, 1, 2, 3])
 ax.set_xticklabels(['Unified\nMME', 'Naive\nDecomposition', 'Prioritize\n(H over S)', 'Prioritize\n(S over H)'])
 
