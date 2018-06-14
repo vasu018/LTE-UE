@@ -5,9 +5,10 @@ matplotlib.rcParams.update({'font.size':60})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
 #pepc = [25.6, 14.4, 11.86, 9.2, 8]
-ch = [21.8, 9.4, 4.86, 3.2, 2.1]
-rr = [19.7, 7.6, 4.35, 3.81, 1.8]
-skch = [2.75, 2.1, 1.15, 0.95, 0.4]
+ch = [6.7, 6.2, 4.7, 7, 100]
+rr = [6.2, 5.3, 3.6, 7, 92]
+skch = [4.1, 3.2, 2.9, 4.2, 45]
+maxservers = [2.7, 2.7, 2.7, 2.7, 2.7]
 #ilp = [1.39, 1, 1, 0.81, 0.37]
 #maglev = [16.3, 8.2, 3.2, 2.81, 1.6]
 hs = [3, 4, 5, 6, 7]
@@ -18,18 +19,13 @@ line, = plt.plot([1,5,2,4], '-')
 line.set_dashes([8, 4, 2, 4, 2, 4])
 
 
-#plt.plot(hs, pepc, marker='p', color='red', linewidth=5, markersize=18, linestyle='--', label='PEPC')
-
 plt.plot(hs, rr, marker='o', color='tomato', linewidth=5, markersize=18, linestyle='--', label='RR')
 plt.plot(hs, ch, marker='D', color='gold', linewidth=5, markersize=18, linestyle='--', label='CH')
 plt.plot(hs, skch, marker='^', color='royalblue', linewidth=5, markersize=18, linestyle='--', label='SK-CH')
-
-
-#plt.plot(hs, ilp, marker='s', color='salmon', linewidth=5, markersize=18, linestyle='--', label='ILP')
-#plt.plot(hs, maglev, marker='*', color='green', linewidth=5, markersize=18, linestyle='--', label='Maglev')
+plt.plot(hs, maxservers, marker='p', color='magenta', linewidth=5, markersize=18, linestyle='--', label='Max # of Servers')
 
 plt.xlabel('Number of Hosts')
-plt.ylabel('Trafiic type')
+plt.ylabel('Traffic type')
 plt.legend(loc='upper right', fontsize=50, ncol=2, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 ax1.xaxis.grid(color='grey', linestyle='dashed')
 ax1.yaxis.grid(color='grey', linestyle='dashed')
