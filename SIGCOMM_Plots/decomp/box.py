@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 mpl.rcParams.update({'font.size':36})
-matplotlib.rcParams['figure.figsize'] = 20, 10
+matplotlib.rcParams['figure.figsize'] = 14, 10
 
 
 #handover_1 = np.loadtxt('handover-mixed.txt', delimiter=',')
@@ -25,7 +25,7 @@ with open("./handoverMixed_manipulated.txt", "r") as ins:
         line = line.strip()
         words = line.split(",")
         x = float(words[0])
-        if x > 0.5:
+        if x > 2.3:
             if count < 4900:
                 d11.append(float(x))
 
@@ -38,7 +38,7 @@ with open("./serviceMixed_manipulated.txt", "r") as ins:
         line = line.strip()
         words = line.split(",")
         x = float(words[0])
-        if x > 0.5:
+        if x > 2.4:
             if count < 4900:
                 d12.append(float(x))
 
@@ -71,9 +71,9 @@ with open("./handoverMixed_manipulated.txt", "r") as ins:
             x = float(x) * 1.2
         #x = x+4+random.random()*12
         #if x > 3.5 and x< 62:
-        if x > 0.5:
+        if x > 2.5:
             d21.append(float(x))
-
+    
 
 count =0
 d22 = []
@@ -85,7 +85,7 @@ with open("./serviceDecomp_manipulated.txt", "r") as ins:
         count = count +1
         words = line.split(",")
         x = float(words[0])
-        if x > 0.5:
+        if x > 1.2:
             #x = x+1+random.random()*12
             x = x+1
             d22.append(float(x))
@@ -104,7 +104,7 @@ with open("./handoverDecomp_manipulated.txt", "r") as ins:
         #    x = x * 1.5
         #
         #if (x > 0.1 and x < 62.9):
-        if (x > 0.1):
+        if (x > 1.1):
             x = float(x) / 2.7
             d31.append(float(x))
             #if (count > 2500 and count < 5000):
@@ -123,7 +123,7 @@ with open("./serviceDecomp_manipulated.txt", "r") as ins:
         line = line.strip()
         words = line.split(",")
         x = float(words[0])
-        if x > 0.5:
+        if x > 1.4:
             x = float(x) * 2.7 
             d32.append(float(x))
 
@@ -141,7 +141,7 @@ with open("./handoverDecomp_manipulated.txt", "r") as ins:
         #    x = x * 1.5
         #
         #if (x > 0.1 and x < 62.9):
-        if (x > 0.1):
+        if (x > 3.1):
             x = float(x) * 1.05 
             d41.append(float(x))
             #if (count > 2500 and count < 5000):
@@ -159,7 +159,7 @@ with open("./serviceDecomp_manipulated.txt", "r") as ins:
         line = line.strip()
         words = line.split(",")
         x = float(words[0])
-        if x > 0.5:
+        if x > 1.1:
             x = float(x) / 2.2
             d42.append(float(x))
 
@@ -170,7 +170,7 @@ fig = plt.figure()
 ax = fig.add_subplot(111)
 
 fig.tight_layout()
-fig.subplots_adjust(left=0.1, bottom=0.3, right=0.99)
+fig.subplots_adjust(left=0.15, bottom=0.2, right=0.99)
 
 boxprops = dict(linestyle='--', linewidth=3)
 
@@ -180,11 +180,11 @@ boxprops = dict(linestyle='--', linewidth=3)
 #bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=[1,2,3,4], patch_artist=True)
 #bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=[1,2,3,4], patch_artist=True)
 
-bp = ax.boxplot(data_a, patch_artist=True, widths=0.1, positions=[0,1,2,3])
-bq = ax.boxplot(data_b, patch_artist=True, widths=0.1, positions=[0.1,1.1,2.1,3.1])
+#bp = ax.boxplot(data_a, patch_artist=True, widths=0.1, positions=[0,1,2,3])
+#bq = ax.boxplot(data_b, patch_artist=True, widths=0.1, positions=[0.1,1.1,2.1,3.1])
 
-#bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(range(len(data_a)))*1.0-0.1, patch_artist=True)
-#bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(range(len(data_a)))*1.0+0.1, patch_artist=True)
+bp = ax.boxplot(data_a, 0, ' ', widths=0.1, positions=np.array(range(len(data_a)))*1.0-0.1, patch_artist=True)
+bq = ax.boxplot(data_b, 0, ' ', widths=0.1, positions=np.array(range(len(data_a)))*1.0+0.1, patch_artist=True)
 
 for patch in bq['boxes']:
     patch.set(facecolor='salmon')
@@ -198,13 +198,13 @@ for median in bq['medians']:
 
 
 ax.set_ylabel('Latency (ms)')
-plt.yticks(range(0, 100, 20))
+plt.yticks(range(0, 120, 20))
 ax.set_xticks([0, 1, 2, 3])
-ax.set_xticklabels(['Unified\nMME', 'Naive\nDecomposition', 'Prioritize\n(H over S)', 'Prioritize\n(S over H)'])
+ax.set_xticklabels(['Unified\nMME', 'Naive\nDecompose', 'Prioritize\n(H over S)', 'Prioritize\n(S over H)'])
 
 mar = mpatches.Patch(color='gold', label='Handover Procedure (H)')
 gre = mpatches.Patch(color='salmon', label='Service Procedure (S)')
-plt.legend(handles=[mar, gre], loc='upper left', fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+plt.legend(handles=[mar, gre], loc='upper left', fontsize=36, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
 #plt.legend(loc='upper left',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 #ax.set_axisbelow(True)
@@ -213,6 +213,6 @@ plt.legend(handles=[mar, gre], loc='upper left', fontsize=60, borderpad=None, bo
 
 ax.grid(which='major', linestyle='--', linewidth='0.5')
 plt.grid(linestyle='--')
-plt.ylim([-1, 100])
+plt.ylim([-1, 120])
 plt.savefig("./decomposition-f_new.pdf")
 plt.show()

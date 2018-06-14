@@ -43,7 +43,7 @@ with open("./latency_datasf_sl_final.txt", "r") as ins:
             step_count = step_count +1
 
 totalEntries = len(data1)
-print "Total entries:", totalEntries
+print("Total entries:", totalEntries)
 
 totalVal = 0
 for latencyEntry in data3:
