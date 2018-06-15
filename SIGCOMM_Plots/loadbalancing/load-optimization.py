@@ -5,21 +5,16 @@ import itertools
 from collections import OrderedDict
 from functools import partial
 
-csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
-csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'42'}
-
-csfont3 = {'fontname':'Comic Sans MS', 'fontsize':'52'}
-
-hfont = {'fontname':'Helvetica', 'fontsize':'24'}
+hsfont = {'fontname':'Helvetica', 'fontsize':'48'}
 dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
 
 matplotlib.rcParams.update({'font.size':36})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
 
-fig, (ax1, ax2) = plt.subplots(ncols=2)
+fig, (ax1, ax2) = plt.subplots(1,2)
 fig.tight_layout()
-fig.subplots_adjust(left=0.10, right=0.99)
+fig.subplots_adjust(left=0.15, right=0.99)
 
 
 #params = {'legend.fontsize': 28,
@@ -142,7 +137,7 @@ def autolabel(rects, ax):
 
         ax.text(rect.get_x() + rect.get_width()/2., label_position,
                 '%d' % int(height),
-                ha='center', va='bottom',**csfont3)					
+                ha='center', va='bottom',**hsfont)					
 					
 #autolabel(rects6,ax2)
 #autolabel(rects7, ax2)
@@ -158,22 +153,22 @@ ax1.legend(loc='upper center', bbox_to_anchor=(0.5, 1.05),
 #ax1.set_position([box.x0, box.y0, box.width * 0.8, box.height])
 
 # axes and labels
-plt.subplot(121)
+#plt.subplot(121)
 ax1.set_xlim(-width1-0.05,len(ind1)+width1)
 ax1.set_ylim(0,8500)
-plt.ylabel('# Rules', **csfont)
+ax1.set_ylabel('# Rules', **hsfont)
 xTickMarks = ['Campus \nNet 1', 'Campus \nNet 2']
 #xTickMarks = ['Campus \nNet 1', 'Campus \nNet 2']
 ax1.set_xticks(ind1+0.50)
-xtickNames = ax1.set_xticklabels(xTickMarks, **csfont2)
+xtickNames = ax1.set_xticklabels(xTickMarks, **hsfont)
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
-plt.grid(linestyle='--')
+ax1.grid(linestyle='--')
 vals1 = ax1.get_yticks()
 #vals1.yticks(range(0, 8500, 2000), fontsize=46)
 ax1.set_yticklabels([str(x/1000) +  "k" for x in vals1])
 
-plt.subplot(121)
+#plt.subplot(121)
 #ax2.set_xlim(-width2,len(ind2))
 #ax2.yticks(range(0, 170000, 40000), fontsize=46)
 ax2.set_xlim(-2*width2-0.1,len(ind2))
@@ -183,11 +178,11 @@ ax2.set_ylim(0,170000)
 xTickMarks = ['Synthesized \nCampus Net 1']
 #xTickMarks = ['Syn. \nCamp 1']
 ax2.set_xticks(ind2+0.35)
-xtickNames = ax2.set_xticklabels(xTickMarks, **csfont2)
+xtickNames = ax2.set_xticklabels(xTickMarks, **hsfont)
 ax2.set_axisbelow(True)
 ax2.yaxis.grid(color='gray', linestyle='dashed')
 #plt.xlabel('Rule Space Optimization', **csfont)
-plt.grid(linestyle='--')
+ax2.grid(linestyle='--')
 vals = ax2.get_yticks()
 ax2.set_yticklabels([str(x/1000) +  "k" for x in vals])
 ax2.legend(loc='upper right',fontsize=28,handleheight=2)
@@ -195,5 +190,5 @@ ax2.legend(loc='upper right',fontsize=28,handleheight=2)
 #plt.legend(loc='upper left')
 #plt.legend(shadow=True, loc=(0.01, 0.78))
 #plt.subplots_adjust(left=0.12, wspace=0.99, top=0.99)
-plt.savefig("./rule-efficiency.pdf", bbox_inches='tight')
+plt.savefig("./load_optimization_new.pdf", bbox_inches='tight')
 plt.show()
