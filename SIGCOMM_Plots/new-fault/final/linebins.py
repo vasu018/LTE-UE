@@ -121,6 +121,7 @@ plt.plot(range(200), [i/1000 for i in data_sl_host], linewidth=1, marker='^', ma
 plt.plot(range(200), [i/1000 for i in data_sl_nf], linewidth=1, marker='*', markersize=10, color='maroon', label='Stateless NF Failure')
 
 #plt.xticks(np.arange(0, 225, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
+#plt.xticks(np.arange(0, 200, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
 plt.xticks(np.arange(0, 200, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
 
 plt.xlabel('Time (sec)',  fontsize='48')
