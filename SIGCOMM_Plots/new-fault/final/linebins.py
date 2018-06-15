@@ -116,18 +116,27 @@ for i, j in zip(data5, data6):
         t = []
         c += 0.1
 
-plt.plot(range(200), [i/1000 for i in data_sf], linewidth=1, marker='x', markersize=10, color='green', label='Stateful Host/NF Failure')
-plt.plot(range(200), [i/1000 for i in data_sl_host], linewidth=1, marker='^', markersize=10, color='magenta', label='Stateless Host Failure')
-plt.plot(range(200), [i/1000 for i in data_sl_nf], linewidth=1, marker='*', markersize=10, color='maroon', label='Stateless NF Failure')
+print(len(data_sf))
+print(len(data_sl_host))
+print(len(data_sl_nf))
+
+data_sf_new = data_sf[25:174]
+data_sl_host_new = data_sl_host[25:174]
+data_sl_nf_new = data_sl_nf[25:174]
+
+
+plt.plot(range(25,174), [i/1000 for i in data_sf_new], linewidth=1, marker='x', markersize=10, color='green', label='Stateful Host/NF Failure')
+plt.plot(range(25,174), [i/1000 for i in data_sl_host_new], linewidth=1, marker='^', markersize=10, color='magenta', label='Stateless Host Failure')
+plt.plot(range(25,174), [i/1000 for i in data_sl_nf_new], linewidth=1, marker='*', markersize=10, color='maroon', label='Stateless NF Failure')
 
 #plt.xticks(np.arange(0, 225, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
 #plt.xticks(np.arange(0, 200, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
-plt.xticks(np.arange(0, 200, 25), ['0', '5', '10', '15', '20', '25', '30', '35', '40'])
+plt.xticks(np.arange(25, 180, 25), ['0', '5', '10', '15', '20', '25', '30'])
 
 plt.xlabel('Time (sec)',  fontsize='48')
 plt.ylabel('Avg. Completion Time (sec)',  fontsize='48')
 #plt.xlim([0, 30])
-#plt.xticks(range(0, 30, 5))
+#plt.xticks(range(0, 31, 5))
 plt.ylim([0, 5.2])
 plt.yticks(range(0, 6, 2))
 plt.grid(linestyle='--')
