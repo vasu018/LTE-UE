@@ -21,7 +21,7 @@ rects2 = ax1.bar(ind+width+0.15, s1, width, color='salmon', error_kw=dict(elinew
 #plt.xticks(np.arange(len(s1))+0.15, ['RR', 'CH', 'Skewed-CH', 'ILP'])
 #plt.xticks(np.arange(len(s1))+0.35, ['RR', 'CH', 'SK-CH', 'ILP'], fontsize='52')
 plt.xticks(np.arange(len(s1))+0.35, ['RR', 'CH', 'Maglev', 'SK-CH', 'ILP'], fontsize='48')
-plt.ylabel('Std Dev of Key Dist. (%)')
+plt.ylabel('Std. Dev of Key Dist. (%)')
 #ax1.grid(linestyle='--')
 #plt.legend(loc=(0.01, 0.75),ncol=1)
 plt.legend(loc='upper right',ncol=1, fontsize=60, fancybox=True, framealpha=0.5)
