@@ -5,6 +5,7 @@ from io import StringIO
 #import numpy as np
 import matplotlib
 #import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 
 matplotlib.rcParams.update({'font.size':60})
 matplotlib.rcParams['figure.figsize'] = 14, 10
@@ -34,9 +35,12 @@ df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinew
 for tick in ax.get_xticklabels():
     tick.set_rotation(30)
 
-ax.set_ylabel('SDResource')
-ax2.set_ylabel('SLOViolation')
-plt.legend(loc='upper right',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+ax.set_ylabel('Std. Dev of Load Dist. (%)')
+ax2.set_ylabel('SLO Violations (%)')
+mar = mpatches.Patch(color='salmon', label='Std. Dev of Load Dist')
+gre = mpatches.Patch(color='royalblue', label='SLO Violations')
+plt.legend(handles=[mar, gre], loc='upper left', fontsize=36, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+#plt.legend(loc='upper right',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
 ax.xaxis.grid(color='gray',linestyle='--')
 ax.yaxis.grid(color='gray', linestyle='--')
