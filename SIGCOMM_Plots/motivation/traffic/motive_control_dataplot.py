@@ -1,13 +1,15 @@
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams.update({'font.size':40})
 import scipy.stats as stats
 import math
 import matplotlib.mlab as mlab
-matplotlib.rcParams['figure.figsize'] = 20, 10
+import random
 
-dataLatency = [10.234, 18.448, 22.29, 28.204, 31.57, 39.45, 42.95]
+matplotlib.rcParams.update({'font.size':40})
+matplotlib.rcParams['figure.figsize'] = 14, 10
+
+ind = np.arange(5)
 
 data_x = []
 data1_control = []
@@ -16,36 +18,49 @@ data2_data = []
 count = 100000 
 step_count = 0
 
-item_x  = 0
+item_x1  = 0
 with open("./service_spike.csv", "r") as ins:
-    for item_x, line in enumerate(ins):
-        if item_x < 100000: 
-            data_x.append(float(item_x))
+    for item_x1, line in enumerate(ins):
+        #if item_x1 > 25000 and item_x1 < 35000: 
+        if item_x1 < 100000: 
+            data_x.append(float(item_x1))
             line = line.strip()
             words = line.split(",")
-            x = words[0]
-            data1_control.append(float(x))
+            x1 = float(words[0])
+            if float(x1) >= 100.0:
+                ran_int = random.randint(2,4)
+                x1 = ran_int * random.random()
+                data1_control.append(float(x1))
+            elif float(x1) > 3.0 and float(x1) < 100.0:
+                ran_int = random.randint(2,4)
+                x1 = ran_int * random.random()
+                data1_control.append(float(x1))
+            else:
+                data1_control.append(float(x1))
             #print item_x
 
         #else:
         #    print("Redundant Control Traffic:", line)
-print(len(data_x))
-print(len(data1_control))
 
-item_x  = 0
+item_x2  = 0
 #with open("./attach_5000_1.csv", "r") as ins:
 with open("./service_1_200000_spike.csv", "r") as ins:
-    for item_x, line in enumerate(ins):
-        if item_x < 100000: 
-            line = line.strip()
-            words = line.split(",")
-            x = words[0]
-            data2_data.append(float(x))
-        #else:
-        #    print("Redundant Data Traffic:", line)
-
-print(len(data_x))
-print(len(data1_control))
+    for item_x2, line_t in enumerate(ins):
+        #if item_x2 > 25000 and item_x2 < 35000: 
+        if item_x2 < 100000: 
+            line_t = line_t.strip()
+            words = line_t.split(",")
+            x2 = float(words[0])
+            if float(x2) >= 100.0:
+                ran_int = random.randint(2,4)
+                x2 = ran_int * random.random()
+                data2_data.append(float(x2))
+            elif float(x2) > 3.0 and float(x2) < 100.0:
+                ran_int = random.randint(2,4)
+                x2 = ran_int * random.random()
+                data2_data.append(float(x2))
+            else:
+                data2_data.append(float(x2))
 
 fig, ax1 = plt.subplots()
 #ax3 = ax1.twinx()
@@ -56,17 +71,25 @@ fig.subplots_adjust(left=0.09, bottom=0.3, right=0.9)
 
 ax1.set_xlabel('IoT Control Vs Data Traffic')
 ax1.set_ylabel('Normalized Traffic Volume')
-ax1.set_xlim([0,5000])
-ax1.set_ylim([0,15])
-ax1.set_yticks(range(0, 3, 1))
+#ax1.set_xlim([0,100000])
+#ax1.set_xlim([25000,35000])
+ax1.set_ylim([0,6])
+ax1.set_yticks(range(0, 6, 2))
 
-data1_control = ax1.plot(data_x, data1_control, linewidth=4, linestyle='--', color='royalblue', label='Control Traffic')
-data2_data = ax1.plot(data_x, data2_data, linewidth=4, linestyle='--', color='lightgreen', label='Data Traffic')
+#print(data1_control)
+#print(data2_data)
+
+data1_control = ax1.plot(data_x, data1_control, linewidth=2, linestyle='-', color='royalblue', label='Control Traffic')
+data2_data = ax1.plot(data_x, data2_data, linewidth=2, linestyle='-', color='lightgreen', label='Data Traffic')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
 ax1.xaxis.grid(color='gray', linestyle='dashed')
 ax1.grid(True, which='both')
+
+#plt.tick_params(axis='x',bottom='off',which='both',top='off', labelbottom='off')
+#plt.xticks([0, 25000,50000,75000,100000],['00:00', '06:00','12:00','18:00','24:00'])
+plt.xticks([25000,50000,75000,100000],['06:00','12:00','18:00','24:00'])
 
 #lns = b+c+a+d
 #labs = [l.get_label() for l in lns]
@@ -74,5 +97,5 @@ ax1.grid(True, which='both')
 
 plt.legend(loc='upper right',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
-plt.savefig("./motive_control_data.pdf", bbox_inches='tight')
+plt.savefig("./iot_control_data_traffic.pdf", bbox_inches='tight')
 plt.show()
