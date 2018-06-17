@@ -67,21 +67,24 @@ ax1.set_xlim([0,349])
 ax1.set_ylim([0,15])
 ax1.set_yticks(range(0, 15, 5))
 ax3.set_ylabel('Latency (ms)')
-ax3.set_ylim([0,1000])
+ax3.set_ylim([0,1100])
 ax3.set_yscale('symlog')
 
-b = ax3.plot(data1, data3, linewidth=4, linestyle='-.', marker='+', markersize=10 , color='green', label='Latency - stateless')
-c = ax3.plot(data1, data4, linewidth=4, linestyle='-.', marker='+', markersize=10 , color='red', label='Latency - stateful')
+b = ax3.plot(data1, data3, linewidth=4, linestyle='-.', marker='+', markersize=6 , color='green', label='Latency - stateless')
+c = ax3.plot(data1, data4, linewidth=4, linestyle='-.', marker='+', markersize=6 , color='red', label='Latency - stateful')
 a = ax1.plot(data1, data2, linewidth=4, linestyle='--', color='blue', label='#NF')
-d = ax1.plot(h1, h2, linewidth=4, linestyle=':', color='magenta', label='#host')
+d = ax1.plot(h1, h2, linewidth=4, linestyle='--', color='magenta', label='#host')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
+ax1.xaxis.grid(color='gray', linestyle='dashed')
 ax1.grid(True, which='both')
 
 lns = b+c+a+d
 labs = [l.get_label() for l in lns]
-ax1.legend(lns, labs, ncol=2, loc='upper center', bbox_to_anchor=(0.5, 1.42), fontsize=39)
+ax1.legend(lns, labs, ncol=2, loc='upper center', bbox_to_anchor=(0.5, 1.45), fontsize=40,  borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+
+#plt.legend(loc='upper right',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
 plt.savefig("./latency-scale_new.pdf", bbox_inches='tight')
 plt.show()
