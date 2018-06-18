@@ -99,7 +99,7 @@ fig, ax1 = plt.subplots()
 
 fig.tight_layout()
 #fig.subplots_adjust(left=0.09, top=0.8, bottom=0.3, right=0.9)
-fig.subplots_adjust(left=0.09, bottom=0.25, right=0.99)
+fig.subplots_adjust(left=0.09, bottom=0.10, right=0.99)
 
 ax1.set_xlabel('IoT Control Vs Data Traffic')
 ax1.set_ylabel('Normalized Traffic Volume')
@@ -113,8 +113,8 @@ ax1.set_ylabel('Normalized Traffic Volume')
 
 data1_control = ax1.plot(data_x, data1_control, linewidth=2, dashes=dashList[3], linestyle='-.', color='lightgreen', label='Control Traffic')
 data2_data = ax1.plot(data_x, data2_data, linewidth=2, linestyle='-.', color='lightcoral', label='Data Traffic')
-data3_control = ax1.plot(data_x, data3_control, linewidth=6, linestyle='--', color='blue', label='Avg. Control Load')
-data4_data = ax1.plot(data_x, data4_data, linewidth=6, linestyle='--', color='red', label='Avg. Data Load')
+#data3_control = ax1.plot(data_x, data3_control, linewidth=6, linestyle='--', color='blue', label='Avg. Control Load')
+#data4_data = ax1.plot(data_x, data4_data, linewidth=6, linestyle='--', color='red', label='Avg. Data Load')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
