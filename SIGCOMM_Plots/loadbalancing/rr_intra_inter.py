@@ -48,8 +48,8 @@ for tick in ax.get_xticklabels():
 ax.set_ylabel('Std. Dev of Load Dist. (%)', fontsize='50')
 ax2.set_ylabel('SLO Violations (%)', fontsize='50')
 
-mar = mpatches.Patch(color='salmon', label='Std. Dev of Load Dist', linewidth=2, hatch='.')
-gre = mpatches.Patch(color='royalblue', label='SLO Violations', hatch='/')
+mar = mpatches.Patch(color='cornflowerblue', label='Std. Dev of Load Dist', linewidth=2, hatch='.')
+gre = mpatches.Patch(color='tomato', label='SLO Violations', hatch='/')
 plt.legend(handles=[mar, gre], loc='upper right', fontsize=46, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 #plt.legend(handles=[mar, gre], loc='upper right', fontsize=42, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 #plt.legend(loc='upper right',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)

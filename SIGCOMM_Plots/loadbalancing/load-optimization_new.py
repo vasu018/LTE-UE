@@ -25,7 +25,7 @@ N2 = 1
 rr_sim = [89]
 ch_sim = [97]
 maglev_sim = [83]
-sk_ch_sim = [57]
+sk_ch_sim = [53]
 
 ## necessary variables
 ind1 = np.arange(N1)                # the x locations for the groups
