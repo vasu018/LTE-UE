@@ -19,8 +19,17 @@ data2_data = []
 data3_control = []
 data4_data = []
 
+data_x_counter = 0
+data5_control_bin = []
+data6_data_bin = []
+
+bin_count = 100
+bin_x_axis_count = 1000
 count = 100000 
-step_count = 0 
+step_count = 0
+bin_average = 0 
+bin_counter = 0
+bin_total = 0
 
 item_x1  = 0
 #with open("./service_spike.csv", "r") as ins:
@@ -28,7 +37,6 @@ with open("./service_1_200000_spike.csv", "r") as ins:
     for item_x1, line in enumerate(ins):
         #if item_x1 > 25000 and item_x1 < 35000: 
         if item_x1 < 100000: 
-            data_x.append(float(item_x1))
             line = line.strip()
             words = line.split(",")
             x1 = float(words[0])
@@ -45,6 +53,23 @@ with open("./service_1_200000_spike.csv", "r") as ins:
             else:
                 data1_control.append(float(x1))
             #print item_x
+
+            if bin_counter >= bin_count:
+                data_x.append(data_x_counter)
+                bin_average = bin_total / bin_count 
+                data5_control_bin.append(bin_average)
+                bin_counter = 0
+                bin_total = 0
+                bin_average = 0
+                data_x_counter = data_x_counter + 1
+
+            else:
+                bin_total = bin_total + x1
+                bin_counter = bin_counter + 1
+
+
+print(len(data_x))
+print(len(data5_control_bin))
 
 item_x2  = 0
 #with open("./attach_5000_1.csv", "r") as ins:
@@ -69,68 +94,45 @@ with open("./service_spike.csv", "r") as ins:
                 data2_data.append(float(x2))
             else:
                 data2_data.append(float(x2))
+            
+            if bin_counter >= bin_count:
+                #data_x.append(data_x_counter)
+                bin_average = bin_total / bin_count 
+                data6_data_bin.append(bin_average)
+                bin_counter = 0
+                bin_total = 0
+                bin_average = 0
+                #data_x_counter = data_x_counter + 1
+            else:
+                bin_total = bin_total + x1
+                bin_counter = bin_counter + 1
 
-average_control = 0
-average_data = 0
-control_val = 0
-for control_val in data1_control:
-    average_control = average_control + control_val
-average_control = average_control / len(data1_control)
+            
+print(len(data6_data_bin))
 
-data_val = 0
-for data_val in data2_data:
-    average_data = average_data + data_val
-average_data = average_data / len(data2_data)
-
-
-#print average_control, average_data
-#print len(data_x)
-for idx1 in range(len(data1_control)):
-    data3_control.append(float(average_control))
-
-
-for idx2 in range(len(data2_data)):
-    data4_data.append(float(average_data)) 
-
-#print average_control, average_data
 
 fig, ax1 = plt.subplots()
 #ax3 = ax1.twinx()
 
 fig.tight_layout()
-#fig.subplots_adjust(left=0.09, top=0.8, bottom=0.3, right=0.9)
 fig.subplots_adjust(left=0.09, bottom=0.10, right=0.99)
 
 ax1.set_xlabel('IoT Control Vs Data Traffic')
 ax1.set_ylabel('Normalized Traffic Volume')
-#ax1.set_xlim([0,100000])
-#ax1.set_xlim([25000,35000])
-#ax1.set_ylim([0,4])
-#ax1.set_yticks(range(0, 4, 1))
 
-#print(data1_control)
-#print(data2_data)
-
-data1_control = ax1.plot(data_x, data1_control, linewidth=2, dashes=dashList[3], linestyle='-.', color='lightgreen', label='Control Traffic')
-data2_data = ax1.plot(data_x, data2_data, linewidth=2, linestyle='-.', color='lightcoral', label='Data Traffic')
-#data3_control = ax1.plot(data_x, data3_control, linewidth=6, linestyle='--', color='blue', label='Avg. Control Load')
-#data4_data = ax1.plot(data_x, data4_data, linewidth=6, linestyle='--', color='red', label='Avg. Data Load')
+data5_control_bin = ax1.plot(data_x, data5_control_bin, linewidth=2, dashes=dashList[3], linestyle='-.', color='lightgreen', label='Control Traffic')
+data6_data_bin = ax1.plot(data_x, data6_data_bin, linewidth=2, linestyle='-.', color='lightcoral', label='Data Traffic')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
 ax1.xaxis.grid(color='gray', linestyle='dashed')
 ax1.grid(True, which='both')
 
-#plt.tick_params(axis='x',bottom='off',which='both',top='off', labelbottom='off')
 #plt.xticks([0, 25000,50000,75000,100000],['00:00', '06:00','12:00','18:00','24:00'])
-plt.xticks([0, 25000,50000,75000,100000],['00:00', '06:00','12:00','18:00','24:00'])
+plt.xticks([0, 250, 500, 750, 1000],['00:00', '06:00','12:00','18:00','24:00'])
 plt.yticks([1,2,3,4],['0.25','0.50','0.75','1.0'])
-
-#lns = b+c+a+d
-#labs = [l.get_label() for l in lns]
-#ax1.legend(lns, labs, ncol=2, loc='upper center', bbox_to_anchor=(0.5, 1.45), fontsize=40,  borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
 plt.legend(loc='upper right',ncol=2, fontsize=32, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
-plt.savefig("./iot_control_data_traffic.pdf", bbox_inches='tight')
+plt.savefig("./bins-iot_control_data_traffic.pdf", bbox_inches='tight')
 plt.show()
