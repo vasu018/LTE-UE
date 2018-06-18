@@ -46,7 +46,7 @@ with open("./service_1_200000_spike.csv", "r") as ins:
                 #x1 = random.random()
                 data1_control.append(float(x1))
             elif float(x1) > 4.0 and float(x1) < 100.0:
-                ran_int = random.randint(2,3)
+                ran_int = random.randint(2,4)
                 x1 = ran_int * random.random()
                 #x1 = random.random()
                 data1_control.append(float(x1))
@@ -102,9 +102,9 @@ with open("./service_spike.csv", "r") as ins:
                 bin_counter = 0
                 bin_total = 0
                 bin_average = 0
-                #data_x_counter = data_x_counter + 1
+                data_x_counter = data_x_counter + 1
             else:
-                bin_total = bin_total + x1
+                bin_total = bin_total + x2
                 bin_counter = bin_counter + 1
 
             
@@ -120,8 +120,8 @@ fig.subplots_adjust(left=0.09, bottom=0.10, right=0.99)
 ax1.set_xlabel('IoT Control Vs Data Traffic')
 ax1.set_ylabel('Normalized Traffic Volume')
 
-data5_control_bin = ax1.plot(data_x, data5_control_bin, linewidth=2, dashes=dashList[3], linestyle='-.', color='lightgreen', label='Control Traffic')
-data6_data_bin = ax1.plot(data_x, data6_data_bin, linewidth=2, linestyle='-.', color='lightcoral', label='Data Traffic')
+data5_control_bin = ax1.plot(data_x, data5_control_bin, linewidth=2, linestyle='-', color='green', label='Control Traffic')
+data6_data_bin = ax1.plot(data_x, data6_data_bin, linewidth=2, linestyle='-', color='salmon', label='Data Traffic')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
@@ -130,9 +130,10 @@ ax1.grid(True, which='both')
 
 #plt.xticks([0, 25000,50000,75000,100000],['00:00', '06:00','12:00','18:00','24:00'])
 plt.xticks([0, 250, 500, 750, 1000],['00:00', '06:00','12:00','18:00','24:00'])
-plt.yticks([1,2,3,4],['0.25','0.50','0.75','1.0'])
+plt.yticks([1,2,3,4],['0.25', '0.50', '0.75', '1.0'])
+#plt.yticks([1,2],['0.50', '1.0'])
 
-plt.legend(loc='upper right',ncol=2, fontsize=32, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+plt.legend(loc='upper right',ncol=2, fontsize=42, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
 plt.savefig("./bins-iot_control_data_traffic.pdf", bbox_inches='tight')
 plt.show()
