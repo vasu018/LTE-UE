@@ -68,8 +68,8 @@ with open("./service_1_200000_spike.csv", "r") as ins:
                 bin_counter = bin_counter + 1
 
 
-print(len(data_x))
-print(len(data5_control_bin))
+#print(len(data_x))
+#print(len(data5_control_bin))
 
 item_x2  = 0
 #with open("./attach_5000_1.csv", "r") as ins:
@@ -108,7 +108,7 @@ with open("./service_spike.csv", "r") as ins:
                 bin_counter = bin_counter + 1
 
             
-print(len(data6_data_bin))
+#print(len(data6_data_bin))
 
 
 fig, ax1 = plt.subplots()
@@ -130,10 +130,12 @@ ax1.grid(True, which='both')
 
 #plt.xticks([0, 25000,50000,75000,100000],['00:00', '06:00','12:00','18:00','24:00'])
 plt.xticks([0, 250, 500, 750, 1000],['00:00', '06:00','12:00','18:00','24:00'])
-plt.yticks([1,2,3,4],['0.25', '0.50', '0.75', '1.0'])
+plt.ylim([0,3])
+#plt.yticks(range(0, 6, 2))
+plt.yticks([0.75,1.5,2.25,3],['0.25', '0.5', '0.75', '1.0'])
 #plt.yticks([1,2],['0.50', '1.0'])
 
-plt.legend(loc='upper right',ncol=2, fontsize=42, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+plt.legend(loc='upper right',ncol=1, fontsize=42, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 
 plt.savefig("./bins-iot_control_data_traffic.pdf", bbox_inches='tight')
 plt.show()
