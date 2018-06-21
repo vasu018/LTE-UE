@@ -31,7 +31,7 @@ ax = fig.add_subplot(111) # Create matplotlib axes
 ax2 = ax.twinx() # Create another axes that shares the same x-axis as ax.
 
 ind = np.arange(5)  # the x locations for the groups
-width = 0.22
+width = 0.18
 
 #rects2 = ax1.bar(ind+0.1, s2, width, color='lightgreen', error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, capsize=10, label='50% Skew', hatch='/')
 #df.SDResource.plot(kind='bar', color='salmon', ax=ax, width=width, position=1)
