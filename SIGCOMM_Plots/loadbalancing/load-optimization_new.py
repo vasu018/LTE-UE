@@ -6,8 +6,8 @@ from collections import OrderedDict
 from functools import partial
 from matplotlib import gridspec
 
-matplotlib.rcParams.update({'font.size':60})
-matplotlib.rcParams['figure.figsize'] = 16, 12
+matplotlib.rcParams.update({'font.size':40})
+matplotlib.rcParams['figure.figsize'] = 16,8 
 
 hfont = {'fontname':'Helvetica', 'fontsize':'42'}
 dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
@@ -17,13 +17,16 @@ dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
 
 fig, (ax1, ax2) = plt.subplots(ncols=2)
 #fig.subplots_adjust(left=0.07, right=0.99)
-fig.subplots_adjust(left=0.1, bottom=0.1, right=0.95)
+fig.subplots_adjust(left=0.1, bottom=0.1, right=0.99)
 
 N1 = 4 
-rr = [6.2, 5.3, 3.6, 6.7]
-ch = [6.7,6.2,4.7,7]
-maglev = [6.3, 5.6, 3.8, 6.8]
-sk_ch = [4.1,3.2,2.9,4.2]
+#rr = [6.2, 5.3, 3.6, 6.7]
+#ch = [6.7,6.2,4.7,7]
+#maglev = [6.3, 5.6, 3.8, 6.8]
+rr = [6.2, 5.1, 3.4, 6.7]
+ch = [6.7,6.0,3.9,7]
+maglev = [6.1, 5.0, 3.6, 6.8]
+sk_ch = [3.6,3.2,3.1,3.7]
 
 N2 = 1 
 rr_sim = [89]
@@ -33,10 +36,10 @@ sk_ch_sim = [53]
 
 ## necessary variables
 ind1 = np.arange(N1)                # the x locations for the groups
-width1 = 0.22                      # the width of the bars
+width1 = 0.20                      # the width of the bars
 
 ind2 = np.arange(N2)                # the x locations for the groups
-width2 = 0.10                      # the width of the bars
+width2 = 0.08                      # the width of the bars
 
 
 ## the bars
@@ -119,28 +122,30 @@ def autolabel(rects, ax):
 plt.subplot(121)
 ax1.set_xlim(-width1-0.05,len(ind1)+width1)
 ax1.set_ylim(0,10)
-plt.ylabel('# Servers')
-xTickMarks = ['$\\alpha=3$', '$\\alpha=2$', '$\\alpha=1$', 'T4']
-ax1.set_xticks(ind1+0.50)
+plt.ylabel('# Servers', fontsize='46')
+xTickMarks = ['$\\alpha$=3', '$\\alpha$=2', '$\\alpha$=1', '$\\alpha$=$\\infty$']
+ax1.set_xticks(ind1+0.40)
 xtickNames = ax1.set_xticklabels(xTickMarks, **hfont)
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')
 plt.grid(linestyle='--')
 vals1 = ax1.get_yticks()
 #plt.legend(loc='upper left',fontsize=60,handleheight=2)
+#ax1.set_yticks(fontsize='42')
+
 
 plt.subplot(121)
 ax2.set_xlim(-2*width2-0.1,len(ind2))
 ax2.set_ylim(0,110)
-xTickMarks = ['T4']
-ax2.set_xticks(ind2+0.25)
-xtickNames = ax2.set_xticklabels(xTickMarks, fontsize='42')
+xTickMarks = ['$\\alpha$=$\\infty$']
+ax2.set_xticks(ind2+0.15)
+xtickNames = ax2.set_xticklabels(xTickMarks, **hfont)
 ax2.set_axisbelow(True)
 ax2.yaxis.grid(color='gray', linestyle='dashed')
 plt.grid(linestyle='--')
 vals = ax2.get_yticks()
 #ax2.set_yticklabels([str(x/1000) +  "k" for x in vals])
-ax2.legend(loc='upper right',fontsize=36,handleheight=1)
+ax2.legend(loc='upper right',fontsize=34,handleheight=1)
 ax1.set_xlabel('(a) Traffic Distributions', fontsize='42')
 ax2.set_xlabel('(b) Simulation Setup', fontsize='42')
 
