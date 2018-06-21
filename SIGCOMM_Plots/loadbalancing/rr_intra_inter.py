@@ -27,6 +27,8 @@ df = pd.read_csv(dataIn, index_col=0, delimiter=' ', skipinitialspace=True)
 
 fig = plt.figure() # Create matplotlib figure
 
+fig.subplots_adjust(left=0.1, bottom=0.1, right=0.99)
+
 ax = fig.add_subplot(111) # Create matplotlib axes
 ax2 = ax.twinx() # Create another axes that shares the same x-axis as ax.
 
