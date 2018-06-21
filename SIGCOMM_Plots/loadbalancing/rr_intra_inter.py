@@ -4,11 +4,11 @@ import pandas as pd
 from io import StringIO
 #import numpy as np
 import matplotlib
-#import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
-matplotlib.rcParams.update({'font.size':52})
-matplotlib.rcParams['figure.figsize'] = 14, 10
+matplotlib.rcParams.update({'font.size':60})
+matplotlib.rcParams['figure.figsize'] = 16, 12
 
 # Original Data
 #RR+RR  25.75   17.89
@@ -17,10 +17,10 @@ matplotlib.rcParams['figure.figsize'] = 14, 10
 #Inter+Intra        7.85   4.25
 
 dataIn = StringIO(u"""     SDResource     SLOViolation
-RR+RR  18.65   21.89
-RR+ViableNF     16.65   9.92
-SK-CH+RR     5.32   16.35
-SK-CH+ViableNF  2.85   4.25
+A1  18.65   21.89
+A2     16.65   9.92
+A3     5.32   16.35
+A4  2.85   4.25
 """)
 
 df = pd.read_csv(dataIn, index_col=0, delimiter=' ', skipinitialspace=True)
@@ -40,17 +40,20 @@ width = 0.25
 #df.SDResource.plot(kind='bar', color='salmon', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, label='Std. Dev of Load Dist. (%)', hatch='/', position=1, fontsize='50')
 #df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, label='SLO Violations (%)', hatch ='.', position=0,  fontsize='50')
 
-df.SDResource.plot(kind='bar', color='salmon', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch='.', position=1+0.1, fontsize='50')
-df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch ='/', position=0,  fontsize='50')
-for tick in ax.get_xticklabels():
-    tick.set_rotation(20)
+df.SDResource.plot(kind='bar', color='salmon', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch='.', position=1+0.1, fontsize='42')
+df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch ='/', position=0,  fontsize='42')
 
-ax.set_ylabel('Std. Dev of Load Dist. (%)', fontsize='50')
-ax2.set_ylabel('SLO Violations (%)', fontsize='50')
+for tick in ax.get_xticklabels():
+    tick.set_rotation(0)
+
+
+ax.set_xlabel('Hybrid LB Schemes')
+ax.set_ylabel('Std. Dev of Load Dist. (%)')
+ax2.set_ylabel('SLO Violations (%)')
 
 mar = mpatches.Patch(color='cornflowerblue', label='Std. Dev of Load Dist', linewidth=2, hatch='.')
 gre = mpatches.Patch(color='tomato', label='SLO Violations', hatch='/')
-plt.legend(handles=[mar, gre], loc='upper right', fontsize=46, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+plt.legend(handles=[mar, gre], loc='upper right', fontsize=42, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 #plt.legend(handles=[mar, gre], loc='upper right', fontsize=42, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 #plt.legend(loc='upper right',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 ax.set_ylim([0, 30])
