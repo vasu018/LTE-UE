@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':60})
-matplotlib.rcParams['figure.figsize'] = 14, 10
+matplotlib.rcParams['figure.figsize'] = 16, 12
 
 pepc = [25.6, 14.4, 8.86, 7.6, 6.1]
 ch = [21.8, 9.4, 4.86, 3.2, 2.1]
@@ -16,6 +16,7 @@ dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
 fig, ax1 = plt.subplots()
 line, = plt.plot([1,5,2,4], '-')
 line.set_dashes([8, 4, 2, 4, 2, 4])
+fig.subplots_adjust(bottom=0.1, right=0.95)
 
 #plt.plot(hs, rr, marker='o', markersize='20', color='magenta', linewidth=4, linestyle='--', label='RR')
 #plt.plot(hs, ch, marker='s', markersize='20', color='orange', linewidth=4, linestyle='--', label='CH')
@@ -35,9 +36,11 @@ plt.plot(hs, pepc, marker='p', color='magenta', linewidth=5, markersize=18, line
 
 plt.xlabel('Number of Hosts')
 plt.ylabel('Violations (%)')
-plt.legend(loc='upper right', fontsize=46, ncol=2, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+plt.legend(loc='upper right', fontsize=60, ncol=2, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 ax1.xaxis.grid(color='grey', linestyle='dashed')
 ax1.yaxis.grid(color='grey', linestyle='dashed')
+
+plt.xticks(fontsize='42')
 
 #plt.xticks(hs, ['3', '4', '5', '6', '7'])
 plt.grid(linestyle='--')
