@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 matplotlib.rcParams.update({'font.size':48})
-matplotlib.rcParams['figure.figsize'] = 14, 8 
+matplotlib.rcParams['figure.figsize'] = 12, 7 
 
 # Original Data
 #RR+RR  25.75   17.89
