@@ -5,7 +5,7 @@ matplotlib.rcParams.update({'font.size':40})
 import scipy.stats as stats
 import math
 import matplotlib.mlab as mlab
-matplotlib.rcParams['figure.figsize'] = 20, 10
+matplotlib.rcParams['figure.figsize'] = 16,10 
 
 dataLatency = [10.234, 18.448, 22.29, 28.204, 31.57, 39.45, 42.95]
 
@@ -59,7 +59,7 @@ fig, ax1 = plt.subplots()
 ax3 = ax1.twinx()
 
 fig.tight_layout()
-fig.subplots_adjust(left=0.09, top=0.8, bottom=0.3, right=0.9)
+fig.subplots_adjust(left=0.1, top=0.8, bottom=0.3, right=0.90)
 
 ax1.set_xlabel('Time (sec)')
 ax1.set_ylabel('#NF or #host')
