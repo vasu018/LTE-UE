@@ -27,7 +27,7 @@ rects1 = ax1.bar(ind+width+0.15, s1, width, color='salmon', error_kw=dict(elinew
 #rects3 = ax1.bar(ind+width+width+0.20, s3, width, color='royalblue', error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, capsize=10, label='PEPC', hatch='-')
 
 plt.xlabel('LB schemes with MME')
-plt.xticks(np.arange(len(s1))+0.18, ['RR', 'PEPC', 'CH', 'Maglev', 'MMLite', 'ILP'], fontsize='42')
+plt.xticks(np.arange(len(s1))+0.35, ['RR', 'PEPC', 'CH', 'Maglev', 'MMLite', 'ILP'], fontsize='42')
 plt.ylabel('Violations (%)')
 ax1.grid(linestyle='--')
 #plt.legend(loc='upper right',ncol=1, fontsize=60, fancybox=True, framealpha=0.5)

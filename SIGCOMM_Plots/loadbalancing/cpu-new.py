@@ -22,7 +22,7 @@ rects2 = ax1.bar(ind+width+0.15, s1, width, color='salmon', error_kw=dict(elinew
 
 #plt.xticks(np.arange(len(s1))+0.15, ['RR', 'CH', 'Skewed-CH', 'ILP'])
 #plt.xticks(np.arange(len(s1))+0.35, ['RR', 'CH', 'SK-CH', 'ILP'], fontsize='52')
-plt.xticks(np.arange(len(s1))+0.18, ['RR', 'PEPC', 'CH', 'Maglev', 'MMLite', 'ILP'], fontsize='42')
+plt.xticks(np.arange(len(s1))+0.35, ['RR', 'PEPC', 'CH', 'Maglev', 'MMLite', 'ILP'], fontsize='42')
 plt.ylabel('Std. Dev of Load Dist. (%)')
 #ax1.grid(linestyle='--')
 #plt.legend(loc=(0.01, 0.75),ncol=1)
