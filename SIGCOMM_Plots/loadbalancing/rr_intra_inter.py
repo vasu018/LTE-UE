@@ -17,10 +17,10 @@ matplotlib.rcParams['figure.figsize'] = 16, 12
 #Inter+Intra        7.85   4.25
 
 dataIn = StringIO(u"""     SDResource     SLOViolation
-A1  18.65   21.89
-A2     16.65   9.92
-A3     5.32   16.35
-A4  2.85   4.25
+RR+RR  18.65   21.89
+RR+OptimalNF     16.65   9.92
+SK-CH+RR     5.32   16.35
+SK-CH+OptimalNF  2.85   4.25
 """)
 
 df = pd.read_csv(dataIn, index_col=0, delimiter=' ', skipinitialspace=True)
@@ -44,10 +44,10 @@ df.SDResource.plot(kind='bar', color='salmon', ax=ax,error_kw=dict(elinewidth=2,
 df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch ='/', position=0,  fontsize='42')
 
 for tick in ax.get_xticklabels():
-    tick.set_rotation(0)
+    tick.set_rotation(20)
 
 
-ax.set_xlabel('Hybrid LB Schemes')
+#ax.set_xlabel('Hybrid LB Schemes')
 ax.set_ylabel('Std. Dev of Load Dist. (%)')
 ax2.set_ylabel('SLO Violations (%)')
 

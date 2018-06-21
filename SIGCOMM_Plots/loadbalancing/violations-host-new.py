@@ -27,7 +27,7 @@ plt.plot(hs, rr, marker='o', color='tomato', linewidth=5, markersize=18, linesty
 plt.plot(hs, ch, marker='D', color='gold', linewidth=5, markersize=18, linestyle='--', label='CH')
 plt.plot(hs, ilp, marker='s', color='salmon', linewidth=5, markersize=18, linestyle='--', label='ILP')
 plt.plot(hs, maglev, marker='*', color='green', linewidth=5, markersize=18, linestyle='--', label='Maglev')
-plt.plot(hs, skch, marker='^', color='royalblue', linewidth=5, markersize=18, linestyle='--', label='SK-CH')
+plt.plot(hs, skch, marker='^', color='royalblue', linewidth=5, markersize=18, linestyle='--', label='MMLite')
 plt.plot(hs, pepc, marker='p', color='magenta', linewidth=5, markersize=18, linestyle='--', label='PEPC')
 #plt.plot(hs, ch, marker='D', color='gold', linewidth=6, markersize=18, linestyle='--', dashes=dashList[1], label='CH')
 #plt.plot(hs, ilp, marker='s', color='salmon', linewidth=6, markersize=18, linestyle='--', dashes=dashList[2], label='ILP')
