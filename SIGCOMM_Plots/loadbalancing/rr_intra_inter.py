@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 matplotlib.rcParams.update({'font.size':60})
-matplotlib.rcParams['figure.figsize'] = 16, 12
+matplotlib.rcParams['figure.figsize'] = 16, 8 
 
 # Original Data
 #RR+RR  25.75   17.89
@@ -31,7 +31,7 @@ ax = fig.add_subplot(111) # Create matplotlib axes
 ax2 = ax.twinx() # Create another axes that shares the same x-axis as ax.
 
 ind = np.arange(5)  # the x locations for the groups
-width = 0.25
+width = 0.22
 
 #rects2 = ax1.bar(ind+0.1, s2, width, color='lightgreen', error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, capsize=10, label='50% Skew', hatch='/')
 #df.SDResource.plot(kind='bar', color='salmon', ax=ax, width=width, position=1)
@@ -40,17 +40,18 @@ width = 0.25
 #df.SDResource.plot(kind='bar', color='salmon', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, label='Std. Dev of Load Dist. (%)', hatch='/', position=1, fontsize='50')
 #df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, label='SLO Violations (%)', hatch ='.', position=0,  fontsize='50')
 
-df.SDResource.plot(kind='bar', color='salmon', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch='.', position=1+0.1, fontsize='42')
-df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch ='/', position=0,  fontsize='42')
+df.SDResource.plot(kind='bar', color='salmon', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch='.', position=1+0.1, fontsize='40')
+df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch ='/', position=0,  fontsize='40')
 
 for tick in ax.get_xticklabels():
-    tick.set_rotation(20)
+    tick.set_rotation(0)
 
 
 #ax.set_xlabel('Hybrid LB Schemes')
-plt.xlabel('this is a xlabel\n(with newlines!)')
-ax.set_ylabel('Std. Dev of Load Dist. (%)')
-ax2.set_ylabel('SLO Violations (%)')
+#plt.xlabel('this is a xlabel\n(with newlines!)')
+ax.set_ylabel('Std. Dev of Load Dist. (%)', fontsize='40')
+ax2.set_ylabel('SLO Violations (%)', fontsize='40')
+plt.xticks([0,1,2,3], ["RR +\nRR", "RR +\nOptimalNF", "SK-CH +\nRR", "SK-CH +\nOptimalNF"])
 
 mar = mpatches.Patch(color='cornflowerblue', label='Std. Dev of Load Dist', linewidth=2, hatch='.')
 gre = mpatches.Patch(color='tomato', label='SLO Violations', hatch='/')
