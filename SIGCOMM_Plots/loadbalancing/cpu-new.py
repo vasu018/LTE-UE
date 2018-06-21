@@ -6,7 +6,7 @@ matplotlib.rcParams.update({'font.size':60})
 matplotlib.rcParams['figure.figsize'] = 16, 12
 
 s1 = [1.25, 1.25, 7.75, 3.25, 1.6, 1.25]
-s2 = [16.65, 16.75, 18.73, 14.72, 2.78, 1.25]
+s2 = [16.65, 16.75, 18.73, 14.72, 3.78, 1.25]
 
 ind = np.arange(6)  # the x locations for the groups
 width = 0.25

@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as mpatches
 
 matplotlib.rcParams.update({'font.size':48})
-matplotlib.rcParams['figure.figsize'] = 12, 7 
+matplotlib.rcParams['figure.figsize'] = 10, 6 
 
 # Original Data
 #RR+RR  25.75   17.89
@@ -40,8 +40,8 @@ width = 0.16
 #df.SDResource.plot(kind='bar', color='salmon', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, label='Std. Dev of Load Dist. (%)', hatch='/', position=1, fontsize='50')
 #df.SLOViolation.plot(kind='bar', color='royalblue', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, label='SLO Violations (%)', hatch ='.', position=0,  fontsize='50')
 
-df.SDResource.plot(kind='bar', color='royalblue', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch='.', position=1+0.1, fontsize='32')
-df.SLOViolation.plot(kind='bar', color='salmon', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch ='/', position=0,  fontsize='32')
+df.SDResource.plot(kind='bar', color='royalblue', ax=ax,error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch='.', position=1+0.1, fontsize='26')
+df.SLOViolation.plot(kind='bar', color='salmon', ax=ax2, error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, hatch ='/', position=0,  fontsize='26')
 
 for tick in ax.get_xticklabels():
     tick.set_rotation(0)
@@ -49,13 +49,13 @@ for tick in ax.get_xticklabels():
 
 #ax.set_xlabel('Hybrid LB Schemes')
 #plt.xlabel('this is a xlabel\n(with newlines!)')
-ax.set_ylabel('Std. Dev of Load Dist. (%)', fontsize='34')
-ax2.set_ylabel('SLO Violations (%)', fontsize='34')
+ax.set_ylabel('Std. Dev of Load Dist. (%)', fontsize='26')
+ax2.set_ylabel('SLO Violations (%)', fontsize='26')
 plt.xticks([0,1,2,3], ["RR +\nRR", "RR +\nOptimalNF", "SK-CH +\nRR", "SK-CH +\nOptimalNF"])
 
 mar = mpatches.Patch(color='royalblue', label='Std. Dev of Load Dist', linewidth=2, hatch='.')
 gre = mpatches.Patch(color='salmon', label='SLO Violations', hatch='/')
-plt.legend(handles=[mar, gre], loc='upper right', fontsize=34, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
+plt.legend(handles=[mar, gre], loc='upper right', fontsize=28, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 #plt.legend(handles=[mar, gre], loc='upper right', fontsize=42, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 #plt.legend(loc='upper right',ncol=1, fontsize=60, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
 ax.set_ylim([0, 30])
