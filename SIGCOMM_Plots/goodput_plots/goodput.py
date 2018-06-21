@@ -3,7 +3,7 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 matplotlib.rcParams.update({'font.size':36})
-matplotlib.rcParams['figure.figsize'] = 14, 10
+matplotlib.rcParams['figure.figsize'] = 14,10 
 
 fig, ax1 = plt.subplots()
 fig.tight_layout()
@@ -30,11 +30,11 @@ plt.plot(tr[:3], op[:3], linestyle='--', linewidth=6, color='firebrick', marker=
 #plt.plot(tr[:3], oa[:3], dashes=dashList[4], linestyle='--', linewidth=6, color='tomato', marker='D', markersize=18, label='OAI')
 #plt.plot(tr[:3], op[:3], dashes=dashList[4], linestyle='--', linewidth=6, color='firebrick', marker='*', markersize=18, label='OpenEPC')
 
-plt.xlabel('Transmission Rate (Gbps)')
-plt.ylabel('Goodput (Gbps)')
+plt.xlabel('Transmission Rate (Gbps)', fontsize='34')
+plt.ylabel('Goodput (Gbps)', fontsize='34')
 
-plt.legend(loc='upper left', ncol=1)
-plt.ylim([0, 12])
+plt.legend(loc='upper left', ncol=2, fontsize='36')
+plt.ylim([0, 11])
 plt.yticks(range(0, 11, 2))
 plt.grid(linestyle='--')
 plt.savefig("./goodput-fig12.pdf", bbox_inches='tight')

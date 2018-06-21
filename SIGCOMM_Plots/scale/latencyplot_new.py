@@ -5,7 +5,7 @@ matplotlib.rcParams.update({'font.size':40})
 import scipy.stats as stats
 import math
 import matplotlib.mlab as mlab
-matplotlib.rcParams['figure.figsize'] = 16,10 
+matplotlib.rcParams['figure.figsize'] = 18,10 
 
 dataLatency = [10.234, 18.448, 22.29, 28.204, 31.57, 39.45, 42.95]
 
