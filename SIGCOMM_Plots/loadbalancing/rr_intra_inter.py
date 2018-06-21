@@ -48,6 +48,7 @@ for tick in ax.get_xticklabels():
 
 
 #ax.set_xlabel('Hybrid LB Schemes')
+plt.xlabel('this is a xlabel\n(with newlines!)')
 ax.set_ylabel('Std. Dev of Load Dist. (%)')
 ax2.set_ylabel('SLO Violations (%)')
 
