@@ -19,14 +19,22 @@ fig, (ax1, ax2) = plt.subplots(ncols=2)
 #fig.subplots_adjust(left=0.07, right=0.99)
 fig.subplots_adjust(left=0.1, bottom=0.1, right=0.99)
 
-N1 = 4 
+N1 = 3 
 #rr = [6.2, 5.3, 3.6, 6.7]
 #ch = [6.7,6.2,4.7,7]
 #maglev = [6.3, 5.6, 3.8, 6.8]
-rr = [6.2, 5.1, 4.3, 6.7]
-ch = [6.7,6.0,4.7,7]
-maglev = [6.1, 5.0, 4.6, 6.8]
-sk_ch = [3.6,3.4,3.1,3.7]
+
+# With alpha = infinity
+#rr = [6.2, 5.1, 4.3, 6.7]
+#ch = [6.7,6.0,4.7,7]
+#maglev = [6.1, 5.0, 4.6, 6.8]
+#sk_ch = [3.6,3.4,3.1,3.7]
+
+# Without infinity
+rr = [6.7, 5.1, 4.3]
+ch = [7, 6.0, 4.7]
+maglev = [6.8, 5.0, 4.6]
+sk_ch = [3.7, 3.4, 3.1]
 
 N2 = 1 
 rr_sim = [89]
@@ -123,7 +131,7 @@ plt.subplot(121)
 ax1.set_xlim(-width1-0.05,len(ind1)+width1)
 ax1.set_ylim(0,10)
 plt.ylabel('# Servers', fontsize='46')
-xTickMarks = ['$\\alpha$=3', '$\\alpha$=2', '$\\alpha$=1', '$\\alpha$=$\\infty$']
+xTickMarks = ['$\\alpha$=1', '$\\alpha$=2', '$\\alpha$=3']
 ax1.set_xticks(ind1+0.40)
 xtickNames = ax1.set_xticklabels(xTickMarks, **hfont)
 ax1.set_axisbelow(True)
@@ -137,7 +145,7 @@ vals1 = ax1.get_yticks()
 plt.subplot(121)
 ax2.set_xlim(-2*width2-0.1,len(ind2))
 ax2.set_ylim(0,110)
-xTickMarks = ['$\\alpha$=$\\infty$']
+xTickMarks = ['$\\alpha$=1']
 ax2.set_xticks(ind2+0.15)
 xtickNames = ax2.set_xticklabels(xTickMarks, **hfont)
 ax2.set_axisbelow(True)
