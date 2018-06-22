@@ -9,7 +9,7 @@ import matplotlib.patches as mpatches
 
 
 matplotlib.rcParams.update({'font.size':60})
-matplotlib.rcParams['figure.figsize'] = 16, 12
+matplotlib.rcParams['figure.figsize'] = 16, 14
 
 
 
@@ -72,5 +72,4 @@ ax.yaxis.grid(color='gray', linestyle='--')
 #ax2.xaxis.grid(color='gray',linestyle='--')
 #ax2.yaxis.grid(color='gray', linestyle='--')
 plt.savefig("./inter-intra.pdf", bbox_inches='tight')
-
 plt.show()

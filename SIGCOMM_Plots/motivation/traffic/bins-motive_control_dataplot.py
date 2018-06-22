@@ -7,7 +7,7 @@ import matplotlib.mlab as mlab
 import random
 
 matplotlib.rcParams.update({'font.size':40})
-matplotlib.rcParams['figure.figsize'] = 14, 10
+matplotlib.rcParams['figure.figsize'] = 16, 12
 
 dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
 

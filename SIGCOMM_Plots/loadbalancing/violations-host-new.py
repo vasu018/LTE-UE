@@ -16,7 +16,7 @@ dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
 fig, ax1 = plt.subplots()
 line, = plt.plot([1,5,2,4], '-')
 line.set_dashes([8, 4, 2, 4, 2, 4])
-fig.subplots_adjust(bottom=0.1, right=0.95)
+fig.subplots_adjust(left=0.1, bottom=0.1, right=0.99)
 
 #plt.plot(hs, rr, marker='o', markersize='20', color='magenta', linewidth=4, linestyle='--', label='RR')
 #plt.plot(hs, ch, marker='s', markersize='20', color='orange', linewidth=4, linestyle='--', label='CH')

@@ -17,7 +17,7 @@ ind = np.arange(6)  # the x locations for the groups
 width = 0.25
 fig, ax1 = plt.subplots()
 #fig.tight_layout()
-fig.subplots_adjust(bottom=0.1, right=0.95)
+fig.subplots_adjust(left=0.1, bottom=0.1, right=0.99)
 
 #rects1 = ax1.bar(ind, s2, width, edgecolor='k', color='gold', linewidth=6, capsize=10, label='50% skew')
 #rects2 = ax1.bar(ind+width+0.05, s1, width, edgecolor='k', color='salmon', linewidth=6, capsize=10, label='Without Skew')

@@ -6,7 +6,7 @@ import matplotlib.ticker as ticker
 from matplotlib.ticker import ScalarFormatter
 
 matplotlib.rcParams.update({'font.size':46})
-matplotlib.rcParams['figure.figsize'] = 14, 10
+matplotlib.rcParams['figure.figsize'] = 16, 12
 import random
 
 csfont = {'fontname':'Comic Sans MS', 'fontsize':'62'}
@@ -47,11 +47,11 @@ def cdf(data, Colour, Label, ls):
     cdf = np.cumsum(counts)
    
     # Plot the cdf
-    plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=6, color=Colour, label=Label)
+    plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=12, color=Colour, label=Label)
     plt.ylim(0,1)
     plt.ylabel("CDF", **hfont)
     plt.xlabel("Latency (ms)", **hfont)
-    plt.legend(shadow=True, loc=(0.01, 0.53), ncol=1, fontsize=24)
+    plt.legend(shadow=True, loc=(0.01, 0.53), ncol=1, fontsize=20)
     plt.legend(loc='lower right')
 
 sf = []
@@ -89,6 +89,8 @@ plt.xticks(fontsize=46)
 cdf(sl, 'royalblue', 'Moderate Load', '--')
 cdf(hv, 'red', 'Overload', '--')
 plt.xscale('symlog')
+#plt.ylim([0,1.1])
+#plt.xlim([1, 10000])
 plt.xlim([1, 5100])
 plt.grid(linestyle='--')
 for axis in [ax.xaxis, ax.yaxis]:
