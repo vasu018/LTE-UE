@@ -30,7 +30,7 @@ data1 = []
 data2 = []
 with open("./sf_failure_data.txt", "r") as ins:
     for line in ins:
-	line = line.strip()
+        line = line.strip()
         words = line.split(",")  
         x = words[0]
         y = float(words[1])
@@ -43,7 +43,7 @@ data3 = []
 data4 = []
 with open("./attach_flood_manipulated.txt", "r") as ins:
     for line in ins:
-	line = line.strip()
+        line = line.strip()
         words = line.split(",")  
         x = words[0]
         y = float(words[1])

@@ -32,7 +32,7 @@ def cdf(data, Colour, Label, ls):
     cdf = np.cumsum(counts)
 	
 	# Plot the cdf
-    plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=12, color=Colour, label=Label)
+    plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=6, color=Colour, label=Label)
     plt.ylim(0,1)
     plt.ylabel("CDF", **hfont)
     plt.xlabel("Latency (ms)", **hfont)
@@ -49,7 +49,7 @@ for i in p:
     i = i.strip().split(',')
 	#attach_alone = [float(j) for j in i if float(j)<65]
     attach_alone = [float(j) for j in i if float(j)<63]
-    print(attach_alone)
+    print attach_alone
     
 p = open('actual/service_10000_1.txt', 'r')
 for i in p:
@@ -75,7 +75,7 @@ cdf(attach_alone, 'royalblue', 'Attach (Alone)', '-')
 cdf(service_alone, 'tomato', 'Service (Alone)', '-')
 plt.xlim((0,110))
 plt.yticks(fontsize=46)
-plt.xticks(list(range(0, 110, 20)), fontsize=46)
+plt.xticks(range(0, 110, 20), fontsize=46)
 
 
 ax.set_axisbelow(True)
