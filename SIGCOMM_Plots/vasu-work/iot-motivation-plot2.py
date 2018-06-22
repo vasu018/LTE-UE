@@ -70,7 +70,7 @@ pivot_df2.plot.bar(stacked=True, ax=ax2,
                        #colormap=ListedColormap(sns.color_palette("muted")),
                        rot=30, ylim=[0, 1], error_kw=dict(elinewidth=2,ecolor='k'), linewidth=2, width=width, capsize=10, position =1, fontsize='24')
 ax.legend().set_visible(False)
-ax.set_xticklabels(['12am - 4am', '4am - 8am', '8am - 12pm',  '12pm - 4pm', '4pm - 8pm', '8pm - 12am'],fontsize = '22',rotation ='0')
+ax.set_xticklabels(['C   D \n 12am - 4am', 'C   D \n 4am - 8am', 'C   D \n 8am - 12pm',  'C   D \n 12pm - 4pm', 'C   D \n 4pm - 8pm', 'C   D \n 8pm - 12am'],fontsize = '22',rotation ='0')
 ax.set_xlabel('Hours of Day', fontsize='42')
 ax.set_ylabel('Normalized Control Load', fontsize='42')
 plt.legend(loc='upper left',ncol=1, fontsize=22, borderpad=None, borderaxespad=None,fancybox=True, framealpha=0.5)
