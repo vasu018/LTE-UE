@@ -40,26 +40,29 @@ def cdf(data, Colour, Label):
 	plt.plot(bin_edges[0:-1], cdf,linestyle='--',linewidth=8, color=Colour, label=Label)
 	plt.ylim((0,1))
 	plt.ylabel("CDF")
-	plt.xlabel("Latency (ms)")
-	plt.legend(loc='lower right')
+	plt.xlabel("Latency (ms)", fontsize='42')
+	plt.legend(loc='lower right', fontsize='42')
 
 sf = []
 sl = []
-p = open('service_10000_sf.csv', 'r')
-for i in p:
-	i = i.strip().split(',')
-	sf = [float(j) for j in i]
+#p = open('service_10000_sf.csv', 'r')
+#for i in p:
+#	i = i.strip().split(',')
+#	sf = [float(j) for j in i]
 p = open('service_10000_sl.csv', 'r')
 for i in p:
-        i = i.strip().split(',')
-        sl = [float(j) for j in i]
+    #print i
+    i = i.strip().split(',')
+    sl = [float(j) for j in i if float(i)<=5000]
+    print sl 
+
 
 hv = readXL('TAUvsMig.xlsx', 1)
 hv = [float(i) for i in hv if float(i)<=4800]
 
-cdf(sf, 'k', 'Normal Load')
-cdf(sl, 'orange', 'Moderate Load')
-cdf(hv, 'navy', 'Overload')
+#cdf(sf, 'k', 'Normal Load')
+#cdf(sl, 'royalblue', 'Moderate Load')
+cdf(hv, 'tomato', 'Overload')
 plt.xscale('symlog')
 plt.grid(linestyle='--')
 plt.savefig("./legacy_overload_condition_modified.pdf", bbox_inches='tight')

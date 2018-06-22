@@ -45,21 +45,37 @@ def cdf(data, Colour, Label):
 
 sf = []
 sl = []
-p = open('service_10000_sf.csv', 'r')
-for i in p:
-	i = i.strip().split(',')
-	sf = [float(j) for j in i]
-p = open('service_10000_sl.csv', 'r')
-for i in p:
-        i = i.strip().split(',')
-        sl = [float(j) for j in i]
+#f1 = open('service_10000_sf.txt', 'r')
+#for i in f1: 
+#    i = i.strip().split(',')
+#    for j in i:
+#        if (j):
+#            sf.append(float(j))
+
+#f1 = open('data_sf.txt', 'r')
+#for i in f1: 
+#    i = i.strip()
+#    sf.append(float(i))
+
+f2 = open('data_sl.txt', 'r')
+for i in f2: 
+    i = i.strip()
+    sl.append(float(i))
+    
+print sl
+print sf
+
+#f2 = open('service_10000_sl.csv', 'r')
+#for i in f2:
+#    i = i.strip().split(',')
+#    sl = [float(j) for j in i]
 
 hv = readXL('TAUvsMig.xlsx', 1)
 hv = [float(i) for i in hv if float(i)<=4800]
 
-cdf(sf, 'k', 'Normal Load')
-cdf(sl, 'orange', 'Moderate Load')
-cdf(hv, 'navy', 'Overload')
+#cdf(sf, 'k', 'Normal Load')
+cdf(sl, 'royalblue', 'Moderate Load')
+cdf(hv, 'red', 'Overload')
 plt.xscale('symlog')
 plt.grid(linestyle='--')
 plt.show()
