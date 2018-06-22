@@ -29,7 +29,31 @@ def readXL(f, col):
             x.append(value)
     return x
 
-def cdf(data, Colour, Label):
+def cdf(data, Colour, Label, ls):
+    global f
+    data_size=len(data)
+   
+    # Set bins edges
+    data_set=sorted(set(data))
+    bins=np.append(data_set, data_set[-1]+1)
+   
+    # Use the histogram function to bin the data
+    counts, bin_edges = np.histogram(data, bins=bins, density=False)
+    counts=counts.astype(float)/data_size
+   
+    # Find the cdf
+    cdf = np.cumsum(counts)
+   
+    # Plot the cdf
+    plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=6, color=Colour, label=Label)
+    plt.ylim(0,1)
+    plt.ylabel("CDF", **hfont)
+    plt.xlabel("Latency (ms)", **hfont)
+    plt.legend(shadow=True, loc=(0.01, 0.53), ncol=1, fontsize=46)
+    plt.legend(loc='lower right')
+
+
+def cdf2(data, Colour, Label):
 	global f
 	data_size=len(data)
 	
@@ -46,10 +70,10 @@ def cdf(data, Colour, Label):
 	cdf = np.cumsum(counts)
 	
 	# Plot the cdf
-	plt.plot(bin_edges[0:-1], cdf,linestyle='--',linewidth=5, color=Colour, label=Label)
+	plt.plot(bin_edges[0:-1], cdf,linestyle='-',linewidth=5, color=Colour, label=Label)
 	plt.ylim((0,1))
-	plt.ylabel("CDF", fontsize='46')
-	plt.xlabel("Latency (ms)", fontsize='46')
+	plt.ylabel("CDF", fontsize='60')
+	plt.xlabel("Latency (ms)", fontsize='60')
 	plt.legend(loc='lower right', fontsize='46')
 
 sf = []
@@ -80,9 +104,12 @@ for i in f2:
 hv = readXL('TAUvsMig.xlsx', 1)
 hv = [float(i) for i in hv if float(i)<=4800]
 
+plt.yticks(fontsize=46)
+plt.xticks(fontsize=46)
+
 #cdf(sf, 'k', 'Normal Load')
-cdf(sl, 'royalblue', 'Moderate Load')
-cdf(hv, 'red', 'Overload')
+cdf(sl, 'royalblue', 'Moderate Load', '-')
+cdf(hv, 'red', 'Overload', '-')
 plt.xscale('symlog')
 plt.grid(linestyle='--')
 plt.savefig("./legacy_overload_condition_modified.pdf", bbox_inches='tight')
