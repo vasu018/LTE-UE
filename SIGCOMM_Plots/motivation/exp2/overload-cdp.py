@@ -2,14 +2,16 @@ import xlrd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+from matplotlib.ticker import ScalarFormatter
 
-matplotlib.rcParams.update({'font.size':40})
+matplotlib.rcParams.update({'font.size':60})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 import random
 
-csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
-csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'46'}
-hfont = {'fontname':'Helvetica', 'fontsize':'52'}
+csfont = {'fontname':'Comic Sans MS', 'fontsize':'62'}
+csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'56'}
+hfont = {'fontname':'Helvetica', 'fontsize':'62'}
 
 
 
@@ -46,7 +48,7 @@ def cdf(data, Colour, Label):
 	cdf = np.cumsum(counts)
 	
 	# Plot the cdf
-	plt.plot(bin_edges[0:-1], cdf,linestyle='--',linewidth=5, color=Colour, label=Label)
+	plt.plot(bin_edges[0:-1], cdf,linestyle='--',linewidth=12, color=Colour, label=Label)
 	plt.ylim((0,1))
 	plt.ylabel("CDF", fontsize='46')
 	plt.xlabel("Latency (ms)", fontsize='46')
@@ -81,10 +83,13 @@ hv = readXL('TAUvsMig.xlsx', 1)
 hv = [float(i) for i in hv if float(i)<=4800]
 
 #cdf(sf, 'k', 'Normal Load')
-cdf(sl, 'royalblue', 'Moderate Load')
+cdf(sl, 'royalblue', 'Moderate')
 cdf(hv, 'red', 'Overload')
 plt.xscale('symlog')
+plt.xlim([1, 1000])
 plt.grid(linestyle='--')
+for axis in [ax.xaxis, ax.yaxis]:
+    axis.set_major_formatter(ScalarFormatter())
 plt.savefig("./legacy_overload_condition_modified.pdf", bbox_inches='tight')
 plt.show()
 

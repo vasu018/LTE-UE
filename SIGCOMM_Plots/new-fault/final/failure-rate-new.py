@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.rcParams.update({'font.size':60})
+matplotlib.rcParams.update({'font.size':65})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
 fig, ax1 = plt.subplots()
@@ -28,9 +28,9 @@ sl_hot = [0.66, 1.12, 1.74, 2.39, 3.97]
 #plt.plot(tr, sl_cold, linewidth=5, color='maroon', ls='--', marker='s', markersize=14, label='Stateless Cold Migration')
 #plt.plot(tr, sl_hot, linewidth=5, color='blue', ls='--', marker='D', markersize=14, label='Stateless Hot Migration')
 
-plt.plot(tr, sf, marker='o', color='green', linewidth=5, markersize=18, linestyle='--', label='Stateful Session Restoration')
-plt.plot(tr, sl_cold, marker='D', color='royalblue', linewidth=5, markersize=18, linestyle='--', label='Stateless Cold Migration')
-plt.plot(tr, sl_hot, marker='s', color='tomato', linewidth=5, markersize=18, linestyle='--', label='Stateless Hot Migration')
+plt.plot(tr, sf, marker='o', color='green', linewidth=12, markersize=18, linestyle='--', label='Stateful Session Restoration')
+plt.plot(tr, sl_cold, marker='D', color='royalblue', linewidth=12, markersize=18, linestyle='--', label='Stateless Cold Migration')
+plt.plot(tr, sl_hot, marker='s', color='tomato', linewidth=12, markersize=18, linestyle='--', label='Stateless Hot Migration')
 
 plt.xlabel('# Control Procedures/Second')
 plt.ylabel('Connection Failures (%)')
