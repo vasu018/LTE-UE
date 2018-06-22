@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 
-matplotlib.rcParams.update({'font.size':65})
+matplotlib.rcParams.update({'font.size':75})
 matplotlib.rcParams['figure.figsize'] = 14, 10
 
 fig, ax1 = plt.subplots()

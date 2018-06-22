@@ -12,17 +12,17 @@ dashList = [(5,2),(2,5),(4,10),(3,3,2,2),(5,5,20,5)]
 tr = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
 #rc = [0, 1, 2, 2.97, 3.89, 4.76, 5.3, 5.35, 5.42, 5.42, 5.42]
-rc = [0, 1, 2, 2.97, 3.89, 4.89, 5.76, 6.35, 6.42, 6.22, 6.12]
+rc = [0, 1, 2, 2.97, 3.89, 4.89, 5.76, 6.35, 6.42, 6.22, 6.16]
 sf = [0, 1, 2, 3, 4, 5, 5.95, 6.92, 7.84, 8.71, 8.81]
 sl = [0, 1, 2, 3, 4, 5, 5.92, 6.85, 7.69, 8.27, 8.44]
 oa = [0, 0.6, 1.1, 0.8, 0.9, 0.9, 0, 0, 0, 0, 0]
 op = [0, 0.7, 0.9, 1.2, 0.9, 0, 0, 0, 0, 0, 0]
 
-plt.plot(tr, sl, linestyle='--', linewidth=6, color='darkmagenta', marker='^', markersize=18, label='Stateless')
-plt.plot(tr, sf, linestyle='--', linewidth=6, color='tomato', marker='s', markersize=18, label='Stateful')
-plt.plot(tr, rc, linestyle='--', linewidth=6, color='seagreen', marker='o', markersize=18, label='RAMCloud')
-plt.plot(tr[:3], oa[:3], linestyle='--', linewidth=6, color='royalblue', marker='D', markersize=18, label='OAI')
-plt.plot(tr[:3], op[:3], linestyle='--', linewidth=6, color='firebrick', marker='*', markersize=18, label='OpenEPC')
+plt.plot(tr, sl, linestyle='--', linewidth=8, color='darkmagenta', marker='^', markersize=18, label='Stateless')
+plt.plot(tr, sf, linestyle='--', linewidth=8, color='tomato', marker='s', markersize=18, label='Stateful')
+plt.plot(tr, rc, linestyle='--', linewidth=8, color='seagreen', marker='o', markersize=18, label='RAMCloud')
+plt.plot(tr[:3], oa[:3], linestyle='--', linewidth=8, color='royalblue', marker='D', markersize=18, label='OAI')
+plt.plot(tr[:3], op[:3], linestyle='--', linewidth=8, color='firebrick', marker='*', markersize=18, label='OpenEPC')
 
 #plt.plot(tr, sl, dashes=dashList[4], linestyle='--', linewidth=6, color='darkmagenta', marker='^', markersize=18, label='Stateless')
 #plt.plot(tr, sf, dashes=dashList[4], linestyle='--', linewidth=6, color='royalblue', marker='s', markersize=18, label='Stateful')
