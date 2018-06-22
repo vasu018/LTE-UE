@@ -1,0 +1,64 @@
+0 Electronics 899 1029
+0 Router 20614 7311
+0 Hubs 4195 1685
+0 Cameras 20835 3192
+0 Switches & Triggers 6562 4052
+0 Computers 2096 636
+0 Air quality sensors 409 340
+7
+1 Router 21023 7400
+1 Cameras 20697 3106
+1 Air quality sensors 448 373
+1 Hubs 4169 1647
+1 Computers 2631 716
+1 Switches & Triggers 8911 5062
+1 Electronics 905 1042
+8
+2 Cameras 22508 3164
+2 Hubs 4152 1649
+2 Router 22518 7438
+2 Electronics 899 1030
+2 Switches & Triggers 6301 3998
+2 Computers 2110 673
+2 Air quality sensors 446 366
+2 Healthcare devices 100 13
+7
+3 Router 37130 7933
+3 Cameras 37781 3690
+3 Switches & Triggers 6098 3902
+3 Electronics 907 1048
+3 Hubs 4287 1709
+3 Computers 2402 664
+3 Air quality sensors 522 382
+WARNING: wrong value: DNS.arcount=1119
+WARNING: DNS RR prematured end (ofs=1446, len=1446)
+WARNING: DNS RR prematured end (ofs=1455, len=1446)
+WARNING: wrong value: DNS.qdcount=12997
+WARNING: more wrong value: DNS.ancount=18884
+WARNING: more DNS RR prematured end (ofs=15092, len=431)
+7
+4 Cameras 44927 4797
+4 Router 155966 11033
+4 Hubs 4567 1680
+4 Switches & Triggers 8115 4349
+4 Electronics 3515 1438
+4 Computers 74795 7490
+4 Air quality sensors 424 354
+8
+5 Router 74586 8406
+5 Cameras 29159 3699
+5 Electronics 1260 1105
+5 Hubs 4582 1698
+5 Air quality sensors 430 353
+5 Computers 28410 2059
+5 Switches & Triggers 9904 5250
+5 Healthcare devices 26 9
+8
+6 Router 18915 6643
+6 Cameras 20697 3006
+6 Switches & Triggers 6197 3876
+6 Hubs 4245 1663
+6 Electronics 892 1024
+6 Computers 302 161
+6 Air quality sensors 425 360
+6 Healthcare devices 75 13
