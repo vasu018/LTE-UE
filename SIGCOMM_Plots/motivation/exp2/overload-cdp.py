@@ -2,14 +2,23 @@ import xlrd
 import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
-matplotlib.rcParams.update({'font.size':36})
-matplotlib.rcParams['figure.figsize'] = 20, 10
+
+matplotlib.rcParams.update({'font.size':40})
+matplotlib.rcParams['figure.figsize'] = 14, 10
+import random
+
+csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
+csfont2 = {'fontname':'Comic Sans MS', 'fontsize':'46'}
+hfont = {'fontname':'Helvetica', 'fontsize':'52'}
+
+
+
 
 fig = plt.figure()
 ax = fig.add_subplot(111)
 
 fig.tight_layout()
-fig.subplots_adjust(left=0.1, bottom=0.3, right=0.99)
+fig.subplots_adjust(left=0.1, bottom=0.1, right=0.99)
 
 def readXL(f, col):
     x = []
@@ -39,9 +48,9 @@ def cdf(data, Colour, Label):
 	# Plot the cdf
 	plt.plot(bin_edges[0:-1], cdf,linestyle='--',linewidth=5, color=Colour, label=Label)
 	plt.ylim((0,1))
-	plt.ylabel("CDF")
-	plt.xlabel("Latency (ms)")
-	plt.legend(loc='lower right')
+	plt.ylabel("CDF", fontsize='46')
+	plt.xlabel("Latency (ms)", fontsize='46')
+	plt.legend(loc='lower right', fontsize='46')
 
 sf = []
 sl = []
@@ -62,8 +71,6 @@ for i in f2:
     i = i.strip()
     sl.append(float(i))
     
-print sl
-print sf
 
 #f2 = open('service_10000_sl.csv', 'r')
 #for i in f2:
@@ -78,4 +85,7 @@ cdf(sl, 'royalblue', 'Moderate Load')
 cdf(hv, 'red', 'Overload')
 plt.xscale('symlog')
 plt.grid(linestyle='--')
+plt.savefig("./legacy_overload_condition_modified.pdf", bbox_inches='tight')
 plt.show()
+
+
