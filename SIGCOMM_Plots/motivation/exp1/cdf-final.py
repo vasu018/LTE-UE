@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib
 import matplotlib.pyplot as plt
 matplotlib.rcParams.update({'font.size':40})
-matplotlib.rcParams['figure.figsize'] = 14, 10
+matplotlib.rcParams['figure.figsize'] = 16, 12
 import random
 
 csfont = {'fontname':'Comic Sans MS', 'fontsize':'52'}
@@ -32,7 +32,7 @@ def cdf(data, Colour, Label, ls):
     cdf = np.cumsum(counts)
 	
 	# Plot the cdf
-    plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=12, color=Colour, label=Label)
+    plt.plot(bin_edges[0:-1], cdf, linestyle=ls, linewidth=8, color=Colour, label=Label)
     plt.ylim(0,1)
     plt.ylabel("CDF", **hfont)
     plt.xlabel("Latency (ms)", **hfont)
