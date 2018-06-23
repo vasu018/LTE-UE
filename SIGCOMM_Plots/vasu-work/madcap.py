@@ -37,9 +37,9 @@ def read_device_list():
     return df
 
 def set_key(df, p):
-    device_category = (df[df.iloc[:, 1] == str(p.src)][CATEGORY]).values[0]
-    return device_category
-    #return str(p.src) + str(p.dst)
+    #device_category = (df[df.iloc[:, 1] == str(p.src)][CATEGORY]).values[0]
+    #return device_category
+    return str(p.src) + str(p.dst)
 
 def get_ip_addr(p):
     if IP in p:
@@ -71,24 +71,22 @@ def read_pcap():
     hash_map = {}
     count = 0
     for p in PcapReader('16-09-23.pcap'):
-        if (p.time - base_time > 3 * 60 * 60):
+        if (p.time - base_time > 5 * 60):
             if base_time > 0:
                 print(len(hash_map))
                 for key in hash_map:
-                    #src_device_name = (df[df.iloc[:, 1] == str(key[:17])][LIST_OF_DEVICES]).values[0]
+                    src_device_name = (df[df.iloc[:, 1] == str(key[:17])][LIST_OF_DEVICES]).values[0]
                     #print(str(key[17:]))
-                    #try:
-                    #    dst_device_name = (df[df.iloc[:, 1] == str(key[17:])][LIST_OF_DEVICES]).values[0]
-                    #except:
-                    #    dst_device_name = str(key[17:])
-                    # print(src_device_name, dst_device_name, hash_map[key].udp_data,
-                    #       hash_map[key].udp_control,
-                    #       hash_map[key].tcp_data, hash_map[key].tcp_control,
-                    #       hash_map[key].icmp_control, sep='|')
-                    print(count, key, hash_map[key].udp_data + hash_map[key].tcp_data,
-                          hash_map[key].udp_control + hash_map[key].tcp_control
-                          + hash_map[key].icmp_control)
-                count += 1
+                    try:
+                       dst_device_name = (df[df.iloc[:, 1] == str(key[17:])][LIST_OF_DEVICES]).values[0]
+                    except:
+                       dst_device_name = str(key[17:])
+                    print(count, src_device_name,
+                          hash_map[key].udp_control + hash_map[key].tcp_control + hash_map[key].icmp_control, sep='|')
+                    #      (src_device_name, key, hash_map[key].udp_data + hash_map[key].tcp_data,
+                    #       hash_map[key].udp_control + hash_map[key].tcp_control
+                    #       + hash_map[key].icmp_control)
+            count += 1
             base_time = p.time
             hash_map = {}
         IPaddr = get_ip_addr(p)

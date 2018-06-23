@@ -14,8 +14,7 @@ SMALL_SIZE = 40
 MEDIUM_SIZE = 40
 BIGGER_SIZE = 40
 
-#df = pd.read_csv('packet_count.txt', sep=' ')
-df = pd.read_csv('graph.txt', sep=' ')
+df = pd.read_csv('packet_count.txt', sep=' ')
 df.columns = ['Hour', 'Category', 'Data Packets', 'Control Packets']
 df.sort_values(['Data Packets'], inplace=True)
 df['Data Packets'] = df['Data Packets'].astype(int)
@@ -51,4 +50,3 @@ ax.set_xticklabels(['12 - 4 am', '4 - 8 am', '8 am - 12 noon',
 ax.set_xlabel('Hours of Day')
 ax.set_ylabel('Number of Control Packets')
 plt.savefig('Comtrol.pdf')
-plt.show()
