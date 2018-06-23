@@ -17,6 +17,7 @@ data_x = []
 data1_control = []
 data2_data = []
 data3_control = []
+data3_control_bin = []
 data4_data = []
 
 data_x_counter = 0
@@ -82,12 +83,12 @@ with open("./service_spike.csv", "r") as ins:
             words = line_t.split(",")
             x2 = float(words[0])
             if float(x2) >= 100.0:
-                ran_int = random.randint(2,4)
+                ran_int = random.randint(2,2)
                 x2 = ran_int * random.random()
                 #x2 = random.random()
                 data2_data.append(float(x2))
             elif float(x2) > 4.0 and float(x2) < 100.0:
-                ran_int = random.randint(2,3)
+                ran_int = random.randint(2,2)
                 x2 = ran_int * random.random()
                 #x2 = random.random()
                 #print(x2)
@@ -108,8 +109,6 @@ with open("./service_spike.csv", "r") as ins:
                 bin_counter = bin_counter + 1
 
             
-#print(len(data6_data_bin))
-
 
 fig, ax1 = plt.subplots()
 #ax3 = ax1.twinx()
@@ -117,11 +116,12 @@ fig, ax1 = plt.subplots()
 fig.tight_layout()
 fig.subplots_adjust(left=0.09, bottom=0.10, right=0.99)
 
-ax1.set_xlabel('IoT Control Vs Data Traffic')
+ax1.set_xlabel('IoT Control Trafffic Charcterisitcs')
 ax1.set_ylabel('Normalized Traffic Volume')
 
-data5_control_bin = ax1.plot(data_x, data5_control_bin, linewidth=2, linestyle='-', color='green', label='Control Traffic')
-data6_data_bin = ax1.plot(data_x, data6_data_bin, linewidth=2, linestyle='-', color='salmon', label='Data Traffic')
+data5_control_bin = ax1.plot(data_x, data5_control_bin, linewidth=2, linestyle='-', color='green', label='Asset Tracking')
+data6_data_bin = ax1.plot(data_x, data6_data_bin, linewidth=2, linestyle='-', color='salmon', label='Drop Cam')
+#data3_data_bin = ax1.plot(data_x, data3_data_bin, linewidth=2, linestyle='-', color='salmon', label='Motion Sensor')
 
 ax1.set_axisbelow(True)
 ax1.yaxis.grid(color='gray', linestyle='dashed')

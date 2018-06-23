@@ -34,27 +34,37 @@ bin_counter = 1
 bin_total = 0
 
 item_x1  = 0
+count = 0
 #with open("./service_spike.csv", "r") as ins:
 with open("./special_out_dropcam", "r") as ins:
     for item_x1, line in enumerate(ins):
-        #if item_x1 > 25000 and item_x1 < 35000: 
-        if item_x1 < 100000: 
-            line = line.strip()
-            words = line.split(",")
-            for word in words:
+        #if item_x1 > 25000 and item_x1 < 35000:
+        line = line.strip()
+        words = line.split(",")
+        for word in words:
+            if count < 10000: 
                 data1_control_bin.append(word)
+                data_x.append(count)
+                count = count +1
+                print count
+
 item_x1  = 0
+count = 0
+#with open("./service_spike.csv", "r") as ins:
 with open("./special_out_printer", "r") as ins:
     for item_x1, line in enumerate(ins):
-        #if item_x1 > 25000 and item_x1 < 35000: 
-        if item_x1 < 100000: 
-            line = line.strip()
-            words = line.split(",")
-            x1 = float(words[0])
-            for word in words:
-                data2_control_bin.append(float(x1))
+        #if item_x1 > 25000 and item_x1 < 35000:
+        line = line.strip()
+        words = line.split(",")
+        for word in words:
+            if count < 10000: 
+                data2_control_bin.append(word)
+                #data_x.append(count)
+                count = count +1
+                print count
+
             
-print data2_control_bin
+#print data2_control_bin
             
 print(len(data1_control_bin))
 print(len(data2_control_bin))
@@ -80,7 +90,7 @@ ax1.grid(True, which='both')
 
 #plt.xticks([0, 25000,50000,75000,100000],['00:00', '06:00','12:00','18:00','24:00'])
 plt.xticks([0, 250, 500, 750, 1000],['00:00', '06:00','12:00','18:00','24:00'])
-plt.ylim([0,3])
+plt.ylim([0,100])
 #plt.xlim([0,1000])
 #plt.yticks(range(0, 6, 2))
 plt.yticks([0.75,1.5,2.25,3],['0.25', '0.5', '0.75', '1.0'])
