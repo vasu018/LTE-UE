@@ -42,6 +42,7 @@ typedef enum {
 typedef struct pkt_identifier_s {
     uint8_t slice_id;
     uint8_t msg_type;
+    uint8_t MMEID;
 }pkt_identifier_t;
 
 typedef enum {

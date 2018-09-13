@@ -2,8 +2,8 @@ import csv
 import numpy as np
 from pylab import *
 
-def draw(Colour,expno, Label, LB):
-	#file=LB + '_enb_id_stats_exp_' + expno + '.csv'
+def draw(Colour,expno, Label, LB,expname):
+	
 	file='soumya_EVALS/' + expname + '/' + LB + '_enb_id_stats_exp_' + expno + '.csv'
 	with open(file) as csvfile:
 		readCSV = csv.reader(csvfile, delimiter='~')
@@ -38,15 +38,19 @@ def draw(Colour,expno, Label, LB):
 		xval = timing_lst[k]
 		k = k + 1
 		j = float(i)/float(len(UE_NUM))
-		if xval > 4:
-			break
-		if xval != timing_lst[k] and xval>=0:    
+		#if xval > 200:
+		#	break
+		if k == len(timing_lst):
+			X.append(xval) 
+			cumulative.append(j)
+		elif xval != timing_lst[k] and xval>=0:    
 			X.append(xval) 
 			cumulative.append(j)
 	
-	#print len(timing_lst),' ',len(UE_NUM)
+	print len(timing_lst),' ',len(UE_NUM)
 	#print len(cumulative)
 	#print len(X)
+	
 	#print X
 	#print cumulative
 	
@@ -54,18 +58,23 @@ def draw(Colour,expno, Label, LB):
 
 expno = sys.argv[1]
 expname = sys.argv[2]
-LB = sys.argv[3]
-draw('blue','1','experiment 1',LB,expname)
-#draw('red','2','experiment 2',LB,expname)
-#draw('green','3','experiment 3',LB,expname)
+LB1 = sys.argv[3]
+LB2 = sys.argv[4]
+LB3 = sys.argv[5]
+
+draw('blue',expno,LB1,LB1,expname)
+draw('red',expno,LB2,LB2,expname)
+draw('black',expno,LB3,LB3,expname)
+#draw('red','2','experiment 2',LB)
+#draw('green','3','experiment 3',LB)
 plt.ylabel("CDF of SERVICE requests")
 plt.xlabel("Latency (ms)")
 plt.legend(loc='lower right')
-plt.title(LB);
+plt.title('Comparison between ' + LB1 + ',' + LB2 + ' and ' + LB3);
 #xticks(np.arange(0,10,1))
-yticks(np.arange(0.1,1,0.1))
+yticks(np.arange(0.1,1.5,0.1))
 
 #xscale('log')
-plt.savefig(LB + '_traffic_cdf.pdf')
+plt.savefig(expname+'_cmp_cdf.pdf')
 
 show()

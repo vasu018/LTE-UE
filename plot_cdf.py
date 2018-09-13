@@ -2,7 +2,7 @@ import csv
 import numpy as np
 from pylab import *
 
-def draw(Colour,expno, Label, LB):
+def draw(Colour,expno, Label, LB,expname):
 	#file=LB + '_enb_id_stats_exp_' + expno + '.csv'
 	file='soumya_EVALS/' + expname + '/' + LB + '_enb_id_stats_exp_' + expno + '.csv'
 	with open(file) as csvfile:
@@ -38,9 +38,12 @@ def draw(Colour,expno, Label, LB):
 		xval = timing_lst[k]
 		k = k + 1
 		j = float(i)/float(len(UE_NUM))
-		if xval > 4:
+		if xval > 50:
 			break
-		if xval != timing_lst[k] and xval>=0:    
+		if k == len(timing_lst):
+			X.append(xval) 
+			cumulative.append(j)
+		elif xval != timing_lst[k] and xval>=0:    
 			X.append(xval) 
 			cumulative.append(j)
 	
@@ -63,7 +66,7 @@ plt.xlabel("Latency (ms)")
 plt.legend(loc='lower right')
 plt.title(LB);
 #xticks(np.arange(0,10,1))
-yticks(np.arange(0.1,1,0.1))
+yticks(np.arange(0.1,1.5,0.1))
 
 #xscale('log')
 plt.savefig(LB + '_traffic_cdf.pdf')

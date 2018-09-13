@@ -71,13 +71,21 @@ rm temp_run.sh
 
 while [ $i -lt $GROUP_COUNT ]
 do
+	seed=`expr $i + 1`
+	conn_count=`grep "GROUP~$seed~" $conf_file | cut -d"~" -f3`
+	total_conn=`expr $conn_count \* $DURATION`
+	interval=`expr $DURATION \* 60000000 / $total_conn`
 	#echo "starting group $i"
-	echo "./launch_group.sh $i $PER_GROUP $DURATION $counter > logs/launcher_${i}.log &" >> temp_run.sh
+	#echo "./launch_group.sh $i $PER_GROUP $DURATION $counter $conn_count > logs/launcher_${i}.log &" >> temp_run.sh
+	echo "./ue 1 1 $total_conn $seed $interval 2 300 > logs/ue_${seed}_${i}.log &" >> temp_run.sh
 	i=`expr $i + 1` 
 
 done
 
+echo "wait" >> temp_run.sh
+
 date
+
 
 chmod 777 temp_run.sh
 ./temp_run.sh
@@ -85,6 +93,8 @@ chmod 777 temp_run.sh
 date
 
 wait
+
+./ue 5
 
 time=`expr $SECONDS \* 1000`
 

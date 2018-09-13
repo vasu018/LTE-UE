@@ -2,9 +2,9 @@ import csv
 import numpy as np
 from pylab import *
 
-def draw(Colour,expno, Label, LB):
+def draw(Colour,expno, Label, LB,expname):
 	
-	file=LB + '_enb_id_stats_exp_' + expno + '.csv'
+	file='soumya_EVALS/' + expname + '/' + LB + '_enb_id_stats_exp_' + expno + '.csv'
 	with open(file) as csvfile:
 		readCSV = csv.reader(csvfile, delimiter='~')
 		enb_id_lst = []
@@ -38,26 +38,31 @@ def draw(Colour,expno, Label, LB):
 		xval = timing_lst[k]
 		k = k + 1
 		j = float(i)/float(len(UE_NUM))
-		if xval > 4:
-			break
-		if xval != timing_lst[k] and xval>=0:    
+	#	if xval > 4:
+	#		break
+		if k == len(timing_lst):
+			X.append(xval) 
+			cumulative.append(j)
+		elif xval != timing_lst[k] and xval>=0:    
 			X.append(xval) 
 			cumulative.append(j)
 	
-	#print len(timing_lst),' ',len(UE_NUM)
+	print len(timing_lst),' ',len(UE_NUM)
 	#print len(cumulative)
 	#print len(X)
+	
 	#print X
 	#print cumulative
 	
 	plot(X,cumulative,linewidth=2, color=Colour, label=Label)
 
 expno = sys.argv[1]
-LB1 = sys.argv[2]
-LB2 = sys.argv[3]
+expname = sys.argv[2]
+LB1 = sys.argv[3]
+LB2 = sys.argv[4]
 
-draw('blue',expno,LB1,LB1)
-draw('red',expno,LB2,LB2)
+draw('blue',expno,LB1,LB1,expname)
+draw('red',expno,LB2,LB2,expname)
 #draw('red','2','experiment 2',LB)
 #draw('green','3','experiment 3',LB)
 plt.ylabel("CDF of SERVICE requests")

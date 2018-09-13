@@ -26,7 +26,7 @@ double serv_time = 0;
 int serial_num=1;
 
 int max_retry_count = 5;
-int timeout_between_retry = 1000;
+int timeout_between_retry = 1500;
 
 system_stats_t global_system_stats;
 time_stats_t global_time_stats;
@@ -556,6 +556,7 @@ show_exit_counter_stats(system_stats_t *stats)
            stats->detach_context_release,
            stats->detach_fail);
 	printf("\nRetries:\t%lu\n",stats->retry);
+	printf("\nFAIL_COUNT:%lu\n",stats->attach_fail + stats->service_fail + stats->detach_fail);
 }
 
 void
@@ -827,6 +828,9 @@ send_signal(int msg_type, int port)
     //pkt_identifier.slice_id = 1;
     pkt_identifier.slice_id = SLICE_ID;
     pkt_identifier.msg_type = PKT_TYPE_ATTACH;
+	
+	pkt_identifier.MMEID = 0;
+	
     /* Keep the start pointer to use for sending
      */
     buf = buf_array;
@@ -852,10 +856,13 @@ service(void *arg)
     struct timeval auth_recv, nas_recv;
     double              cpu_time_used=0;
     uint8_t             attach_code = 0x4d;
+    //time_t start_t,end_t;
     pkt_identifier_t    pkt_identifier;
     uint32_t            enb_ue_s1ap_id = 0;
     enb_ue_s1ap_id = (thread_state->thread_num + thread_state->thread_seed)* 10000 +
                     thread_state->serial_seed;
+
+    //printf("%d\n",enb_ue_s1ap_id);
 
     char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
 
@@ -869,6 +876,8 @@ service(void *arg)
     pkt_identifier.slice_id = SLICE_ID;
 #endif
     pkt_identifier.msg_type = PKT_TYPE_SERVICE;
+	
+	pkt_identifier.MMEID = 0;
 
     /* Keep the start pointer to use for sending
      */
@@ -896,6 +905,16 @@ service(void *arg)
         all_start_flag = 0;
     }
 
+   char fname[100];
+
+   sprintf(fname,"logs/%d_time.txt",enb_ue_s1ap_id);
+
+   FILE *fp = fopen(fname,"w");
+
+
+   struct timespec start, end;
+   clock_gettime(CLOCK_MONOTONIC_RAW, &start);
+
     if (sendto(thread_state->socket, buf_start, BUFLEN, 0,
                (struct sockaddr *) thread_state->si_other, slen)==-1)
         diep("sendto()");
@@ -903,6 +922,7 @@ service(void *arg)
     increment_system_stat(&thread_state->thread_stats, 
                           STAT_SERVICE_ATTEMPT);
 
+    //time(&start_t);
     /*
      * Start listening for auth/NAS requests
      */
@@ -951,6 +971,7 @@ service(void *arg)
 #ifdef DEBUG
                 printf("received NAS request : %d\n",thread_state->thread_num);
 #endif
+		//printf("thread %d enb_s1ap_id received %d\n",thread_state->thread_num,*((uint8_t*)buf+17));
 		char payload[] = "000d40340000050000000200010008000480646dbe001a00090847f3914a9d00075e006440080002f83900e00000004340060002f8390001\0";
 
                 memcpy(buf_start, &pkt_identifier, sizeof(pkt_identifier_t));
@@ -1054,10 +1075,19 @@ service(void *arg)
                            slen)==-1) {
                     diep("sendto()");
                 } else {
+                    //time(&end_t);
                     thread_state->state = STAT_SERVICE_ACCEPT_COMPLETE_SENT;
                     increment_system_stat(&thread_state->thread_stats, 
                                           STAT_SERVICE_ACCEPT_COMPLETE_SENT);
                 }
+		clock_gettime(CLOCK_MONOTONIC_RAW, &end);
+    		uint64_t delta_us = (end.tv_sec - start.tv_sec) * 1000000 + (end.tv_nsec - start.tv_nsec) / 1000;
+
+
+
+    		fprintf(fp,"TIME:%d~%ld",enb_ue_s1ap_id,delta_us);
+    		fclose(fp);
+
                 return 0;
             } else {
 #if 0
@@ -1069,6 +1099,10 @@ service(void *arg)
         }
 
     }
+
+    fprintf(fp,"TIME:%d~%d",enb_ue_s1ap_id,-1);
+    fclose(fp);
+
     return err;
 }
 
@@ -1087,6 +1121,8 @@ attach(void *arg)
 	enb_ue_s1ap_id = (thread_state->thread_num + thread_state->thread_seed)* 10000 +
 		thread_state->serial_seed;
 
+        //printf("s1ap id %d\n",enb_ue_s1ap_id);
+
 	char payload[] = "000c005c0000050008000480646dbe001a00323107417108298039100000111102802000200201d011271a8080211001000010810600000000830600000000000d00000a00004300060002f8390001006440080002f83900e000000086400130\0";
 
 	/*
@@ -1099,6 +1135,7 @@ attach(void *arg)
     pkt_identifier.slice_id = SLICE_ID;
 #endif
 	pkt_identifier.msg_type = PKT_TYPE_ATTACH;
+	pkt_identifier.MMEID = 0;
 
 	/* Keep the start pointer to use for sending
 	*/
@@ -1313,6 +1350,7 @@ detach(void *arg)
     //pkt_identifier.slice_id = 1;
     pkt_identifier.slice_id = SLICE_ID;
     pkt_identifier.msg_type = PKT_TYPE_DETACH;
+	pkt_identifier.MMEID = 0;
 
     /* Keep the start pointer to use for sending
      */
@@ -1514,13 +1552,8 @@ execute_thread(void *arg)
 
 int main(int argc, char *argv[])
 {
-    pthread_t   *attach_thread;
-    int         i=0, j , num_threads;
-    int         seed = 0, burst_interval=1;
-    thread_state_t       *thread_state;
-    int ret = 0;
-
-    if (argc < 5) {
+   
+    if (argc < 5 && (atoi(argv[1]) != 4 && atoi(argv[1]) != 5)) {
         printf("Usage: ./ue <pkt_type> <num_par> <num_ser> <Thread IMSI seed>\n");
         printf("Usage: ./ue <pkt_type> <num_par> <num_ser> <Thread IMSI seed> <burst interval>\n");
         printf("Usage: ./ue <pkt_type> <num_par> <num_ser> <Thread IMSI seed> <burst interval> <max_retry_count> <timeout_between_retries>\n");
@@ -1528,24 +1561,51 @@ int main(int argc, char *argv[])
         printf("pkt_type:\n0\tATTACH\n1\tSERVICE\n2\tDETACH\nATTACH+DETACH\n");
         exit(0);
     }
+	
+	if(atoi(argv[1]) == 4)
+	{
+		send_signal(PKT_TYPE_TEST_MME, EXP_START_PORT);
+		return 0;
+	}
+	if(atoi(argv[1]) == 5)
+	{
+		send_signal(PKT_TYPE_TEST_MME, EXP_STOP_PORT);
+		return 0;
+	}
+	pthread_t   *attach_thread;
+    int         i=0, j , num_threads;
+    int         seed = 0, burst_interval=1;
+    thread_state_t       *thread_state;
+    int ret = 0;
+	
+
+   printf("thread count: %d\n",atoi(argv[2]));
+   printf("connection count: %d\n",atoi(argv[3]));
+
     msg_type_global = atoi(argv[1]);
     num_threads = atoi(argv[2]);
+    serial_num = atoi(argv[3]);
+    seed = atoi(argv[4]);
+
+
+    printf("param count %d\n",argc);
+
     if (argc == 5) {
-        serial_num = atoi(argv[3]);
-        seed = atoi(argv[4]);
+        //serial_num = atoi(argv[3]);
+        //seed = atoi(argv[4]);
     } else if (argc == 6) {
-        serial_num = atoi(argv[3]);
-        seed = atoi(argv[4]);
+        //serial_num = atoi(argv[3]);
+        //seed = atoi(argv[4]);
         burst_interval = atoi(argv[5]);
     } else if (argc == 8) {
-        serial_num = atoi(argv[3]);
-        seed = atoi(argv[4]);
+        //serial_num = atoi(argv[3]);
+        //seed = atoi(argv[4]);
         burst_interval = atoi(argv[5]);
 		max_retry_count = atoi(argv[6]);
 		timeout_between_retry = atoi(argv[7]);
     } else if (argc == 9){
-        serial_num = atoi(argv[3]);
-        seed = atoi(argv[4]);
+        //serial_num = atoi(argv[3]);
+        //seed = atoi(argv[4]);
         burst_interval = atoi(argv[5]);
 		max_retry_count = atoi(argv[6]);
 		timeout_between_retry = atoi(argv[7]);
@@ -1559,6 +1619,9 @@ int main(int argc, char *argv[])
      * After that wait for those threads to complete.
      */
 
+    printf("serial num %d\n",serial_num);
+    printf("Retry limit %d\n",max_retry_count);
+    printf("Retry time %d\n",timeout_between_retry);
     attach_thread = (pthread_t*)calloc(num_threads * serial_num, sizeof(pthread_t));
     thread_state  = (thread_state_t*)calloc(num_threads * serial_num, sizeof(thread_state_t));
 
@@ -1567,8 +1630,8 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    send_signal(PKT_TYPE_TEST_MME, EXP_START_PORT);
-
+    //send_signal(PKT_TYPE_TEST_MME, EXP_START_PORT);
+    //int ctr = 0;
     for (j=0; j<serial_num; j++) {
         for (i=0; i<num_threads; i++) {
             thread_state[i + num_threads*j].thread_num = i;
@@ -1580,11 +1643,15 @@ int main(int argc, char *argv[])
 				ret = -1;
 			}
             if (ret != 0) {
-                fprintf(stderr, "Failed to create thread %dx%d (%d) : %d (%s)\n", i, j, ret, i+num_threads*j, strerror(ret));
+                fprintf(stdout, "Failed to create thread %dx%d (%d) : %d (%s)\n", i, j, ret, i+num_threads*j, strerror(ret));
                 break;
             }
         }
-        if (ret != 0) break;
+        if (ret != 0) 
+	{
+		printf("Panic encountered\n");
+		break;
+	}
         /*
          * sleep between 2 bursts
          */
@@ -1664,10 +1731,11 @@ int main(int argc, char *argv[])
         }
     }
 
-    send_signal(PKT_TYPE_TEST_MME, EXP_STOP_PORT);
+    //send_signal(PKT_TYPE_TEST_MME, EXP_STOP_PORT);
 
 //    show_time_thread_stats(thread_state, num_threads, serial_num);
 //    show_system_thread_stats(thread_state, num_threads, serial_num);
+//	printf("counter %d\n",ctr);
     show_system_global_stats();
     show_exit_counter_stats(&global_system_stats);
     show_time_global_stats();
