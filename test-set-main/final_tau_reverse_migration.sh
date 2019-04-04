@@ -33,7 +33,7 @@ for element in ${parallel[@]}
 do
 	echo " running TAU attach for  "$element
 	echo "seeding by "$seed
-	ssh -l sayanb -t $host "echo 'sayanb_123' | sudo -S /home/sayanb/openNetVM/examples/ue_state_client2/go.sh ""$tau_size"" 1 1" &
+	ssh -l vasu -t $host "echo 'password_123' | sudo -S /home/vasu/openNetVM/examples/ue_state_client2/go.sh ""$tau_size"" 1 1" &
 	sleep 0.05
 	./ue 0 "$element" 1 "$seed"
 	sleep 3
@@ -48,7 +48,7 @@ for element in ${parallel[@]}
 do
 	echo " running TAU service for  "$element
 	echo "seeding by "$seed
-	ssh -l sayanb -t $host "echo 'sayanb_123' | sudo -S /home/sayanb/openNetVM/examples/ue_state_client2/go.sh ""$tau_size"" 1 1" &
+	ssh -l vasu -t $host "echo 'password_123' | sudo -S /home/vasu/openNetVM/examples/ue_state_client2/go.sh ""$tau_size"" 1 1" &
 	sleep 0.05
 	./ue 1 "$element" 1 "$seed"
 	sleep 3
