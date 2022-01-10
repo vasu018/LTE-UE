@@ -1,4 +1,4 @@
-# UE_SIM
+# LTE UE Emulator
 
 [Version 1]:
 An LTE UE packet generator module which can generate LTE attach packets and handle replies parallelly.
